@@ -1,3 +1,13 @@
-{% for entry in response %}
+<h2> {{name}} </h2>
+
+<h3> push/get </h3>
+
+{% for entry in push %}
+<p> {{entry}} </p>
+{% endfor %}
+
+<h3> historic/get </h3>
+
+{% for entry in historic %}
 <p> {{entry}} </p>
 {% endfor %}

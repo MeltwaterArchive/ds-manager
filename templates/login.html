@@ -1,0 +1,12 @@
+<!doctype html>
+<title>DataSift Login</title>
+{% if error %}
+  <h1>Bad login: {{ error }}!</h1>
+{% else %}
+  <h1>Hello World!</h1>
+{% endif %}
+<form action="" method="post">
+    User name: <input type="text" name="username"><br>
+    API Key: <input type="text" name="apikey"><br>
+    <input type="submit" value="Login">
+</form>

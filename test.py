@@ -35,11 +35,16 @@ def valid_login(user,apikey):
 
 @app.route('/ds_console', methods=['POST', 'GET'])
 def log_the_user_in():
+    client = Client(session['username'],session['apikey'])
+    acct = {'balance':str(client.balance()),'usage':str(client.usage(period='day')['streams']),'headers':str(client.usage().headers)}
+    acctstr = str(acct)
+    # just put responses in strings for now
     pushgetstr = [str(p) for p in push_get_all()]
     historicgetstr = [str(h) for h in historic_get_all()]
+    sourcegetstr = [str(s) for s in source_get_all()]
 
     return render_template('console.html', 
-        name=session['username'],push=pushgetstr, historic=historicgetstr)
+        name=session['username'],acct=acctstr,push=pushgetstr, historic=historicgetstr, source=sourcegetstr)
 
 def push_get_all():
     ''' get list of all push subscriptions from API v1.1 '''
@@ -50,7 +55,7 @@ def push_get_all():
     # custom request, so we can pass all param to API v.1.1 
     #  only for internal accounts?
     request = PartialRequest(DatasiftAuth(session['username'],session['apikey']),prefix='push')
-    params = {'include_finished':1,'all':1,'per_page':per_page}
+    params = {'include_finished':1,'all':1,'order_dir':'desc','per_page':per_page}
     pushget = request.get('get',params)
     pushgetlist = [p for p in pushget['subscriptions']]
     pages = pushget['count']/per_page + 2 
@@ -73,6 +78,18 @@ def historic_get_all():
         historicget = client.historics.get(maximum=per_page,page=i)
         historicgetlist.extend([h for h in historicget['data']])
     return historicgetlist
+
+def source_get_all():
+    ''' get list of all managed sources '''
+    client = Client(session['username'],session['apikey'])
+    per_page = 100
+
+    sourcegetlist = []
+    pages = client.managed_sources.get()['count']/per_page + 2
+    for i in xrange(1,pages):
+        sourceget = client.managed_sources.get(per_page=per_page,page=i)
+        sourcegetlist.extend([s for s in sourceget['sources']])
+    return sourcegetlist
 
 app.secret_key = 'A0Zr98j/3yX R~XHH!jmN]LWX/,?RT'
 

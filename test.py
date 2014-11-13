@@ -35,23 +35,44 @@ def valid_login(user,apikey):
 
 @app.route('/ds_console', methods=['POST', 'GET'])
 def log_the_user_in():
-    client = Client(session['username'],session['apikey'])
-    pushget = client.push.get(include_finished=True)
-    pushgetstr = [ str(p) for p in pushget['subscriptions']]
+    pushgetstr = [str(p) for p in push_get_all()]
+    historicgetstr = [str(h) for h in historic_get_all()]
 
-    # custom push get request, so we can pass all to API v.1.1 
-    # should only be for internal accounts
-    request = PartialRequest(DatasiftAuth(session['username'],session['apikey']),prefix='push')
-    params = {'include_finished':1,'all':1,'per_page':100}
-    pushget = request.get('get',params)
-    pushgetstr = [ str(p) for p in pushget['subscriptions']]
-
-    historicget = client.historics.get()
-    historicget = client.historics.get(maximum=historicget['count'])
-    historicgetstr = [str(h) for h in historicget['data']]
     return render_template('console.html', 
         name=session['username'],push=pushgetstr, historic=historicgetstr)
 
+def push_get_all():
+    ''' get list of all push subscriptions from API v1.1 '''
+
+    client = Client(session['username'],session['apikey'])
+    per_page = 100
+
+    # custom request, so we can pass all param to API v.1.1 
+    #  only for internal accounts?
+    request = PartialRequest(DatasiftAuth(session['username'],session['apikey']),prefix='push')
+    params = {'include_finished':1,'all':1,'per_page':per_page}
+    pushget = request.get('get',params)
+    pushgetlist = [p for p in pushget['subscriptions']]
+    pages = pushget['count']/per_page + 2 
+
+    # >= 2 pages push/get response
+    for i in xrange(2,pages):
+        params = {'include_finished':1,'all':1,'per_page':per_page,'page':i}
+        pushget = request.get('get',params)
+        pushgetlist.extend([p for p in pushget['subscriptions']])
+    return pushgetlist
+
+def historic_get_all():
+    ''' get list of all historics '''
+    client = Client(session['username'],session['apikey'])
+    per_page = 100
+
+    historicgetlist = []
+    pages = client.historics.get()['count']/per_page + 2
+    for i in xrange(1,pages):
+        historicget = client.historics.get(maximum=per_page,page=i)
+        historicgetlist.extend([h for h in historicget['data']])
+    return historicgetlist
 
 app.secret_key = 'A0Zr98j/3yX R~XHH!jmN]LWX/,?RT'
 

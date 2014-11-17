@@ -35,16 +35,14 @@ def valid_login(user,apikey):
 
 @app.route('/ds_console', methods=['POST', 'GET'])
 def log_the_user_in():
-    client = Client(session['username'],session['apikey'])
-    acct = {'balance':str(client.balance()),'usage':str(client.usage(period='day')['streams']),'headers':str(client.usage().headers)}
-    acctstr = str(acct)
+    
     # just put responses in strings for now
     pushgetstr = [str(p) for p in push_get_all()]
     historicgetstr = [str(h) for h in historic_get_all()]
     sourcegetstr = [str(s) for s in source_get_all()]
 
     return render_template('console.html', 
-        name=session['username'],acct=acctstr,push=pushgetstr, historic=historicgetstr, source=sourcegetstr)
+        name=session['username'],acct=account_all(),push=pushgetstr, historic=historicgetstr, source=sourcegetstr)
 
 def push_get_all():
     ''' get list of all push subscriptions from API v1.1 '''
@@ -90,6 +88,20 @@ def source_get_all():
         sourceget = client.managed_sources.get(per_page=per_page,page=i)
         sourcegetlist.extend([s for s in sourceget['sources']])
     return sourcegetlist
+
+def account_all():
+    ''' get dictionary of usage, balance, and rate limit '''
+    client = Client(session['username'],session['apikey'])
+    usage_streams = client.usage(period='day')['streams']
+    print str(usage_streams)
+    usage = [ "%s :  %s" % (s,str(usage_streams[s])) for s in usage_streams]
+    limit = client.usage().headers['x-ratelimit-limit']
+    limit_remaining = client.usage().headers['x-ratelimit-remaining']
+    acct = {'balance':str(client.balance()),
+    'usage':usage,
+    'x-ratelimit-remaining':limit_remaining,
+    'x-ratelimit-limit':limit}
+    return acct
 
 app.secret_key = 'A0Zr98j/3yX R~XHH!jmN]LWX/,?RT'
 

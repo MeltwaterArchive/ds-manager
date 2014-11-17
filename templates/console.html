@@ -1,7 +1,13 @@
 <h2> {{name}} </h2>
 
 <h3> account details </h3>
-<p>{{acct}}</p>
+<p>Balance: {{acct['balance']}}</p>
+<p>Rate Limit:{{acct['x-ratelimit-remaining']}} / {{acct['x-ratelimit-limit']}} </p>
+<p>Usage:
+{% for s in acct['usage'] %}
+<p> {{s}} </p>
+{% endfor %}
+</p>
 
 <h3> push/get </h3>
 

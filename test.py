@@ -41,8 +41,13 @@ def log_the_user_in():
     historicgetstr = [str(h) for h in historic_get_all()]
     sourcegetstr = [str(s) for s in source_get_all()]
 
-    return render_template('console.html', 
-        name=session['username'],acct=account_all(),push=pushgetstr, historic=historicgetstr, source=sourcegetstr)
+    return render_template(
+        'console.html',
+        name=session['username'],
+        acct=account_all(),
+        push=pushgetstr,
+        historic=historicgetstr,
+        source=sourcegetstr)
 
 def push_get_all():
     ''' get list of all push subscriptions from API v1.1 '''
@@ -52,15 +57,27 @@ def push_get_all():
 
     # custom request, so we can pass all param to API v.1.1 
     #  only for internal accounts?
-    request = PartialRequest(DatasiftAuth(session['username'],session['apikey']),prefix='push')
-    params = {'include_finished':1,'all':1,'order_dir':'desc','per_page':per_page}
+    request = PartialRequest(
+        DatasiftAuth(
+            session['username'],
+            session['apikey']),
+        prefix='push')
+    params = {
+    'include_finished':1,
+    'all':1,
+    'order_dir':'desc',
+    'per_page':per_page}
     pushget = request.get('get',params)
     pushgetlist = [p for p in pushget['subscriptions']]
     pages = pushget['count']/per_page + 2 
 
     # >= 2 pages push/get response
     for i in xrange(2,pages):
-        params = {'include_finished':1,'all':1,'per_page':per_page,'page':i}
+        params = {
+        'include_finished':1,
+        'all':1,
+        'per_page':per_page,
+        'page':i}
         pushget = request.get('get',params)
         pushgetlist.extend([p for p in pushget['subscriptions']])
     return pushgetlist
@@ -71,10 +88,13 @@ def historic_get_all():
     per_page = 100
 
     historicgetlist = []
-    pages = client.historics.get()['count']/per_page + 2
-    for i in xrange(1,pages):
-        historicget = client.historics.get(maximum=per_page,page=i)
-        historicgetlist.extend([h for h in historicget['data']])
+    try:
+        pages = client.historics.get()['count']/per_page + 2
+        for i in xrange(1,pages):
+            historicget = client.historics.get(maximum=per_page,page=i)
+            historicgetlist.extend([h for h in historicget['data']])
+    except:
+        historicgetlist = ["No Historic API access"]
     return historicgetlist
 
 def source_get_all():
@@ -93,7 +113,6 @@ def account_all():
     ''' get dictionary of usage, balance, and rate limit '''
     client = Client(session['username'],session['apikey'])
     usage_streams = client.usage(period='day')['streams']
-    print str(usage_streams)
     usage = [ "%s :  %s" % (s,str(usage_streams[s])) for s in usage_streams]
     limit = client.usage().headers['x-ratelimit-limit']
     limit_remaining = client.usage().headers['x-ratelimit-remaining']

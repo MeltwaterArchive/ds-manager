@@ -1,4 +1,18 @@
+{% if error %}
+  <h3>Bad login: {{ error }}!</h3>
+{% else %}
+  <h3>DataSift Login</h3>
+{% endif %}
+<form action="" method="post">
+    User name: <input type="text" name="username"><br>
+    API Key: <input type="text" name="apikey"><br>
+    <input type="submit" value="Login">
+    <input type="button" value="Log out" onClick="javascript:location.href='/logout';">
+</form>
+
+{% if name %}
 <h2> {{name}} </h2>
+{% endif %}
 
 <h3> account details </h3>
 <p>Balance: {{acct['balance']}}</p>
@@ -15,7 +29,7 @@
 <p> {{entry}} </p>
 {% endfor %}
 
-<h3> historic/get </h3>
+<h3> historics/get </h3>
 
 {% for entry in historic %}
 <p> {{entry}} </p>

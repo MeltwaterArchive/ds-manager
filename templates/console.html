@@ -1,7 +1,26 @@
+<!doctype html>
+
+<head>
+<style>
+body {
+    background-color: linen;
+}
+h1 {
+    color: maroon;
+    margin-left: 20px;
+} 
+p {
+    margin-left: 40px;
+}
+</style>
+</head>
+
+<title>DataSift Console</title>
+
 {% if error %}
   <h3>Bad login: {{ error }}!</h3>
 {% else %}
-  <h3>DataSift Login</h3>
+  <h3>DataSift Console Login</h3>
 {% endif %}
 <form action="" method="post">
     User name: <input type="text" name="username"><br>
@@ -10,9 +29,9 @@
     <input type="button" value="Log out" onClick="javascript:location.href='/logout';">
 </form>
 
+<!-- only show these if there is user info in session -->
 {% if name %}
 <h2> {{name}} </h2>
-{% endif %}
 
 <h3> account details </h3>
 <p>Balance: {{acct['balance']}}</p>
@@ -40,3 +59,4 @@
 {% for entry in source %}
 <p> {{entry}} </p>
 {% endfor %}
+{% endif %}

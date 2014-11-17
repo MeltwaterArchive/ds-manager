@@ -46,6 +46,9 @@ def log_the_user_in():
             name=session['username']
         else:
             error = 'Invalid username/password'
+    else:
+        if 'username' in session.keys():
+            name=session['username']
 
     # just put responses in strings for now
     pushgetstr = [str(p) for p in push_get_all()]

@@ -50,10 +50,22 @@ def log_the_user_in():
         if 'username' in session.keys():
             name=session['username']
 
+    push_get = push_get_all()
+    historic_get = historic_get_all()
+    source_get = source_get_all()
     # just put responses in strings for now
-    pushgetstr = [str(p) for p in push_get_all()]
-    historicgetstr = [str(h) for h in historic_get_all()]
-    sourcegetstr = [str(s) for s in source_get_all()]
+    pushgetstr = [str(p) for p in push_get if type(p) is dict and 'hash_type' in p.keys() and p['hash_type'] != "historic"]
+    # historicgetstr = [str(h) for h in historic_get]
+    sourcegetstr = [str(s) for s in source_get]
+
+    hp = historic_push(historic_get,push_get)
+    historicgetstr = []
+    for h in hp:
+        push=""
+        for p in hp[h]:
+            push+=str(p)
+        historicgetstr.append(h + ":\n" + push)
+
 
     return render_template(
         'console.html',
@@ -63,6 +75,22 @@ def log_the_user_in():
         push=pushgetstr,
         historic=historicgetstr,
         source=sourcegetstr)
+
+
+def historic_push(historic_get,push_get):
+    ''' get dictionary of historic queries with list of push subscriptions '''
+    hp = {}
+    for h in historic_get:
+        if type(h) is dict:
+            for p in push_get:
+                if h['id'] == p['hash']:
+                    if h['id'] in hp.keys():
+                        hp[h['id']].append(p)
+                    else:
+                        hp[h['id']] = [p]
+            else:
+                h['id'] = []
+    return hp
 
 @app.route('/logout')
 def logout():

@@ -52,12 +52,13 @@ def log_the_user_in():
             name=session['username']
 
     push_get = push_get_all()
+    push_get_no_historics = [p for p in push_get if type(p) is dict and 'hash_type' in p.keys() and p['hash_type'] != "historic"]
     historic_get = historic_get_all()
     source_get = source_get_all()
 
     # just put responses in strings for now
     # only push type stream is listed
-    pushgetstr = [str(p) for p in push_get if type(p) is dict and 'hash_type' in p.keys() and p['hash_type'] != "historic"]
+    # pushgetstr = [str(p) for p in push_get if type(p) is dict and 'hash_type' in p.keys() and p['hash_type'] != "historic"]
     sourcegetstr = [str(s) for s in source_get]
 
     # list of historic ids with push as string
@@ -74,7 +75,7 @@ def log_the_user_in():
         error=error,
         name=name,
         acct=account_all(),
-        push=pushgetstr,
+        push=push_get_no_historics,
         historic=historicgetstr,
         source=sourcegetstr)
 
@@ -100,7 +101,6 @@ def logout():
 
 def push_get_all():
     ''' get list of all push subscriptions from API v1.1 '''
-    # Note: there seem to be a few missing subscriptions. Push w/ Historics Hash?
     try:
         client = Client(session['username'],session['apikey'])
         per_page = 100
@@ -117,7 +117,7 @@ def push_get_all():
         'all':1,
         'order_dir':'desc',
         'per_page':per_page}
-        pushget = request.get('get',params)
+        pushget = request.get('get',params=params)
         pushgetlist = [p for p in pushget['subscriptions']]
         pages = pushget['count']/per_page + 2 
 
@@ -126,9 +126,10 @@ def push_get_all():
             params = {
             'include_finished':1,
             'all':1,
+            'order_dir':'desc',
             'per_page':per_page,
             'page':i}
-            pushget = request.get('get',params)
+            pushget = request.get('get',params=params)
             pushgetlist.extend([p for p in pushget['subscriptions']])
     except:
         pushgetlist = ["No Push API access"]

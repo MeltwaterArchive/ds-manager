@@ -12,6 +12,10 @@ h1 {
 p {
     margin-left: 40px;
 }
+.tg  {border-collapse:collapse;border-spacing:0;}
+.tg td{font-family:Arial, sans-serif;font-size:14px;padding:10px 5px;border-style:solid;border-width:1px;overflow:hidden;word-break:normal;}
+.tg th{font-family:Arial, sans-serif;font-size:14px;font-weight:normal;padding:10px 5px;border-style:solid;border-width:1px;overflow:hidden;word-break:normal;}
+
 </style>
 </head>
 
@@ -44,9 +48,36 @@ p {
 
 <h3> Live Streams </h3>
 
-{% for entry in push %}
-<p> {{entry}} </p>
-{% endfor %}
+<table class="tg">
+  <tr>
+    <th class="tg-031e">Push ID</th>
+    <th class="tg-031e">Name</th>
+    <th class="tg-031e">Type</th>
+    <th class="tg-031e">Hash</th>
+    <th class="tg-031e">Last Request</th>
+    <th class="tg-031e">Last Success</th>
+    <th class="tg-031e">Created</th>
+    <th class="tg-031e">Lost Data</th>
+    <th class="tg-031e">Count</th>
+    <th class="tg-031e">Output</th>
+    <th class="tg-031e">Status</th>
+  </tr>
+  {% for entry in push %}
+    <tr>
+      <th class="tg-031e">{{entry['id']}}</th>
+      <th class="tg-031e">{{entry['name']}}</th>
+      <th class="tg-031e">{{entry['hash_type']}}</th>
+      <th class="tg-031e">{{entry['hash']}}</th>
+      <th class="tg-031e">{{entry['last_request']}}</th>
+      <th class="tg-031e">{{entry['last_success']}}</th>
+      <th class="tg-031e">{{entry['start']}}</th>
+      <th class="tg-031e">{{entry['lost_data']}}</th>
+      <th class="tg-031e">{{entry['interaction_count']}}</th>
+      <th class="tg-031e">{{entry['output_type']}}</th>
+      <th class="tg-031e">{{entry['status']}}</th>
+    </tr>
+  {% endfor %}
+</table>
 
 <h3> Historic Streams </h3>
 

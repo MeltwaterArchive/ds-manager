@@ -36,6 +36,7 @@ def valid_login(user,apikey):
 @app.route('/ds_console', methods=['POST', 'GET'])
 def log_the_user_in():
     
+    # login dialog, set session stuff
     error = None 
     name = None
     if request.method == 'POST':
@@ -53,19 +54,20 @@ def log_the_user_in():
     push_get = push_get_all()
     historic_get = historic_get_all()
     source_get = source_get_all()
+
     # just put responses in strings for now
+    # only push type stream is listed
     pushgetstr = [str(p) for p in push_get if type(p) is dict and 'hash_type' in p.keys() and p['hash_type'] != "historic"]
-    # historicgetstr = [str(h) for h in historic_get]
     sourcegetstr = [str(s) for s in source_get]
 
+    # list of historic ids with push as string
     hp = historic_push(historic_get,push_get)
     historicgetstr = []
     for h in hp:
         push=""
-        for p in hp[h]:
+        for p in hp[h]['subscriptions']:
             push+=str(p)
-        historicgetstr.append(h + ":\n" + push)
-
+        historicgetstr.append(str(hp[h]['historic']) + ":<BR>" + push)
 
     return render_template(
         'console.html',
@@ -78,18 +80,15 @@ def log_the_user_in():
 
 
 def historic_push(historic_get,push_get):
-    ''' get dictionary of historic queries with list of push subscriptions '''
+    ''' get dictionary of historics with list of push subscription dicts  '''
     hp = {}
     for h in historic_get:
         if type(h) is dict:
+            hp[h['id']]={'historic':h}
+            hp[h['id']]['subscriptions'] = []
             for p in push_get:
                 if h['id'] == p['hash']:
-                    if h['id'] in hp.keys():
-                        hp[h['id']].append(p)
-                    else:
-                        hp[h['id']] = [p]
-            else:
-                h['id'] = []
+                    hp[h['id']]['subscriptions'].append(p)
     return hp
 
 @app.route('/logout')
@@ -101,7 +100,7 @@ def logout():
 
 def push_get_all():
     ''' get list of all push subscriptions from API v1.1 '''
-
+    # Note: there seem to be a few missing subscriptions. Push w/ Historics Hash?
     try:
         client = Client(session['username'],session['apikey'])
         per_page = 100

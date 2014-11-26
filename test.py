@@ -63,12 +63,15 @@ def log_the_user_in():
 
     # list of historic ids with push as string
     hp = historic_push(historic_get,push_get)
+    '''
     historicgetstr = []
     for h in hp:
         push=""
         for p in hp[h]['subscriptions']:
             push+=str(p)
         historicgetstr.append(str(hp[h]['historic']) + ":<BR>" + push)
+    '''
+
 
     return render_template(
         'console.html',
@@ -76,7 +79,7 @@ def log_the_user_in():
         name=name,
         acct=account_all(),
         push=push_get_no_historics,
-        historic=historicgetstr,
+        historic=hp,
         source=sourcegetstr)
 
 

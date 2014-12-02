@@ -173,10 +173,12 @@ def account_all():
     try:
         client = Client(session['username'],session['apikey'])
         usage_streams = client.usage(period='day')['streams']
-        usage = [ "%s :  %s" % (s,str(usage_streams[s])) for s in usage_streams]
+        # usage = [ "%s :  %s" % (s,str(usage_streams[s])) for s in usage_streams]
+        # transform usage response as a list of tuples
+        usage = usage_streams.items()
         limit = client.usage().headers['x-ratelimit-limit']
         limit_remaining = client.usage().headers['x-ratelimit-remaining']
-        acct = {'balance':str(client.balance()),
+        acct = {'balance':client.balance(),
         'usage':usage,
         'x-ratelimit-remaining':limit_remaining,
         'x-ratelimit-limit':limit}

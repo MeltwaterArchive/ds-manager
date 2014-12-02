@@ -38,13 +38,29 @@ p {
 <h2> {{name}} </h2>
 
 <h3> account details </h3>
+{% if acct['balance'] %}
 <p>Balance: {{acct['balance']}}</p>
-<p>Rate Limit:{{acct['x-ratelimit-remaining']}} / {{acct['x-ratelimit-limit']}} </p>
-<p>Usage:
+{% endif %}
+<p>Rate Limit remaining: {{acct['x-ratelimit-remaining']}} / {{acct['x-ratelimit-limit']}} </p>
+<p>Usage:</p>
+<table class="tg">
+  <tr>
+    <th class="tg-031e">Stream Hash</th>
+    <th class="tg-031e">License Volumes</th>
+    <th class="tg-031e">Running Time (seconds)</th>
+  </tr>
 {% for s in acct['usage'] %}
-<p> {{s}} </p>
+  <tr>
+    <th class="tg-031e">{{s[0]}}</th>
+    <th class="tg-031e">
+{% for l in s[1]['licenses'] %}
+      {{l}} : {{s[1]['licenses'][l]}} <BR>
 {% endfor %}
-</p>
+    </th>
+    <th class="tg-031e">{{s[1]['seconds']}}</th>
+  </tr>
+{% endfor %}
+</table>
 
 <h3> Live Streams </h3>
 

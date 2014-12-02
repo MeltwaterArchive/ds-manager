@@ -42,7 +42,7 @@ p {
 <p>Balance: {{acct['balance']}}</p>
 {% endif %}
 <p>Rate Limit remaining: {{acct['limit'][0]}} / {{acct['limit'][1]}} </p>
-<p>Usage ({{ acct['usage_period'][0] }} - {{ acct['usage_period'][1] }}):</p>
+<p>Usage: ({{ acct['usage_period'][0] }} - {{ acct['usage_period'][1] }})</p>
 <table class="tg">
   <tr>
     <th class="tg-031e">Stream Hash</th>
@@ -144,7 +144,38 @@ p {
 
 <h3> Managed Sources </h3>
 
+<table class="tg">
+  <tr>
+    <th class="tg-031e">Source Type</th>
+    <th class="tg-031e">Name</th>
+    <th class="tg-031e">ID</th>
+    <th class="tg-031e">Resources</th>
+    <th class="tg-031e">Parameters</th>
+    <th class="tg-031e">Created At (UTC)</th>
+    <th class="tg-031e">Status</th>
+  </tr>  
 {% for entry in source %}
-<p> {{entry}} </p>
+  <tr>
+    <th class="tg-031e">{{entry['source_type']}}</th>
+    <th class="tg-031e">{{entry['name']}}</th>
+    <th class="tg-031e">{{entry['id']}}</th>
+    <th class="tg-031e">
+{% for r in entry['resources'] %}
+      {{r['resource_id']}} :
+{% for p in r['parameters'] %}
+       {{p}}:{{r['parameters'][p]}}<BR>
 {% endfor %}
+{% endfor %}
+    </th>
+    <th class="tg-031e">
+{% for p in entry['parameters'] %}
+      {{p}}: {{entry['parameters'][p]}}<BR> 
+{% endfor %}
+    </th>
+    <th class="tg-031e">{{entry['created_at']}}</th>
+    <th class="tg-031e">{{entry['status']}}</th>
+  </tr>
+{% endfor %}
+</table>
+
 {% endif %}

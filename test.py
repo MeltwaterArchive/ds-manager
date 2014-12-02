@@ -80,7 +80,7 @@ def log_the_user_in():
         acct=account_all(),
         push=push_get_no_historics,
         historic=hp,
-        source=sourcegetstr)
+        source=source_get)
 
 
 def historic_push(historic_get,push_get):
@@ -176,7 +176,7 @@ def account_all():
         # transform usage response as a list of tuples
         usage_streams = usage['streams'].items()
         usage_period = (usage['start'],usage['end'])
-        limit = (usage.headers['x-ratelimit-limit'], usage.headers['x-ratelimit-remaining'])
+        limit = (usage.headers['x-ratelimit-remaining'], usage.headers['x-ratelimit-limit'])
         acct = {'balance':client.balance(),
         'usage_streams':usage_streams,
         'usage_period': usage_period,

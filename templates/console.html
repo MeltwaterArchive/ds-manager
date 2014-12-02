@@ -166,6 +166,7 @@ p {
     <th class="tg-031e">ID</th>
     <th class="tg-031e">Resources</th>
     <th class="tg-031e">Parameters</th>
+    <th class="tg-031e">Auth</th>
     <th class="tg-031e">Created At (UTC)</th>
     <th class="tg-031e">Status</th>
   </tr>  
@@ -185,6 +186,14 @@ p {
     <th class="tg-031e">
 {% for p in entry['parameters'] %}
       {{p}}: {{entry['parameters'][p]}}<BR> 
+{% endfor %}
+    </th>
+    <th class="tg-031e">
+{% for a in entry['auth'] %}
+      id: {{a['identity_id']}}<BR>
+{% for k in a['parameters'] %}
+      {{k}}: {{a['parameters'][k]}}<BR> 
+{% endfor %}
 {% endfor %}
     </th>
     <th class="tg-031e">{{entry['created_at']}}</th>

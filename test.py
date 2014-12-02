@@ -172,16 +172,15 @@ def account_all():
     ''' get dictionary of usage, balance, and rate limit '''
     try:
         client = Client(session['username'],session['apikey'])
-        usage_streams = client.usage(period='day')['streams']
-        # usage = [ "%s :  %s" % (s,str(usage_streams[s])) for s in usage_streams]
+        usage = client.usage(period='day')
         # transform usage response as a list of tuples
-        usage = usage_streams.items()
-        limit = client.usage().headers['x-ratelimit-limit']
-        limit_remaining = client.usage().headers['x-ratelimit-remaining']
+        usage_streams = usage['streams'].items()
+        usage_period = (usage['start'],usage['end'])
+        limit = (usage.headers['x-ratelimit-limit'], usage.headers['x-ratelimit-remaining'])
         acct = {'balance':client.balance(),
-        'usage':usage,
-        'x-ratelimit-remaining':limit_remaining,
-        'x-ratelimit-limit':limit}
+        'usage_streams':usage_streams,
+        'usage_period': usage_period,
+        'limit':limit}
     except:
         acct = {'balance':"",
         'usage':"",

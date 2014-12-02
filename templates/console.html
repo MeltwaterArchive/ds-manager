@@ -41,15 +41,15 @@ p {
 {% if acct['balance'] %}
 <p>Balance: {{acct['balance']}}</p>
 {% endif %}
-<p>Rate Limit remaining: {{acct['x-ratelimit-remaining']}} / {{acct['x-ratelimit-limit']}} </p>
-<p>Usage:</p>
+<p>Rate Limit remaining: {{acct['limit'][0]}} / {{acct['limit'][1]}} </p>
+<p>Usage ({{ acct['usage_period'][0] }} - {{ acct['usage_period'][1] }}):</p>
 <table class="tg">
   <tr>
     <th class="tg-031e">Stream Hash</th>
     <th class="tg-031e">License Volumes</th>
     <th class="tg-031e">Running Time (seconds)</th>
   </tr>
-{% for s in acct['usage'] %}
+{% for s in acct['usage_streams'] %}
   <tr>
     <th class="tg-031e">{{s[0]}}</th>
     <th class="tg-031e">

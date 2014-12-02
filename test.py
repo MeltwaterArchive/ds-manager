@@ -52,26 +52,13 @@ def log_the_user_in():
             name=session['username']
 
     push_get = push_get_all()
-    push_get_no_historics = [p for p in push_get if type(p) is dict and 'hash_type' in p.keys() and p['hash_type'] != "historic"]
     historic_get = historic_get_all()
     source_get = source_get_all()
 
-    # just put responses in strings for now
-    # only push type stream is listed
-    # pushgetstr = [str(p) for p in push_get if type(p) is dict and 'hash_type' in p.keys() and p['hash_type'] != "historic"]
-    sourcegetstr = [str(s) for s in source_get]
+    push_get_no_historics = [p for p in push_get if type(p) is dict and 'hash_type' in p.keys() and p['hash_type'] != "historic"]
 
     # list of historic ids with push as string
     hp = historic_push(historic_get,push_get)
-    '''
-    historicgetstr = []
-    for h in hp:
-        push=""
-        for p in hp[h]['subscriptions']:
-            push+=str(p)
-        historicgetstr.append(str(hp[h]['historic']) + ":<BR>" + push)
-    '''
-
 
     return render_template(
         'console.html',

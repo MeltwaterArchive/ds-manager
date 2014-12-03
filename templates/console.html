@@ -70,6 +70,8 @@ li {
 
   <h2> {{name}} </h2>
 
+<!-- ACCOUNT DETAILS -->
+
   <h3> account details </h3>
 
   {% if acct['balance'] %}
@@ -121,12 +123,15 @@ li {
     </tbody>
   </table>
 
+<!-- PUSH SUBSCRIPTIONS -->
+
   <h3 id="showstreams"> Live Streams </h3>
 
   <div id="pushget" style="display: none;">
     <table id="pushtable" class="tg">
       <thead>
         <tr>
+          <th class="tg-031e"></th>
           <th class="tg-031e">Push ID</th>
           <th class="tg-031e">Name</th>
           <th class="tg-031e">Type</th>
@@ -143,6 +148,7 @@ li {
       <tbody>
     {% for entry in push %}
         <tr>
+          <td class="tg-031e"><input type="checkbox" name={{entry['id']}}></td>
           <td class="tg-031e">{{entry['id']}}</td>
           <td class="tg-031e">{{entry['name']}}</td>
           <td class="tg-031e">{{entry['hash_type']}}</td>
@@ -159,6 +165,8 @@ li {
       </tbody>
     </table>
   </div>
+
+<!-- HISTORICS -->
 
   <h3 id="showhistorics"> Historic Streams </h3>
 
@@ -209,12 +217,15 @@ li {
     </table>
   </div>
 
+<!--  MANAGED SOURCES -->
+
   <h3 id="showsources"> Managed Sources </h3>
 
   <div id="sourcesget" style="display: none;">
     <table id="sourcestable" class="tg">
       <thead>
         <tr>
+          <th class="tg-031e"></th>
           <th class="tg-031e">Source Type</th>
           <th class="tg-031e">Name</th>
           <th class="tg-031e">ID</th>
@@ -228,6 +239,7 @@ li {
       <tbody>
     {% for entry in source %}
       <tr>
+        <td class="tg-031e"><input type="checkbox" name={{entry['id']}}></td>
         <td class="tg-031e">{{entry['source_type']}}</td>
         <td class="tg-031e">{{entry['name']}}</td>
         <td class="tg-031e">{{entry['id']}}</td>

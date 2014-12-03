@@ -55,9 +55,9 @@ def log_the_user_in():
     historic_get = historic_get_all()
     source_get = source_get_all()
 
-    push_get_no_historics = [p for p in push_get if type(p) is dict and 'hash_type' in p.keys() and p['hash_type'] != "historic"]
+    # separate 'live streams' from historics and their push subscriptions
 
-    # list of historic ids with push as string
+    push_get_no_historics = [p for p in push_get if type(p) is dict and 'hash_type' in p.keys() and p['hash_type'] != "historic"]
     hp = historic_push(historic_get,push_get)
 
     return render_template(
@@ -68,6 +68,14 @@ def log_the_user_in():
         push=push_get_no_historics,
         historic=hp,
         source=source_get)
+
+
+@app.route('/logout')
+def logout():
+    # remove the username from the session if it's there
+    session.pop('username', None)
+    session.pop('apikey', None)
+    return redirect(url_for('log_the_user_in'))
 
 
 def historic_push(historic_get,push_get):
@@ -82,12 +90,6 @@ def historic_push(historic_get,push_get):
                     hp[h['id']]['subscriptions'].append(p)
     return hp
 
-@app.route('/logout')
-def logout():
-    # remove the username from the session if it's there
-    session.pop('username', None)
-    session.pop('apikey', None)
-    return redirect(url_for('log_the_user_in'))
 
 def push_get_all():
     ''' get list of all push subscriptions from API v1.1 '''

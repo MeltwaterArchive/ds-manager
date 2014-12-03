@@ -20,15 +20,36 @@ li {
 .tg th{font-family:Arial, sans-serif;font-size:14px;font-weight:normal;padding:10px 5px;border-style:solid;border-width:1px;overflow:hidden;word-break:normal;}
 
 </style>
+
+<script src="//ajax.googleapis.com/ajax/libs/jquery/1.9.1/jquery.min.js"></script>
+<script>window.jQuery || document.write('<script src="{{
+  url_for('static', filename='jquery.js') }}">\x3C/script>')</script>
+<script type="text/javascript" src="{{
+  url_for('static', filename='jquery.tablesorter.js') }}"></script>
+<script type=text/javascript>
+  //$SCRIPT_ROOT = {{ request.script_root|tojson|safe }};
+
+  $(document).ready(function() {
+    // hide/show tables
+    $('#showstreams').click(function() {
+      $('#pushget').slideToggle("fast");
+    });
+    $('#showhistorics').click(function() {
+      $('#historicsget').slideToggle("fast");
+    });
+    $('#showsources').click(function() {
+      $('#sourcesget').slideToggle("fast");
+    });
+
+    //sort tables
+    $('#sourcestable').tablesorter(); 
+    $('#pushtable').tablesorter(); 
+    $('#usagetable').tablesorter();
+  });
+</script>
+
 </head>
 <body>
-  <script src="//ajax.googleapis.com/ajax/libs/jquery/1.9.1/jquery.min.js"></script>
-  <script>window.jQuery || document.write('<script src="{{
-    url_for('static', filename='jquery.js') }}">\x3C/script>')</script>
-  <script type=text/javascript>
-    $SCRIPT_ROOT = {{ request.script_root|tojson|safe }};
-  </script>
-
 
   <title>DataSift Console</title>
 
@@ -54,179 +75,201 @@ li {
   {% if acct['balance'] %}
   {% set balance = acct['balance']['balance'] %}
   <p>Balance:</p>
-  <table class="tg">
-    <tr>
-      <th class="tg-031e">Plan</th>
-      <th class="tg-031e">Remaining DPUs</th>
-      <th class="tg-031e">Cost</th>
-      <th class="tg-031e">Cost Limit</th>
-    </tr>
-    <tr>
-      <th class="tg-031e">{{balance['plan']}}</th>
-      <th class="tg-031e">{{balance['remaining_dpus']}}</th>
-      <th class="tg-031e">{{balance['cost']}}</th>
-      <th class="tg-031e">{{balance['threshold']}}</th>
-    </tr>
+  <table id="balancetable" class="tg">
+    <thead>
+      <tr>
+        <th class="tg-031e">Plan</th>
+        <th class="tg-031e">Remaining DPUs</th>
+        <th class="tg-031e">Cost</th>
+        <th class="tg-031e">Cost Limit</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td class="tg-031e">{{balance['plan']}}</td>
+        <td class="tg-031e">{{balance['remaining_dpus']}}</td>
+        <td class="tg-031e">{{balance['cost']}}</td>
+        <td class="tg-031e">{{balance['tdreshold']}}</td>
+      </tr>
+    </tbody>
   </table>
   {% endif %}
   <p>Rate Limit remaining: {{acct['limit'][0]}} / {{acct['limit'][1]}} </p>
   <p>Usage: ({{ acct['usage_period'][0] }} - {{ acct['usage_period'][1] }})</p>
-  <table class="tg">
-    <tr>
-      <th class="tg-031e">Stream Hash</th>
-      <th class="tg-031e">License Volumes</th>
-      <th class="tg-031e">Running Time (seconds)</th>
-    </tr>
+  <table id="usagetable" class="tg">
+    <thead>
+      <tr>
+        <th class="tg-031e">Stream Hash</th>
+        <th class="tg-031e">License Volumes</th>
+        <th class="tg-031e">Running Time (seconds)</th>
+      </tr>
+    </thead>
+    <tbody>
   {% for s in acct['usage_streams'] %}
-    <tr>
-      <th class="tg-031e">{{s[0]}}</th>
-      <th class="tg-031e">
-        <ul>
+      <tr>
+        <td class="tg-031e">{{s[0]}}</td>
+        <td class="tg-031e">
+          <ul>
   {% for l in s[1]['licenses'] %}
-        <li> {{l}} : {{s[1]['licenses'][l]}} </li>
+          <li> {{l}} : {{s[1]['licenses'][l]}} </li>
   {% endfor %}
-        </ul>
-      </th>
-      <th class="tg-031e">{{s[1]['seconds']}}</th>
-    </tr>
+          </ul>
+        </td>
+        <td class="tg-031e">{{s[1]['seconds']}}</td>
+      </tr>
   {% endfor %}
+    </tbody>
   </table>
 
-  <h3> Live Streams </h3>
+  <h3 id="showstreams"> Live Streams </h3>
 
-  <table class="tg">
-    <tr>
-      <th class="tg-031e">Push ID</th>
-      <th class="tg-031e">Name</th>
-      <th class="tg-031e">Type</th>
-      <th class="tg-031e">Hash</th>
-      <th class="tg-031e">Last Request</th>
-      <th class="tg-031e">Last Success</th>
-      <th class="tg-031e">Created</th>
-      <th class="tg-031e">Lost Data</th>
-      <th class="tg-031e">Count</th>
-      <th class="tg-031e">Output</th>
-      <th class="tg-031e">Status</th>
-    </tr>
-  {% for entry in push %}
-    <tr>
-      <th class="tg-031e">{{entry['id']}}</th>
-      <th class="tg-031e">{{entry['name']}}</th>
-      <th class="tg-031e">{{entry['hash_type']}}</th>
-      <th class="tg-031e">{{entry['hash']}}</th>
-      <th class="tg-031e">{{entry['last_request']}}</th>
-      <th class="tg-031e">{{entry['last_success']}}</th>
-      <th class="tg-031e">{{entry['start']}}</th>
-      <th class="tg-031e">{{entry['lost_data']}}</th>
-      <th class="tg-031e">{{entry['interaction_count']}}</th>
-      <th class="tg-031e">{{entry['output_type']}}</th>
-      <th class="tg-031e">{{entry['status']}}</th>
-    </tr>
-  {% endfor %}
-  </table>
+  <div id="pushget" style="display: none;">
+    <table id="pushtable" class="tg">
+      <thead>
+        <tr>
+          <th class="tg-031e">Push ID</th>
+          <th class="tg-031e">Name</th>
+          <th class="tg-031e">Type</th>
+          <th class="tg-031e">Hash</th>
+          <th class="tg-031e">Last Request</th>
+          <th class="tg-031e">Last Success</th>
+          <th class="tg-031e">Created</th>
+          <th class="tg-031e">Lost Data</th>
+          <th class="tg-031e">Count</th>
+          <th class="tg-031e">Output</th>
+          <th class="tg-031e">Status</th>
+        </tr>
+      </thead>
+      <tbody>
+    {% for entry in push %}
+        <tr>
+          <td class="tg-031e">{{entry['id']}}</td>
+          <td class="tg-031e">{{entry['name']}}</td>
+          <td class="tg-031e">{{entry['hash_type']}}</td>
+          <td class="tg-031e">{{entry['hash']}}</td>
+          <td class="tg-031e">{{entry['last_request']}}</td>
+          <td class="tg-031e">{{entry['last_success']}}</td>
+          <td class="tg-031e">{{entry['start']}}</td>
+          <td class="tg-031e">{{entry['lost_data']}}</td>
+          <td class="tg-031e">{{entry['interaction_count']}}</td>
+          <td class="tg-031e">{{entry['output_type']}}</td>
+          <td class="tg-031e">{{entry['status']}}</td>
+        </tr>
+    {% endfor %}
+      </tbody>
+    </table>
+  </div>
 
-  <h3> Historic Streams </h3>
+  <h3 id="showhistorics"> Historic Streams </h3>
 
-  <table class="tg">
-    <tr>
-      <th class="tg-031e">Historic ID</th>
-      <th class="tg-031e">Push ID</th>
-      <th class="tg-031e">Name</th>
-      <th class="tg-031e">Hash</th>
-      <th class="tg-031e">Created At</th>
-      <th class="tg-031e">Start</th>
-      <th class="tg-031e">End</th>
-      <th class="tg-031e">Status</th>
-      <th class="tg-031e">Count</th>
-      <th class="tg-031e">Delivery</th>
-    </tr>
-  {% for entry in historic %}
-  {% set h = historic[entry]['historic'] %}
-    <tr>
-      <th class="tg-031e">{{h['id']}}</th>
-      <th class="tg-031e"></th>
-      <th class="tg-031e">{{h['name']}}</th>
-      <th class="tg-031e">{{h['hash']}}</th>
-      <th class="tg-031e">{{h['created_at']}}</th>
-      <th class="tg-031e">{{h['start']}}</th>
-      <th class="tg-031e">{{h['end']}}</th>
-      <th class="tg-031e">{{h['status']}} <BR> {{h['progress']}}</th>
-      <th class="tg-031e">{{h['delivery_count']}}</th>
-      <th class="tg-031e"></th>
-    </tr>
-  {% set subs = historic[entry]['subscriptions'] %}
-  {% for s in subs %}
-    <tr>
-      <th class="tg-031e"></th>
-      <th class="tg-031e">{{s['id']}}</th>
-      <th class="tg-031e">{{s['name']}}</th>
-      <th class="tg-031e">{{s['hash']}}</th>
-      <th class="tg-031e">{{s['created_at']}}</th>
-      <th class="tg-031e">{{s['start']}}</th>
-      <th class="tg-031e"></th>
-      <th class="tg-031e">{{s['status']}}</th>
-      <th class="tg-031e">{{h['interaction_count']}}</th>
-      <th class="tg-031e"></th>
-    </tr>
-  {% endfor %}
-  {% endfor %}
-  </table>
+  <div id="historicsget" style="display: none;">
+    <table class="tg">
+      <tr>
+        <th class="tg-031e">Historic ID</th>
+        <th class="tg-031e">Push ID</th>
+        <th class="tg-031e">Name</th>
+        <th class="tg-031e">Hash</th>
+        <th class="tg-031e">Created At</th>
+        <th class="tg-031e">Start</th>
+        <th class="tg-031e">End</th>
+        <th class="tg-031e">Status</th>
+        <th class="tg-031e">Count</th>
+        <th class="tg-031e">Delivery</th>
+      </tr>
+    {% for entry in historic %}
+    {% set h = historic[entry]['historic'] %}
+      <tr>
+        <th class="tg-031e">{{h['id']}}</th>
+        <th class="tg-031e"></th>
+        <th class="tg-031e">{{h['name']}}</th>
+        <th class="tg-031e">{{h['hash']}}</th>
+        <th class="tg-031e">{{h['created_at']}}</th>
+        <th class="tg-031e">{{h['start']}}</th>
+        <th class="tg-031e">{{h['end']}}</th>
+        <th class="tg-031e">{{h['status']}} <BR> {{h['progress']}}</th>
+        <th class="tg-031e">{{h['delivery_count']}}</th>
+        <th class="tg-031e"></th>
+      </tr>
+    {% set subs = historic[entry]['subscriptions'] %}
+    {% for s in subs %}
+      <tr>
+        <th class="tg-031e"></th>
+        <th class="tg-031e">{{s['id']}}</th>
+        <th class="tg-031e">{{s['name']}}</th>
+        <th class="tg-031e">{{s['hash']}}</th>
+        <th class="tg-031e">{{s['created_at']}}</th>
+        <th class="tg-031e">{{s['start']}}</th>
+        <th class="tg-031e"></th>
+        <th class="tg-031e">{{s['status']}}</th>
+        <th class="tg-031e">{{h['interaction_count']}}</th>
+        <th class="tg-031e"></th>
+      </tr>
+    {% endfor %}
+    {% endfor %}
+    </table>
+  </div>
 
-  <h3> Managed Sources </h3>
+  <h3 id="showsources"> Managed Sources </h3>
 
-  <table class="tg">
-    <tr>
-      <th class="tg-031e">Source Type</th>
-      <th class="tg-031e">Name</th>
-      <th class="tg-031e">ID</th>
-      <th class="tg-031e">Resources</th>
-      <th class="tg-031e">Parameters</th>
-      <th class="tg-031e">Auth</th>
-      <th class="tg-031e">Created At (UTC)</th>
-      <th class="tg-031e">Status</th>
-    </tr>  
-  {% for entry in source %}
-    <tr>
-      <th class="tg-031e">{{entry['source_type']}}</th>
-      <th class="tg-031e">{{entry['name']}}</th>
-      <th class="tg-031e">{{entry['id']}}</th>
-      <th class="tg-031e">
-        <ul>
-  {% for r in entry['resources'] %}
-          <li>
-            {{r['resource_id']}}
-            <ul>
-  {% for p in r['parameters'] %}
-              <li>{{p}}:{{r['parameters'][p]}}</li>
-  {% endfor %}
-            </ul>
-          </li>
-  {% endfor %}
-        </ul>
-      </th>
-      <th class="tg-031e">
-        <ul>
-  {% for p in entry['parameters'] %}
-        <li>{{p}}: {{entry['parameters'][p]}}</li> 
-  {% endfor %}
-        </ul>
-      </th>
-      <th class="tg-031e">
-        <ul>
-  {% for a in entry['auth'] %}
-          <li>id: {{a['identity_id']}}
-  {% for k in a['parameters'] %}
-            <ul><li>{{k}}: {{a['parameters'][k]}}</li></ul>
-  {% endfor %}
-          </li>
-  {% endfor %}
-        </ul>
-      </th>
-      <th class="tg-031e">{{entry['created_at']}}</th>
-      <th class="tg-031e">{{entry['status']}}</th>
-    </tr>
-  {% endfor %}
-  </table>
+  <div id="sourcesget" style="display: none;">
+    <table id="sourcestable" class="tg">
+      <thead>
+        <tr>
+          <th class="tg-031e">Source Type</th>
+          <th class="tg-031e">Name</th>
+          <th class="tg-031e">ID</th>
+          <th class="tg-031e">Resources</th>
+          <th class="tg-031e">Parameters</th>
+          <th class="tg-031e">Auth</th>
+          <th class="tg-031e">Created At (UTC)</th>
+          <th class="tg-031e">Status</th>
+        </tr>  
+      </thead>
+      <tbody>
+    {% for entry in source %}
+      <tr>
+        <td class="tg-031e">{{entry['source_type']}}</td>
+        <td class="tg-031e">{{entry['name']}}</td>
+        <td class="tg-031e">{{entry['id']}}</td>
+        <td class="tg-031e">
+          <ul>
+    {% for r in entry['resources'] %}
+            <li>
+              {{r['resource_id']}}
+              <ul>
+    {% for p in r['parameters'] %}
+                <li>{{p}}:{{r['parameters'][p]}}</li>
+    {% endfor %}
+              </ul>
+            </li>
+    {% endfor %}
+          </ul>
+        </td>
+        <td class="tg-031e">
+          <ul>
+    {% for p in entry['parameters'] %}
+          <li>{{p}}: {{entry['parameters'][p]}}</li> 
+    {% endfor %}
+          </ul>
+        </td>
+        <td class="tg-031e">
+          <ul>
+    {% for a in entry['auth'] %}
+            <li>id: {{a['identity_id']}}
+    {% for k in a['parameters'] %}
+              <ul><li>{{k}}: {{a['parameters'][k]}}</li></ul>
+    {% endfor %}
+            </li>
+    {% endfor %}
+          </ul>
+        </td>
+        <td class="tg-031e">{{entry['created_at']}}</td>
+        <td class="tg-031e">{{entry['status']}}</td>
+      </tr>
+    {% endfor %}
+    </tbody>
+    </table>
+  </div>
 
   {% endif %}
 </body>

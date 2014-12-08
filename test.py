@@ -1,4 +1,4 @@
-from flask import Flask, render_template,request,session,redirect,url_for
+from flask import Flask, render_template,request,session,redirect,url_for,jsonify
 from datasift import Client
 from datasift.push import Push
 from datasift.request import PartialRequest, DatasiftAuth
@@ -24,14 +24,6 @@ def login():
     # the code below is executed if the request method
     # was GET or the credentials were invalid
     return render_template('login.html', error=error)
-
-def valid_login(user,apikey):
-    try:
-        client = Client(user,apikey)
-        client.balance()
-        return client
-    except:
-        return None
 
 @app.route('/ds_console', methods=['POST', 'GET'])
 def log_the_user_in():
@@ -77,6 +69,79 @@ def logout():
     session.pop('apikey', None)
     return redirect(url_for('log_the_user_in'))
 
+'''
+PUSH 
+'''
+
+@app.route('/push_get_raw')
+def push_get_raw():
+    for r in request.args:
+        print r
+        #look it up and jsonify the stuff.
+    return jsonify(test="hahaha")
+
+@app.route('/push_delete')
+def push_delete():
+    client = Client(session['username'],session['apikey'])
+    try:
+        for r in request.args:
+            client.push.delete(r)
+        return jsonify(out="Success")
+    except:
+        return jsonify(out="Issues deleting")
+
+@app.route('/push_stop')
+def push_stop():
+    client = Client(session['username'],session['apikey'])
+    try:
+        for r in request.args:
+            client.push.stop(r)
+        return jsonify(out="Success")
+    except:
+        return jsonify(out="Issues stopping")
+
+@app.route('/push_pause')
+def push_pause():
+    client = Client(session['username'],session['apikey'])
+    try:
+        for r in request.args:
+            client.push.pause(r)
+        return jsonify(out="Success")
+    except:
+        return jsonify(out="Issues pausing")
+
+@app.route('/push_resume')
+def push_resume():
+    client = Client(session['username'],session['apikey'])
+    try:
+        for r in request.args:
+            client.push.resume(r)
+        return jsonify(out="Success")
+    except:
+        return jsonify(out="Issues resuming")
+
+@app.route('/push_log')
+def push_log():
+    client = Client(session['username'],session['apikey'])
+    try:
+        out = []
+        for r in request.args:
+            out.append(client.push.log(subscription_id=r))
+        return jsonify(out=str(out))
+    except:
+        return jsonify(out="Issues getting log")
+
+'''
+HELPER FUNCTIONS
+'''
+
+def valid_login(user,apikey):
+    try:
+        client = Client(user,apikey)
+        client.balance()
+        return client
+    except:
+        return None
 
 def historic_push(historic_get,push_get):
     ''' get dictionary of historics with list of push subscription dicts  '''

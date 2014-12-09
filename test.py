@@ -132,6 +132,51 @@ def push_log():
         return jsonify(out="Issues getting log")
 
 '''
+MANAGED SOURCES
+'''
+
+@app.route('/push_delete')
+def source_delete():
+    client = Client(session['username'],session['apikey'])
+    try:
+        for r in request.args:
+            client.managed_sources.delete(r)
+        return jsonify(out="Success")
+    except:
+        return jsonify(out="Issues deleting")
+
+@app.route('/source_stop')
+def source_stop():
+    client = Client(session['username'],session['apikey'])
+    try:
+        for r in request.args:
+            client.managed_sources.stop(r)
+        return jsonify(out="Success")
+    except:
+        return jsonify(out="Issues stopping")
+
+@app.route('/source_start')
+def source_start():
+    client = Client(session['username'],session['apikey'])
+    try:
+        for r in request.args:
+            client.managed_sources.start(r)
+        return jsonify(out="Success")
+    except:
+        return jsonify(out="Issues starting")
+
+@app.route('/source_log')
+def source_log():
+    client = Client(session['username'],session['apikey'])
+    try:
+        out = []
+        for r in request.args:
+            out.append(client.managed_sources.log(r))
+        return jsonify(out=str(out))
+    except:
+        return jsonify(out="Issues getting log")
+
+'''
 HELPER FUNCTIONS
 '''
 

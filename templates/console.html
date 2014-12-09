@@ -21,6 +21,7 @@ li {
 
 .out {
   margin: 10px;
+  padding: 10px;
   background-color: Gainsboro;
   border-style:solid;border-width:1px;
 }
@@ -104,6 +105,54 @@ li {
       $( ".push:checked"), 
       function(data) {
         $("#push_output").text(data.out);
+      });
+      return false;
+    });
+
+    //Managed Sources actions
+
+    $('input#source_raw').bind('click', function() {
+      $.getJSON($SCRIPT_ROOT + '/source_get_raw',
+      $( ".source:checked"), 
+      function(data) {
+        $("#result").text(data.test);
+      });
+      return false;
+    });
+
+    $('input#source_delete').bind('click', function() {
+      $.getJSON($SCRIPT_ROOT + '/source_delete',
+      $( ".source:checked"), 
+      function(data) {
+        $("#source_output").text(data.out);
+      });
+      return false;
+    });
+
+    $('input#source_stop').bind('click', function() {
+      $.getJSON($SCRIPT_ROOT + '/source_stop',
+      $( ".source:checked"), 
+      function(data) {
+        $("#source_output").text(data.out);
+      });
+      return false;
+    });
+
+
+    $('input#source_start').bind('click', function() {
+      $.getJSON($SCRIPT_ROOT + '/source_start',
+      $( ".source:checked"), 
+      function(data) {
+        $("#source_output").text(data.out);
+      });
+      return false;
+    });
+
+    $('input#source_log').bind('click', function() {
+      $.getJSON($SCRIPT_ROOT + '/source_log',
+      $( ".source:checked"), 
+      function(data) {
+        $("#source_output").text(data.out);
       });
       return false;
     });
@@ -292,6 +341,12 @@ li {
   <h3 id="showsources"> Managed Sources </h3>
 
   <div id="sourcesget" style="display: none;">
+    <input type="button" id=source_raw value="raw output">
+    <input type="button" id=source_delete value=delete>
+    <input type="button" id=source_start value=start>
+    <input type="button" id=source_stop value=stop>
+    <input type="button" id=source_log value=log>
+    <div id=source_output class="out">[output]</div>
     <table id="sourcestable" class="tg">
       <thead>
         <tr>
@@ -309,7 +364,7 @@ li {
       <tbody>
     {% for entry in source %}
       <tr>
-        <td class="tg-031e"><input type="checkbox" name="{{entry['id']}}"></td>
+        <td class="tg-031e"><input type="checkbox" class="source" name="{{entry['id']}}"></td>
         <td class="tg-031e">{{entry['source_type']}}</td>
         <td class="tg-031e">{{entry['name']}}</td>
         <td class="tg-031e">{{entry['id']}}</td>

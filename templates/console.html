@@ -59,7 +59,7 @@ li {
       $.getJSON($SCRIPT_ROOT + '/push_get_raw',
       $( ".push:checked"), 
       function(data) {
-        $("#result").text(data.test);
+        $("#push_output").text(data.out);
       });
       return false;
     });
@@ -115,7 +115,7 @@ li {
       $.getJSON($SCRIPT_ROOT + '/source_get_raw',
       $( ".source:checked"), 
       function(data) {
-        $("#result").text(data.test);
+        $("#source_output").text(data.out);
       });
       return false;
     });

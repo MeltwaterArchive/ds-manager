@@ -5,6 +5,9 @@ from datasift.request import PartialRequest, DatasiftAuth
 
 app = Flask(__name__)
 
+push_get_no_historics = []
+source_get = []
+
 @app.route('/')
 def index():
     return 'heres the index'
@@ -45,10 +48,11 @@ def log_the_user_in():
 
     push_get = push_get_all()
     historic_get = historic_get_all()
+    global source_get
     source_get = source_get_all()
 
     # separate 'live streams' from historics and their push subscriptions
-
+    global push_get_no_historics
     push_get_no_historics = [p for p in push_get if type(p) is dict and 'hash_type' in p.keys() and p['hash_type'] != "historic"]
     hp = historic_push(historic_get,push_get)
 
@@ -75,10 +79,14 @@ PUSH
 
 @app.route('/push_get_raw')
 def push_get_raw():
-    for r in request.args:
-        print r
+    raw = []
+    for p in push_get_no_historics:
+        for r in request.args:
+            print p['id']
+            if p['id'] == r:
+                raw.append(p)
         #look it up and jsonify the stuff.
-    return jsonify(test="hahaha")
+    return jsonify(out=str(raw))
 
 @app.route('/push_delete')
 def push_delete():
@@ -135,7 +143,17 @@ def push_log():
 MANAGED SOURCES
 '''
 
-@app.route('/push_delete')
+@app.route('/source_get_raw')
+def source_get_raw():
+    raw = []
+    for s in source_get:
+        for r in request.args:
+            if s['id'] == r:
+                raw.append(s)
+        #look it up and jsonify the stuff.
+    return jsonify(out=str(raw))
+
+@app.route('/source_delete')
 def source_delete():
     client = Client(session['username'],session['apikey'])
     try:

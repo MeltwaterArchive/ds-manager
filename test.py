@@ -88,35 +88,45 @@ def push_get_raw():
         #look it up and jsonify the stuff.
     return jsonify(out=str(raw))
 
+
 @app.route('/push_delete')
 def push_delete():
     client = Client(session['username'],session['apikey'])
-    try:
-        for r in request.args:
+    success = []
+    fail = []
+    for r in request.args:
+        try:
             client.push.delete(r)
-        return jsonify(out="Success")
-    except:
-        return jsonify(out="Issues deleting")
+            success.append(r)
+        except:
+            fail.append(r)
+    return jsonify(success=success,fail=fail)
 
 @app.route('/push_stop')
 def push_stop():
     client = Client(session['username'],session['apikey'])
-    try:
-        for r in request.args:
+    success = []
+    fail = []
+    for r in request.args:
+        try:
             client.push.stop(r)
-        return jsonify(out="Success")
-    except:
-        return jsonify(out="Issues stopping")
+            success.append(r)
+        except:
+            fail.append(r)
+    return jsonify(success=success,fail=fail)
 
 @app.route('/push_pause')
 def push_pause():
     client = Client(session['username'],session['apikey'])
-    try:
-        for r in request.args:
+    success = []
+    fail = []
+    for r in request.args:
+        try:
             client.push.pause(r)
-        return jsonify(out="Success")
-    except:
-        return jsonify(out="Issues pausing")
+            success.append(r)
+        except:
+            fail.append(r)
+    return jsonify(success=success,fail=fail)
 
 @app.route('/push_resume')
 def push_resume():
@@ -156,32 +166,41 @@ def source_get_raw():
 @app.route('/source_delete')
 def source_delete():
     client = Client(session['username'],session['apikey'])
-    try:
-        for r in request.args:
+    success = []
+    fail = []
+    for r in request.args:
+        try:
             client.managed_sources.delete(r)
-        return jsonify(out="Success")
-    except:
-        return jsonify(out="Issues deleting")
+            success.append(r)
+        except:
+            fail.append(r)
+    return jsonify(success=success,fail=fail)
 
 @app.route('/source_stop')
 def source_stop():
     client = Client(session['username'],session['apikey'])
-    try:
-        for r in request.args:
+    success = []
+    fail = []
+    for r in request.args:
+        try:
             client.managed_sources.stop(r)
-        return jsonify(out="Success")
-    except:
-        return jsonify(out="Issues stopping")
+            success.append(r)
+        except:
+            fail.append(r)
+    return jsonify(success=success,fail=fail)
 
 @app.route('/source_start')
 def source_start():
     client = Client(session['username'],session['apikey'])
-    try:
-        for r in request.args:
+    success = []
+    fail = []
+    for r in request.args:
+        try:
             client.managed_sources.start(r)
-        return jsonify(out="Success")
-    except:
-        return jsonify(out="Issues starting")
+            success.append(r)
+        except:
+            fail.append(r)
+    return jsonify(success=success,fail=fail)
 
 @app.route('/source_log')
 def source_log():

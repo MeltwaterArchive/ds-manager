@@ -69,16 +69,23 @@ li {
       $.getJSON($SCRIPT_ROOT + '/push_delete',
       $( ".push:checked"), 
       function(data) {
-        $("#push_output").text(data.out);
+        $("#push_output").text("Deleted: " + data.success + "\nNot deleted: " + data.fail);
+        $.each(data.success, function( index, id ){
+          $("#push_row_"+id).remove()
+        });
       });
       return false;
     });
+
 
     $('input#push_stop').bind('click', function() {
       $.getJSON($SCRIPT_ROOT + '/push_stop',
       $( ".push:checked"), 
       function(data) {
-        $("#push_output").text(data.out);
+        $("#push_output").text("Stopped: " + data.success + "\nNot stopped: " + data.fail);
+        $.each(data.success, function( index, id ){
+          $("#push_status_"+id).text("stopped")
+        });
       });
       return false;
     });
@@ -87,7 +94,10 @@ li {
       $.getJSON($SCRIPT_ROOT + '/push_pause',
       $( ".push:checked"), 
       function(data) {
-        $("#push_output").text(data.out);
+        $("#push_output").text("Paused: " + data.success + "\nNot paused: " + data.fail);
+        $.each(data.success, function( index, id ){
+          $("#push_status_"+id).text("paused")
+        });
       });
       return false;
     });
@@ -121,11 +131,26 @@ li {
       return false;
     });
 
+    $('input#push_delete').bind('click', function() {
+      $.getJSON($SCRIPT_ROOT + '/push_delete',
+      $( ".push:checked"), 
+      function(data) {
+        $("#push_output").text("Deleted: " + data.success + "\nNot deleted: " + data.fail);
+        $.each(data.success, function( index, id ){
+          $("#push_row_"+id).remove()
+        });
+      });
+      return false;
+    });
+
     $('input#source_delete').bind('click', function() {
       $.getJSON($SCRIPT_ROOT + '/source_delete',
       $( ".source:checked"), 
       function(data) {
-        $("#source_output").text(data.out);
+        $("#source_output").text("Deleted: " + data.success + "\nNot deleted: " + data.fail);
+        $.each(data.success, function( index, id ){
+          $("#source_row_"+id).remove()
+        });
       });
       return false;
     });
@@ -134,7 +159,10 @@ li {
       $.getJSON($SCRIPT_ROOT + '/source_stop',
       $( ".source:checked"), 
       function(data) {
-        $("#source_output").text(data.out);
+        $("#source_output").text("Stopped: " + data.success + "\nNot stopped: " + data.fail);
+        $.each(data.success, function( index, id ){
+          $("#status_"+id).text("stopped")
+        });
       });
       return false;
     });
@@ -144,7 +172,10 @@ li {
       $.getJSON($SCRIPT_ROOT + '/source_start',
       $( ".source:checked"), 
       function(data) {
-        $("#source_output").text(data.out);
+        $("#source_output").text("Started: " + data.success + "\nNot started: " + data.fail);
+        $.each(data.success, function( index, id ){
+          $("#status_"+id).text("running")
+        });
       });
       return false;
     });
@@ -266,7 +297,7 @@ li {
       </thead>
       <tbody>
     {% for entry in push %}
-        <tr>
+        <tr id="push_row_{{entry['id']}}">
           <td class="tg-031e"><input type="checkbox" class="push" name="{{entry['id']}}"></td>
           <td class="tg-031e">{{entry['id']}}</td>
           <td class="tg-031e">{{entry['name']}}</td>
@@ -278,7 +309,7 @@ li {
           <td class="tg-031e">{{entry['lost_data']}}</td>
           <td class="tg-031e">{{entry['interaction_count']}}</td>
           <td class="tg-031e">{{entry['output_type']}}</td>
-          <td class="tg-031e">{{entry['status']}}</td>
+          <td class="tg-031e" id="push_status_{{entry['id']}}">{{entry['status']}}</td>
         </tr>
     {% endfor %}
       </tbody>
@@ -363,7 +394,7 @@ li {
       </thead>
       <tbody>
     {% for entry in source %}
-      <tr>
+      <tr id="source_row_{{entry['id']}}">
         <td class="tg-031e"><input type="checkbox" class="source" name="{{entry['id']}}"></td>
         <td class="tg-031e">{{entry['source_type']}}</td>
         <td class="tg-031e">{{entry['name']}}</td>
@@ -401,7 +432,7 @@ li {
           </ul>
         </td>
         <td class="tg-031e">{{entry['created_at']}}</td>
-        <td class="tg-031e">{{entry['status']}}</td>
+        <td class="tg-031e" id="status_{{entry['id']}}">{{entry['status']}}</td>
       </tr>
     {% endfor %}
     </tbody>

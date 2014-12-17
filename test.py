@@ -2,6 +2,7 @@ from flask import Flask, render_template,request,session,redirect,url_for,jsonif
 from datasift import Client
 from datasift.push import Push
 from datasift.request import PartialRequest, DatasiftAuth
+import datetime
 
 app = Flask(__name__)
 
@@ -270,6 +271,11 @@ def push_get_all():
             'page':i}
             pushget = request.get('get',params=params)
             pushgetlist.extend([p for p in pushget['subscriptions']])
+
+        # convert 'last request' to date format
+        for p in pushgetlist:
+            if p['last_request']:
+                p['last_request'] = datetime.datetime.fromtimestamp(p['last_request'])
     except:
         pushgetlist = ["No Push API access"]
     return pushgetlist

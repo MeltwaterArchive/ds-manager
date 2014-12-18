@@ -2,6 +2,7 @@ from flask import Flask, render_template,request,session,redirect,url_for,jsonif
 from datasift import Client
 from datasift.push import Push
 from datasift.request import PartialRequest, DatasiftAuth
+from pprint import pformat
 import datetime
 
 app = Flask(__name__)
@@ -83,11 +84,10 @@ def push_get_raw():
     raw = []
     for p in push_get_no_historics:
         for r in request.args:
-            print p['id']
             if p['id'] == r:
-                raw.append(p)
+                raw.append(pformat(p))
         #look it up and jsonify the stuff.
-    return jsonify(out=str(raw))
+    return jsonify(out=raw)
 
 
 @app.route('/push_delete')
@@ -145,8 +145,8 @@ def push_log():
     try:
         out = []
         for r in request.args:
-            out.append(client.push.log(subscription_id=r))
-        return jsonify(out=str(out))
+            out.append(pformat(client.push.log(subscription_id=r)))
+        return jsonify(out=out)
     except:
         return jsonify(out="Issues getting log")
 
@@ -160,9 +160,9 @@ def source_get_raw():
     for s in source_get:
         for r in request.args:
             if s['id'] == r:
-                raw.append(s)
+                raw.append(pformat(s))
         #look it up and jsonify the stuff.
-    return jsonify(out=str(raw))
+    return jsonify(out=raw)
 
 @app.route('/source_delete')
 def source_delete():
@@ -209,8 +209,8 @@ def source_log():
     try:
         out = []
         for r in request.args:
-            out.append(client.managed_sources.log(r))
-        return jsonify(out=str(out))
+            out.append(pformat(client.managed_sources.log(r)))
+        return jsonify(out=out)
     except:
         return jsonify(out="Issues getting log")
 

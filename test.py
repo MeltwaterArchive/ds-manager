@@ -214,6 +214,23 @@ def source_log():
     except:
         return jsonify(out="Issues getting log")
 
+@app.route('/source_token')
+def source_token():
+    client = Client(session['username'],session['apikey'])
+    success = []
+    fail = []
+    for r in request.args:
+        try:
+            source = client.managed_sources.get(r)
+            auth = source['auth']
+            auth.append({"parameters":{"value":request.args[r]},"expires_at":0})
+            client.managed_sources.update(
+                r, source['source_type'], source['name'], source['resources'], auth, parameters=source['parameters'])
+            success.append(r)
+        except Exception as e:
+            fail.append(r)
+    return jsonify(success=success,fail=fail)
+
 '''
 HELPER FUNCTIONS
 '''

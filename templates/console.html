@@ -192,6 +192,36 @@ li {
       });
       return false;
     });
+
+    $('input#source_token').bind('click', function() {
+      var formatted = ""
+      for (i=0; i < $( ".source:checked").length; i++){
+        formatted = formatted + "<li>" + $( ".source:checked")[i].name + ' <input type="text" class=token name=' + $( ".source:checked")[i].name + ">" + "</li>";
+      }
+      
+      if ($( ".source:checked").length > 0) {
+        formatted = formatted + '<input type="button" value="Submit" id="token_submit" >';
+        $("#source_submit").show();
+      }
+      
+      $("#source_output").html(formatted);
+      return false;
+    });
+
+    $('#source_output').on('click', '#token_submit', function() {
+      $.getJSON($SCRIPT_ROOT + '/source_token',
+      $( ".token:text"), 
+      function(data) {
+        $("#source_output").text("Added: " + data.success + "\nNot added: " + data.fail);
+      
+        $.each(data.success, function( index, id ){
+          $("#status_"+id).text("running")
+
+        });
+      });
+      return false;
+    });
+    
   });
 </script>
 
@@ -381,7 +411,10 @@ li {
     <input type="button" id=source_start value=start>
     <input type="button" id=source_stop value=stop>
     <input type="button" id=source_log value=log>
-    <div id=source_output class="out">[output]</div>
+    <input type="button" id=source_token value="add token">
+    <div id=source_output class="out">[output]
+      <input type="button" id="source_submit" value="Submit" style="visibility:collapse;">
+    </div>
     <table id="sourcestable" class="tablesorter">
       <thead>
         <tr>

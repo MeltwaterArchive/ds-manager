@@ -1,14 +1,15 @@
-from flask import Flask, render_template,request,session,redirect,url_for,jsonify
+from flask import Flask, render_template,request,session,redirect,url_for,jsonify,make_response
 from datasift import Client
 from datasift.push import Push
 from datasift.request import PartialRequest, DatasiftAuth
 from pprint import pformat
 import datetime
+import json
 
 app = Flask(__name__)
 
 push_get_no_historics = []
-source_get = []
+source_get_list = []
 
 @app.route('/')
 def index():
@@ -48,24 +49,22 @@ def log_the_user_in():
         if 'username' in session.keys():
             name=session['username']
 
-    push_get = push_get_all()
-    historic_get = historic_get_all()
-    global source_get
-    source_get = source_get_all()
+    # push_get = push_get_all()
+    # historic_get = historic_get_all()
 
+    '''
     # separate 'live streams' from historics and their push subscriptions
     global push_get_no_historics
     push_get_no_historics = [p for p in push_get if type(p) is dict and 'hash_type' in p.keys() and p['hash_type'] != "historic"]
     hp = historic_push(historic_get,push_get)
-
+    '''
+    hp = []
     return render_template(
         'console.html',
         error=error,
         name=name,
         acct=account_all(),
-        push=push_get_no_historics,
-        historic=hp,
-        source=source_get)
+        historic=hp)
 
 
 @app.route('/logout')
@@ -79,9 +78,19 @@ def logout():
 PUSH 
 '''
 
+@app.route('/push_get')
+def push_get():
+    # do push/get request only when asked
+    global push_get_no_historics
+    if not push_get_no_historics:
+        push_get = push_get_all()
+        push_get_no_historics = [p for p in push_get if type(p) is dict and 'hash_type' in p.keys() and p['hash_type'] != "historic"]
+    return make_response(render_template('push.html', push=push_get_no_historics))
+
 @app.route('/push_get_raw')
 def push_get_raw():
     raw = []
+    global push_get_no_historics
     for p in push_get_no_historics:
         for r in request.args:
             if p['id'] == r:
@@ -154,10 +163,19 @@ def push_log():
 MANAGED SOURCES
 '''
 
+@app.route('/source_get')
+def source_get():
+    # do push/get request only when asked
+    global source_get_list
+    if not source_get_list:
+        source_get_list = source_get_all()
+    return make_response(render_template('sources.html', source=source_get_list))
+
 @app.route('/source_get_raw')
 def source_get_raw():
+    global push_get_no_historics
     raw = []
-    for s in source_get:
+    for s in source_get_list:
         for r in request.args:
             if s['id'] == r:
                 raw.append(pformat(s))

@@ -40,187 +40,23 @@ li {
   $(document).ready(function() {
     // hide/show tables
     $('#showstreams').click(function() {
-      $('#pushget').slideToggle("fast");
+      $.get($SCRIPT_ROOT + '/push_get', function(data){
+        $('#pushget').html(data).slideToggle("fast");
+      });
     });
     $('#showhistorics').click(function() {
       $('#historicsget').slideToggle("fast");
     });
     $('#showsources').click(function() {
-      $('#sourcesget').slideToggle("fast");
+      $.get($SCRIPT_ROOT + '/source_get', function(data){
+        $('#sourceget').html(data).slideToggle("fast");
+      });
     });
 
     //sort tables
-    $('#sourcestable').tablesorter(); 
-    $('#pushtable').tablesorter(); 
     $('#usagetable').tablesorter();
 
-    //push subscription actions
-
-    $('input#push_raw').bind('click', function() {
-      $.getJSON($SCRIPT_ROOT + '/push_get_raw',
-      $( ".push:checked"), 
-      function(data) {
-        var formatted = "";
-        for (i = 0; i < data.out.length; i++){
-          formatted = formatted + "<pre>" + data.out[i] + "</pre>";
-        }
-        $("#push_output").html(formatted);
-      });
-      return false;
-    });
-
-    $('input#push_delete').bind('click', function() {
-      $.getJSON($SCRIPT_ROOT + '/push_delete',
-      $( ".push:checked"), 
-      function(data) {
-        $("#push_output").text("Deleted: " + data.success + "\nNot deleted: " + data.fail);
-        $.each(data.success, function( index, id ){
-          $("#push_row_"+id).remove()
-        });
-      });
-      return false;
-    });
-
-
-    $('input#push_stop').bind('click', function() {
-      $.getJSON($SCRIPT_ROOT + '/push_stop',
-      $( ".push:checked"), 
-      function(data) {
-        $("#push_output").text("Stopped: " + data.success + "\nNot stopped: " + data.fail);
-        $.each(data.success, function( index, id ){
-          $("#push_status_"+id).text("stopped")
-        });
-      });
-      return false;
-    });
-
-    $('input#push_pause').bind('click', function() {
-      $.getJSON($SCRIPT_ROOT + '/push_pause',
-      $( ".push:checked"), 
-      function(data) {
-        $("#push_output").text("Paused: " + data.success + "\nNot paused: " + data.fail);
-        $.each(data.success, function( index, id ){
-          $("#push_status_"+id).text("paused")
-        });
-      });
-      return false;
-    });
-
-    $('input#push_resume').bind('click', function() {
-      $.getJSON($SCRIPT_ROOT + '/push_resume',
-      $( ".push:checked"), 
-      function(data) {
-        $("#push_output").text(data.out);
-      });
-      return false;
-    });
-
-    $('input#push_log').bind('click', function() {
-      $.getJSON($SCRIPT_ROOT + '/push_log',
-      $( ".push:checked"), 
-      function(data) {
-        var formatted = "";
-        for (i = 0; i < data.out.length; i++){
-          formatted = formatted + "<pre>" + data.out[i] + "</pre>";
-        }
-        $("#push_output").html(formatted);
-      });
-      return false;
-    });
-
-    //Managed Sources actions
-
-    $('input#source_raw').bind('click', function() {
-      $.getJSON($SCRIPT_ROOT + '/source_get_raw',
-      $( ".source:checked"), 
-      function(data) {
-        var formatted = "";
-        for (i = 0; i < data.out.length; i++){
-          formatted = formatted + "<pre>" + data.out[i] + "</pre>";
-        }
-        $("#source_output").html(formatted);
-      });
-      return false;
-    });
-
-    $('input#source_delete').bind('click', function() {
-      $.getJSON($SCRIPT_ROOT + '/source_delete',
-      $( ".source:checked"), 
-      function(data) {
-        $("#source_output").text("Deleted: " + data.success + "\nNot deleted: " + data.fail);
-        $.each(data.success, function( index, id ){
-          $("#source_row_"+id).remove()
-        });
-      });
-      return false;
-    });
-
-    $('input#source_stop').bind('click', function() {
-      $.getJSON($SCRIPT_ROOT + '/source_stop',
-      $( ".source:checked"), 
-      function(data) {
-        $("#source_output").text("Stopped: " + data.success + "\nNot stopped: " + data.fail);
-        $.each(data.success, function( index, id ){
-          $("#status_"+id).text("stopped")
-        });
-      });
-      return false;
-    });
-
-
-    $('input#source_start').bind('click', function() {
-      $.getJSON($SCRIPT_ROOT + '/source_start',
-      $( ".source:checked"), 
-      function(data) {
-        $("#source_output").text("Started: " + data.success + "\nNot started: " + data.fail);
-        $.each(data.success, function( index, id ){
-          $("#status_"+id).text("running")
-        });
-      });
-      return false;
-    });
-
-    $('input#source_log').bind('click', function() {
-      $.getJSON($SCRIPT_ROOT + '/source_log',
-      $( ".source:checked"), 
-      function(data) {
-        var formatted = "";
-        for (i = 0; i < data.out.length; i++){
-          formatted = formatted + "<pre>" + data.out[i] + "</pre>";
-        }
-        $("#source_output").html(formatted);
-      });
-      return false;
-    });
-
-    $('input#source_token').bind('click', function() {
-      var formatted = ""
-      for (i=0; i < $( ".source:checked").length; i++){
-        formatted = formatted + "<li>" + $( ".source:checked")[i].name + ' <input type="text" class=token name=' + $( ".source:checked")[i].name + ">" + "</li>";
-      }
-      
-      if ($( ".source:checked").length > 0) {
-        formatted = formatted + '<input type="button" value="Submit" id="token_submit" >';
-        $("#source_submit").show();
-      }
-      
-      $("#source_output").html(formatted);
-      return false;
-    });
-
-    $('#source_output').on('click', '#token_submit', function() {
-      $.getJSON($SCRIPT_ROOT + '/source_token',
-      $( ".token:text"), 
-      function(data) {
-        $("#source_output").text("Added: " + data.success + "\nNot added: " + data.fail);
-      
-        $.each(data.success, function( index, id ){
-          $("#status_"+id).text("running")
-
-        });
-      });
-      return false;
-    });
+    
     
   });
 </script>
@@ -303,52 +139,9 @@ li {
 <!-- PUSH SUBSCRIPTIONS -->
 
   <h3 id="showstreams"> Live Streams </h3>
+  <img src="static/ajax-loader.gif" alt="loading.." id="push_load" style="display: none;">
+  <div id="pushget" style="display: none;"></div>
 
-  <div id="pushget" style="display: none;">
-    <input type="button" id=push_raw value="raw output">
-    <input type="button" id=push_delete value=delete>
-    <input type="button" id=push_stop value=stop>
-    <input type="button" id=push_pause value=pause>
-    <input type="button" id=push_resume value=resume>
-    <input type="button" id=push_log value=log>
-    <div id=push_output class="out">[output]</div>
-    <table id="pushtable" class="tablesorter">
-      <thead>
-        <tr>
-          <th class="tg-031e"></th>
-          <th class="tg-031e">Push ID</th>
-          <th class="tg-031e">Name</th>
-          <th class="tg-031e">Type</th>
-          <th class="tg-031e">Hash</th>
-          <th class="tg-031e">Last Request</th>
-          <th class="tg-031e">Last Success</th>
-          <th class="tg-031e">Created</th>
-          <th class="tg-031e">Lost Data</th>
-          <th class="tg-031e">Count</th>
-          <th class="tg-031e">Output</th>
-          <th class="tg-031e">Status</th>
-        </tr>
-      </thead>
-      <tbody>
-    {% for entry in push %}
-        <tr id="push_row_{{entry['id']}}">
-          <td class="tg-031e"><input type="checkbox" class="push" name="{{entry['id']}}"></td>
-          <td class="tg-031e">{{entry['id']}}</td>
-          <td class="tg-031e">{{entry['name']}}</td>
-          <td class="tg-031e">{{entry['hash_type']}}</td>
-          <td class="tg-031e">{{entry['hash']}}</td>
-          <td class="tg-031e">{{entry['last_request']}}</td>
-          <td class="tg-031e">{{entry['last_success']}}</td>
-          <td class="tg-031e">{{entry['start']}}</td>
-          <td class="tg-031e">{{entry['lost_data']}}</td>
-          <td class="tg-031e">{{entry['interaction_count']}}</td>
-          <td class="tg-031e">{{entry['output_type']}}</td>
-          <td class="tg-031e" id="push_status_{{entry['id']}}">{{entry['status']}}</td>
-        </tr>
-    {% endfor %}
-      </tbody>
-    </table>
-  </div>
 
 <!-- HISTORICS -->
 
@@ -404,77 +197,8 @@ li {
 <!--  MANAGED SOURCES -->
 
   <h3 id="showsources"> Managed Sources </h3>
-
-  <div id="sourcesget" style="display: none;">
-    <input type="button" id=source_raw value="raw output">
-    <input type="button" id=source_delete value=delete>
-    <input type="button" id=source_start value=start>
-    <input type="button" id=source_stop value=stop>
-    <input type="button" id=source_log value=log>
-    <input type="button" id=source_token value="add token">
-    <div id=source_output class="out">[output]
-      <input type="button" id="source_submit" value="Submit" style="visibility:collapse;">
-    </div>
-    <table id="sourcestable" class="tablesorter">
-      <thead>
-        <tr>
-          <th class="tg-031e"></th>
-          <th class="tg-031e">Source Type</th>
-          <th class="tg-031e">Name</th>
-          <th class="tg-031e">ID</th>
-          <th class="tg-031e">Resources</th>
-          <th class="tg-031e">Parameters</th>
-          <th class="tg-031e">Auth</th>
-          <th class="tg-031e">Created At (UTC)</th>
-          <th class="tg-031e">Status</th>
-        </tr>  
-      </thead>
-      <tbody>
-    {% for entry in source %}
-      <tr id="source_row_{{entry['id']}}">
-        <td class="tg-031e"><input type="checkbox" class="source" name="{{entry['id']}}"></td>
-        <td class="tg-031e">{{entry['source_type']}}</td>
-        <td class="tg-031e">{{entry['name']}}</td>
-        <td class="tg-031e">{{entry['id']}}</td>
-        <td class="tg-031e">
-          <ul>
-    {% for r in entry['resources'] %}
-            <li>
-              {{r['resource_id']}}
-              <ul>
-    {% for p in r['parameters'] %}
-                <li>{{p}}:{{r['parameters'][p]}}</li>
-    {% endfor %}
-              </ul>
-            </li>
-    {% endfor %}
-          </ul>
-        </td>
-        <td class="tg-031e">
-          <ul>
-    {% for p in entry['parameters'] %}
-          <li>{{p}}: {{entry['parameters'][p]}}</li> 
-    {% endfor %}
-          </ul>
-        </td>
-        <td class="tg-031e">
-          <ul>
-    {% for a in entry['auth'] %}
-            <li>id: {{a['identity_id']}}
-    {% for k in a['parameters'] %}
-              <ul><li>{{k}}: {{a['parameters'][k]}}</li></ul>
-    {% endfor %}
-            </li>
-    {% endfor %}
-          </ul>
-        </td>
-        <td class="tg-031e">{{entry['created_at']}}</td>
-        <td class="tg-031e" id="status_{{entry['id']}}">{{entry['status']}}</td>
-      </tr>
-    {% endfor %}
-    </tbody>
-    </table>
-  </div>
+  <img src="static/ajax-loader.gif" alt="loading.." id="source_load" style="display: none;">
+  <div id="sourceget" style="display: none;"></div>
 
   {% endif %}
 </body>

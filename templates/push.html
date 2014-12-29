@@ -1,0 +1,138 @@
+<head>
+<link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='themes/blue/style.css') }}">
+
+<script src="//ajax.googleapis.com/ajax/libs/jquery/1.9.1/jquery.min.js"></script>
+<script>window.jQuery || document.write('<script src="{{
+  url_for('static', filename='jquery.js') }}">\x3C/script>')</script>
+<script type="text/javascript" src="{{
+  url_for('static', filename='jquery.tablesorter.js') }}"></script>
+<script type=text/javascript>
+  $SCRIPT_ROOT = {{ request.script_root|tojson|safe }};
+
+  $(document).ready(function() {
+
+    $('#pushtable').tablesorter();
+
+        //push subscription actions
+
+    $('input#push_raw').bind('click', function() {
+      $.getJSON($SCRIPT_ROOT + '/push_get_raw',
+      $( ".push:checked"), 
+      function(data) {
+        var formatted = "";
+        for (i = 0; i < data.out.length; i++){
+          formatted = formatted + "<pre>" + data.out[i] + "</pre>";
+        }
+        $("#push_output").html(formatted);
+      });
+      return false;
+    });
+
+    $('input#push_delete').bind('click', function() {
+      $.getJSON($SCRIPT_ROOT + '/push_delete',
+      $( ".push:checked"), 
+      function(data) {
+        $("#push_output").text("Deleted: " + data.success + "\nNot deleted: " + data.fail);
+        $.each(data.success, function( index, id ){
+          $("#push_row_"+id).remove()
+        });
+      });
+      return false;
+    });
+
+
+    $('input#push_stop').bind('click', function() {
+      $.getJSON($SCRIPT_ROOT + '/push_stop',
+      $( ".push:checked"), 
+      function(data) {
+        $("#push_output").text("Stopped: " + data.success + "\nNot stopped: " + data.fail);
+        $.each(data.success, function( index, id ){
+          $("#push_status_"+id).text("stopped")
+        });
+      });
+      return false;
+    });
+
+    $('input#push_pause').bind('click', function() {
+      $.getJSON($SCRIPT_ROOT + '/push_pause',
+      $( ".push:checked"), 
+      function(data) {
+        $("#push_output").text("Paused: " + data.success + "\nNot paused: " + data.fail);
+        $.each(data.success, function( index, id ){
+          $("#push_status_"+id).text("paused")
+        });
+      });
+      return false;
+    });
+
+    $('input#push_resume').bind('click', function() {
+      $.getJSON($SCRIPT_ROOT + '/push_resume',
+      $( ".push:checked"), 
+      function(data) {
+        $("#push_output").text(data.out);
+      });
+      return false;
+    });
+
+    $('input#push_log').bind('click', function() {
+      $.getJSON($SCRIPT_ROOT + '/push_log',
+      $( ".push:checked"), 
+      function(data) {
+        var formatted = "";
+        for (i = 0; i < data.out.length; i++){
+          formatted = formatted + "<pre>" + data.out[i] + "</pre>";
+        }
+        $("#push_output").html(formatted);
+      });
+      return false;
+    });
+    });
+</script>
+
+</head>
+<body>
+
+    <input type="button" id=push_raw value="raw output">
+    <input type="button" id=push_delete value=delete>
+    <input type="button" id=push_stop value=stop>
+    <input type="button" id=push_pause value=pause>
+    <input type="button" id=push_resume value=resume>
+    <input type="button" id=push_log value=log>
+    <div id=push_output class="out">[output]</div>
+    <table id="pushtable" class="tablesorter">
+      <thead>
+        <tr>
+          <th class="tg-031e"></th>
+          <th class="tg-031e">Push ID</th>
+          <th class="tg-031e">Name</th>
+          <th class="tg-031e">Type</th>
+          <th class="tg-031e">Hash</th>
+          <th class="tg-031e">Last Request</th>
+          <th class="tg-031e">Last Success</th>
+          <th class="tg-031e">Created</th>
+          <th class="tg-031e">Lost Data</th>
+          <th class="tg-031e">Count</th>
+          <th class="tg-031e">Output</th>
+          <th class="tg-031e">Status</th>
+        </tr>
+      </thead>
+      <tbody>
+    {% for entry in push %}
+        <tr id="push_row_{{entry['id']}}">
+          <td class="tg-031e"><input type="checkbox" class="push" name="{{entry['id']}}"></td>
+          <td class="tg-031e">{{entry['id']}}</td>
+          <td class="tg-031e">{{entry['name']}}</td>
+          <td class="tg-031e">{{entry['hash_type']}}</td>
+          <td class="tg-031e">{{entry['hash']}}</td>
+          <td class="tg-031e">{{entry['last_request']}}</td>
+          <td class="tg-031e">{{entry['last_success']}}</td>
+          <td class="tg-031e">{{entry['start']}}</td>
+          <td class="tg-031e">{{entry['lost_data']}}</td>
+          <td class="tg-031e">{{entry['interaction_count']}}</td>
+          <td class="tg-031e">{{entry['output_type']}}</td>
+          <td class="tg-031e" id="push_status_{{entry['id']}}">{{entry['status']}}</td>
+        </tr>
+    {% endfor %}
+      </tbody>
+    </table>
+</body>

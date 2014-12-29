@@ -1,0 +1,181 @@
+<head>
+<link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='themes/blue/style.css') }}">
+
+<script src="//ajax.googleapis.com/ajax/libs/jquery/1.9.1/jquery.min.js"></script>
+<script>window.jQuery || document.write('<script src="{{
+  url_for('static', filename='jquery.js') }}">\x3C/script>')</script>
+<script type="text/javascript" src="{{
+  url_for('static', filename='jquery.tablesorter.js') }}"></script>
+<script type=text/javascript>
+  $SCRIPT_ROOT = {{ request.script_root|tojson|safe }};
+
+  $(document).ready(function() {
+
+    $('#sourcestable').tablesorter(); 
+
+  //Managed Sources actions
+
+    $('input#source_raw').bind('click', function() {
+      $.getJSON($SCRIPT_ROOT + '/source_get_raw',
+      $( ".source:checked"), 
+      function(data) {
+        var formatted = "";
+        for (i = 0; i < data.out.length; i++){
+          formatted = formatted + "<pre>" + data.out[i] + "</pre>";
+        }
+        $("#source_output").html(formatted);
+      });
+      return false;
+    });
+
+    $('input#source_delete').bind('click', function() {
+      $.getJSON($SCRIPT_ROOT + '/source_delete',
+      $( ".source:checked"), 
+      function(data) {
+        $("#source_output").text("Deleted: " + data.success + "\nNot deleted: " + data.fail);
+        $.each(data.success, function( index, id ){
+          $("#source_row_"+id).remove()
+        });
+      });
+      return false;
+    });
+
+    $('input#source_stop').bind('click', function() {
+      $.getJSON($SCRIPT_ROOT + '/source_stop',
+      $( ".source:checked"), 
+      function(data) {
+        $("#source_output").text("Stopped: " + data.success + "\nNot stopped: " + data.fail);
+        $.each(data.success, function( index, id ){
+          $("#status_"+id).text("stopped")
+        });
+      });
+      return false;
+    });
+
+
+    $('input#source_start').bind('click', function() {
+      $.getJSON($SCRIPT_ROOT + '/source_start',
+      $( ".source:checked"), 
+      function(data) {
+        $("#source_output").text("Started: " + data.success + "\nNot started: " + data.fail);
+        $.each(data.success, function( index, id ){
+          $("#status_"+id).text("running")
+        });
+      });
+      return false;
+    });
+
+    $('input#source_log').bind('click', function() {
+      $.getJSON($SCRIPT_ROOT + '/source_log',
+      $( ".source:checked"), 
+      function(data) {
+        var formatted = "";
+        for (i = 0; i < data.out.length; i++){
+          formatted = formatted + "<pre>" + data.out[i] + "</pre>";
+        }
+        $("#source_output").html(formatted);
+      });
+      return false;
+    });
+
+    $('input#source_token').bind('click', function() {
+      var formatted = ""
+      for (i=0; i < $( ".source:checked").length; i++){
+        formatted = formatted + "<li>" + $( ".source:checked")[i].name + ' <input type="text" class=token name=' + $( ".source:checked")[i].name + ">" + "</li>";
+      }
+      
+      if ($( ".source:checked").length > 0) {
+        formatted = formatted + '<input type="button" value="Submit" id="token_submit" >';
+        $("#source_submit").show();
+      }
+      
+      $("#source_output").html(formatted);
+      return false;
+    });
+
+    $('#source_output').on('click', '#token_submit', function() {
+      $.getJSON($SCRIPT_ROOT + '/source_token',
+      $( ".token:text"), 
+      function(data) {
+        $("#source_output").text("Added: " + data.success + "\nNot added: " + data.fail);
+      
+        $.each(data.success, function( index, id ){
+          $("#status_"+id).text("running")
+
+        });
+      });
+      return false;
+    });
+  });
+</script>
+
+</head>
+<body>
+
+    <input type="button" id=source_raw value="raw output">
+    <input type="button" id=source_delete value=delete>
+    <input type="button" id=source_start value=start>
+    <input type="button" id=source_stop value=stop>
+    <input type="button" id=source_log value=log>
+    <input type="button" id=source_token value="add token">
+    <div id=source_output class="out">[output] </div>
+    <table id="sourcestable" class="tablesorter">
+      <thead>
+        <tr>
+          <th class="tg-031e"></th>
+          <th class="tg-031e">Source Type</th>
+          <th class="tg-031e">Name</th>
+          <th class="tg-031e">ID</th>
+          <th class="tg-031e">Resources</th>
+          <th class="tg-031e">Parameters</th>
+          <th class="tg-031e">Auth</th>
+          <th class="tg-031e">Created At (UTC)</th>
+          <th class="tg-031e">Status</th>
+        </tr>  
+      </thead>
+      <tbody>
+    {% for entry in source %}
+      <tr id="source_row_{{entry['id']}}">
+        <td class="tg-031e"><input type="checkbox" class="source" name="{{entry['id']}}"></td>
+        <td class="tg-031e">{{entry['source_type']}}</td>
+        <td class="tg-031e">{{entry['name']}}</td>
+        <td class="tg-031e">{{entry['id']}}</td>
+        <td class="tg-031e">
+          <ul>
+    {% for r in entry['resources'] %}
+            <li>
+              {{r['resource_id']}}
+              <ul>
+    {% for p in r['parameters'] %}
+                <li>{{p}}:{{r['parameters'][p]}}</li>
+    {% endfor %}
+              </ul>
+            </li>
+    {% endfor %}
+          </ul>
+        </td>
+        <td class="tg-031e">
+          <ul>
+    {% for p in entry['parameters'] %}
+          <li>{{p}}: {{entry['parameters'][p]}}</li> 
+    {% endfor %}
+          </ul>
+        </td>
+        <td class="tg-031e">
+          <ul>
+    {% for a in entry['auth'] %}
+            <li>id: {{a['identity_id']}}
+    {% for k in a['parameters'] %}
+              <ul><li>{{k}}: {{a['parameters'][k]}}</li></ul>
+    {% endfor %}
+            </li>
+    {% endfor %}
+          </ul>
+        </td>
+        <td class="tg-031e">{{entry['created_at']}}</td>
+        <td class="tg-031e" id="status_{{entry['id']}}">{{entry['status']}}</td>
+      </tr>
+    {% endfor %}
+    </tbody>
+    </table>
+</body>

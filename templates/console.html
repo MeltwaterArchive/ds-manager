@@ -4,10 +4,16 @@
 <style>
 body {
     background-color: linen;
+    font-family: sans-serif;
+    color:dimgrey;
 }
 h1 {
     color: maroon;
     margin-left: 20px;
+}
+h3 {
+  display: inline;
+  margin-right: 10px;
 } 
 p {
     margin-left: 40px;
@@ -15,9 +21,87 @@ p {
 li {
   text-align: left;
 }
+
+label{
+display:inline-block;
+width:100px;
+margin-right:30px;
+text-align:right;
+}
+
+fieldset{
+border:none;
+width:400px;
+margin:0px auto;
+}
+
+input[type="submit"]{
+padding: 8px 3px 2px;
+background: navajowhite;
+border-radius: 2px;
+color: dimgrey;
+border: 1px solid dimgrey;
+font-weight: bold;
+text-shadow: 1px 1px 1px darkorange;
+}
+
+input[type="button"] {
+padding: 8px 3px 2px;
+background: navajowhite;
+border-radius: 2px;
+color: dimgrey;
+border: 1px solid dimgrey;
+font-weight: bold;
+text-shadow: 1px 1px 1px darkorange;
+}
+
 .tg  {border-collapse:collapse;border-spacing:0;}
 .tg td{font-family:Arial, sans-serif;font-size:14px;padding:10px 5px;border-style:solid;border-width:1px;overflow:hidden;word-break:normal;}
 .tg th{font-family:Arial, sans-serif;font-size:14px;font-weight:normal;padding:10px 5px;border-style:solid;border-width:1px;overflow:hidden;word-break:normal;}
+
+table.tablesorter tfoot tr th {
+background-color: navajowhite;
+}
+
+#login {
+background-color: navajowhite;
+padding: 10px;
+border: 2px solid;
+border-radius: 4px;
+width: 400px;
+border-color: darkgrey;
+float:right;
+}
+
+#introtext {
+background-color: dimgrey;
+color:navajowhite;
+padding: 10px;
+margin-right: 460px;
+border: 2px solid;
+border-radius: 4px;
+border-color: navajowhite;
+}
+
+.loginfield {
+  width: 220px;
+}
+
+.section {
+  margin: 10px;
+  margin-left: 0px;
+}
+
+.section h3{
+  text-shadow: 1px 1px 1px darkorange;
+}
+
+.section:hover h3{
+  color:darkorange;
+  text-decoration: bold;
+  cursor:pointer;
+  text-shadow: 1px 1px 1px dimgrey;
+}
 
 .out {
   margin: 10px;
@@ -27,7 +111,7 @@ li {
 }
 
 </style>
-<link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='themes/blue/style.css') }}">
+<link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='themes/orange/style.css') }}">
 
 <script src="//ajax.googleapis.com/ajax/libs/jquery/1.9.1/jquery.min.js"></script>
 <script>window.jQuery || document.write('<script src="{{
@@ -39,18 +123,22 @@ li {
 
   $(document).ready(function() {
     // hide/show tables
-    $('#showstreams').click(function() {
+    $('#push').click(function() {
       $.get($SCRIPT_ROOT + '/push_get', function(data){
+        $('#push_up').attr('src', 'static/desc.gif');
         $('#pushget').html(data).slideToggle("fast");
       });
     });
-    $('#showhistorics').click(function() {
+    $('#historics').click(function() {
       $('#historicsget').slideToggle("fast");
     });
-    $('#showsources').click(function() {
+    $('#sources').click(function() {
       $.get($SCRIPT_ROOT + '/source_get', function(data){
         $('#sourceget').html(data).slideToggle("fast");
       });
+    });
+    $('#usage').click(function() {
+      $('#usageget').slideToggle("fast");
     });
 
     //sort tables
@@ -63,30 +151,29 @@ li {
 
 </head>
 <body>
-
   <title>DataSift Console</title>
-
-  {% if error %}
-    <h3>Bad login: {{ error }}!</h3>
-  {% else %}
-    <h3>DataSift Console Login</h3>
-  {% endif %}
-  <form action="" method="post">
-      User name: <input type="text" name="username"><br>
-      API Key: <input type="text" name="apikey"><br>
-      <input type="submit" value="Login">
-      <input type="button" value="Log out" onClick="javascript:location.href='/logout';">
-  </form>
+  <div id="login">
+    {% if error %}
+      <h3>Bad login: {{ error }}!</h3>
+    {% else %}
+      <h3>DataSift Console Login</h3>
+    {% endif %}
+    <form action="" method="post">
+      <fieldset>
+        <label for="username">User name:</label> <input type="text"  class="loginfield" name="username">
+        <label for="apikey">API Key:</label> <input type="text"  class="loginfield" name="apikey" >
+        <input type="submit" value="Login" >
+        <input type="button" value="Log out" onClick="javascript:location.href='/logout';">
+      </fieldset>
+    </form>
+  </div>
 
   <!-- only show these if there is user info in session -->
   {% if name %}
 
-  <h2> {{name}} </h2>
-
 <!-- ACCOUNT DETAILS -->
 
-  <h3> account details </h3>
-
+  <p>Account: {{name}} </p>
   {% if acct['balance'] %}
   {% set balance = acct['balance']['balance'] %}
   <p>Balance:</p>
@@ -110,42 +197,58 @@ li {
   </table>
   {% endif %}
   <p>Rate Limit remaining: {{acct['limit'][0]}} / {{acct['limit'][1]}} </p>
-  <p>Usage: ({{ acct['usage_period'][0] }} - {{ acct['usage_period'][1] }})</p>
-  <table id="usagetable" class="tablesorter">
-    <thead>
-      <tr>
-        <th class="tg-031e">Stream Hash</th>
-        <th class="tg-031e">License Volumes</th>
-        <th class="tg-031e">Running Time (seconds)</th>
-      </tr>
-    </thead>
-    <tbody>
-  {% for s in acct['usage_streams'] %}
-      <tr>
-        <td class="tg-031e">{{s[0]}}</td>
-        <td class="tg-031e">
-          <ul>
-  {% for l in s[1]['licenses'] %}
-          <li> {{l}} : {{s[1]['licenses'][l]}} </li>
-  {% endfor %}
-          </ul>
-        </td>
-        <td class="tg-031e">{{s[1]['seconds']}}</td>
-      </tr>
-  {% endfor %}
-    </tbody>
-  </table>
+  <p>&nbsp;</p>
+
+
+<!-- USAGE -->
+  <div id="usage" class="section">
+    <h3 id="showusage"> Usage </h3>
+  </div>
+  <div id="usageget" class="section">
+    <p>Period: ({{ acct['usage_period'][0] }} - {{ acct['usage_period'][1] }})</p>
+    {% if acct['usage_streams'] %}
+    <table id="usagetable" class="tablesorter">
+      <thead>
+        <tr>
+          <th class="tg-031e">Stream Hash</th>
+          <th class="tg-031e">License Volumes</th>
+          <th class="tg-031e">Running Time (seconds)</th>
+        </tr>
+      </thead>
+      <tbody>
+    {% for s in acct['usage_streams'] %}
+        <tr>
+          <td class="tg-031e">{{s[0]}}</td>
+          <td class="tg-031e">
+            <ul>
+    {% for l in s[1]['licenses'] %}
+            <li> {{l}} : {{s[1]['licenses'][l]}} </li>
+    {% endfor %}
+            </ul>
+          </td>
+          <td class="tg-031e">{{s[1]['seconds']}}</td>
+        </tr>
+    {% endfor %}
+      </tbody>
+    </table>
+    {% else %}
+    <p> [ No usage data for this period ] </p>
+    {% endif %}
+  </div>
 
 <!-- PUSH SUBSCRIPTIONS -->
-
-  <h3 id="showstreams"> Live Streams </h3>
-  <img src="static/ajax-loader.gif" alt="loading.." id="push_load" style="display: none;">
+  <div id="push" class="section">
+    <h3 id="showstreams"> Live Streams </h3>
+    <!-- this doesn't work.. -->
+    <img src="static/ajax-loader.gif" alt="loading.." id="push_load" style="display: none;">
+  </div>
   <div id="pushget" style="display: none;"></div>
 
 
 <!-- HISTORICS -->
-
-  <h3 id="showhistorics"> Historic Streams </h3>
+  <div id="historics" class="section">
+    <h3 id="showhistorics"> Historic Streams </h3>
+  </div>
 
   <div id="historicsget" style="display: none;">
     <table class="tg">
@@ -195,10 +298,25 @@ li {
   </div>
 
 <!--  MANAGED SOURCES -->
-
-  <h3 id="showsources"> Managed Sources </h3>
-  <img src="static/ajax-loader.gif" alt="loading.." id="source_load" style="display: none;">
+  
+  <div id="sources" class="section">
+    <h3 id="showsources"> Managed Sources </h3>
+    <img src="static/ajax-loader.gif" alt="loading.." id="source_load" style="display: none;">
+  </div>
   <div id="sourceget" style="display: none;"></div>
 
+
+  {% else %}
+  <!-- no login message -->
+  <div id="introtext">
+    <p>Welcome to the DataSift Console.</p>
+    <p>Login with your account's user name and api key, to get a comprehensive account summary. This includes usage, Live Streams, Historic Streams, and Managed Sources. Additional features include:
+      <ul>
+        <li>Live Streams: delete, stop, pause, and resume streams. push/get and log output</li>
+        <li>Historic Streams: (to do)</li>
+        <li>Managed Sources: add tokens, delete, stop, and start Managed Sources. push/get and log output</li>
+      </ul>
+    </p>
+  </div>
   {% endif %}
 </body>

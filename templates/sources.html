@@ -21,7 +21,8 @@
       function(data) {
         var formatted = "";
         for (i = 0; i < data.out.length; i++){
-          formatted = formatted + "<pre>" + data.out[i] + "</pre>";
+          var stringify = JSON.stringify(data.out[i], null, 4)
+          formatted = formatted + "<pre>" + stringify + "</pre>";
         }
         $("#source_output").html(formatted);
       });
@@ -71,7 +72,8 @@
       function(data) {
         var formatted = "";
         for (i = 0; i < data.out.length; i++){
-          formatted = formatted + "<pre>" + data.out[i] + "</pre>";
+          var stringify = JSON.stringify(data.out[i], null, 4)
+          formatted = formatted + "<pre>" + stringify + "</pre>";
         }
         $("#source_output").html(formatted);
       });

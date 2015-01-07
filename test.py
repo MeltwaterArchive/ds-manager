@@ -94,7 +94,7 @@ def push_get_raw():
     for p in push_get_no_historics:
         for r in request.args:
             if p['id'] == r:
-                raw.append(pformat(p))
+                raw.append(p)
         #look it up and jsonify the stuff.
     return jsonify(out=raw)
 
@@ -154,7 +154,7 @@ def push_log():
     try:
         out = []
         for r in request.args:
-            out.append(pformat(client.push.log(subscription_id=r)))
+            out.append(client.push.log(subscription_id=r))
         return jsonify(out=out)
     except:
         return jsonify(out="Issues getting log")
@@ -178,7 +178,7 @@ def source_get_raw():
     for s in source_get_list:
         for r in request.args:
             if s['id'] == r:
-                raw.append(pformat(s))
+                raw.append(s)
         #look it up and jsonify the stuff.
     return jsonify(out=raw)
 
@@ -227,7 +227,7 @@ def source_log():
     try:
         out = []
         for r in request.args:
-            out.append(pformat(client.managed_sources.log(r)))
+            out.append(client.managed_sources.log(r))
         return jsonify(out=out)
     except:
         return jsonify(out="Issues getting log")

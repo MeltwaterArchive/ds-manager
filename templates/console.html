@@ -125,7 +125,6 @@ border-color: navajowhite;
     // hide/show tables
     $('#push').click(function() {
       $.get($SCRIPT_ROOT + '/push_get', function(data){
-        $('#push_up').attr('src', 'static/desc.gif');
         $('#pushget').html(data).slideToggle("fast");
       });
     });

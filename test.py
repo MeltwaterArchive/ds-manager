@@ -8,9 +8,6 @@ import json
 
 app = Flask(__name__)
 
-push_get_no_historics = []
-source_get_list = []
-
 @app.route('/')
 def index():
     return 'heres the index'
@@ -49,13 +46,9 @@ def log_the_user_in():
         if 'username' in session.keys():
             name=session['username']
 
-    # push_get = push_get_all()
-    # historic_get = historic_get_all()
-
     '''
     # separate 'live streams' from historics and their push subscriptions
-    global push_get_no_historics
-    push_get_no_historics = [p for p in push_get if type(p) is dict and 'hash_type' in p.keys() and p['hash_type'] != "historic"]
+    session['push'] = [p for p in push_get if type(p) is dict and 'hash_type' in p.keys() and p['hash_type'] != "historic"]
     hp = historic_push(historic_get,push_get)
     '''
     hp = []
@@ -81,22 +74,21 @@ PUSH
 @app.route('/push_get')
 def push_get():
     # do push/get request only when asked
-    global push_get_no_historics
-    if not push_get_no_historics:
+    if not 'push' in session:
         push_get = push_get_all()
-        push_get_no_historics = [p for p in push_get if type(p) is dict and 'hash_type' in p.keys() and p['hash_type'] != "historic"]
-    return make_response(render_template('push.html', push=push_get_no_historics))
+        session['push'] = [p for p in push_get if type(p) is dict and 'hash_type' in p.keys() and p['hash_type'] != "historic"]
+    return make_response(render_template('push.html', push=session['push']))
 
 @app.route('/push_get_raw')
 def push_get_raw():
     raw = []
-    global push_get_no_historics
-    for p in push_get_no_historics:
-        for r in request.args:
-            if p['id'] == r:
-                raw.append(p)
-        #look it up and jsonify the stuff.
-    return jsonify(out=raw)
+    if 'push' in session:
+        for p in session['push']:
+            for r in request.args:
+                if p['id'] == r:
+                    raw.append(p)
+            #look it up and jsonify the stuff.
+        return jsonify(out=raw)
 
 
 @app.route('/push_delete')
@@ -166,16 +158,14 @@ MANAGED SOURCES
 @app.route('/source_get')
 def source_get():
     # do push/get request only when asked
-    global source_get_list
-    if not source_get_list:
-        source_get_list = source_get_all()
-    return make_response(render_template('sources.html', source=source_get_list))
+    if not 'source' in session:
+        session['source'] = source_get_all()
+    return make_response(render_template('sources.html', source=session['source']))
 
 @app.route('/source_get_raw')
 def source_get_raw():
-    global push_get_no_historics
     raw = []
-    for s in source_get_list:
+    for s in session['source']:
         for r in request.args:
             if s['id'] == r:
                 raw.append(s)

@@ -37,6 +37,7 @@ def log_the_user_in():
     if request.method == 'POST':
         client = valid_login(request.form['username'], request.form['apikey'])
         if client:
+            pop_session()
             session['username'] = request.form['username']
             session['apikey'] = request.form['apikey']
             name=session['username']
@@ -63,18 +64,17 @@ def log_the_user_in():
 @app.route('/logout')
 def logout():
     # remove the username from the session if it's there
-    session.pop('username', None)
-    session.pop('apikey', None)
+    pop_session()
     return redirect(url_for('log_the_user_in'))
 
 '''
 PUSH 
 '''
 
-@app.route('/push_get')
+@app.route('/push_get', methods=['POST', 'GET'])
 def push_get():
     # do push/get request only when asked
-    if not 'push' in session:
+    if not 'push' in session.keys():
         push_get = push_get_all()
         session['push'] = [p for p in push_get if type(p) is dict and 'hash_type' in p.keys() and p['hash_type'] != "historic"]
     return make_response(render_template('push.html', push=session['push']))
@@ -82,7 +82,7 @@ def push_get():
 @app.route('/push_get_raw')
 def push_get_raw():
     raw = []
-    if 'push' in session:
+    if 'push' in session.keys():
         for p in session['push']:
             for r in request.args:
                 if p['id'] == r:
@@ -155,10 +155,10 @@ def push_log():
 MANAGED SOURCES
 '''
 
-@app.route('/source_get')
+@app.route('/source_get', methods=['POST', 'GET'])
 def source_get():
     # do push/get request only when asked
-    if not 'source' in session:
+    if not 'source' in session.keys():
         session['source'] = source_get_all()
     return make_response(render_template('sources.html', source=session['source']))
 
@@ -250,6 +250,10 @@ def valid_login(user,apikey):
         return client
     except:
         return None
+
+def pop_session():
+    for k in session.keys():
+        session.pop(k, None)
 
 def historic_push(historic_get,push_get):
     ''' get dictionary of historics with list of push subscription dicts  '''

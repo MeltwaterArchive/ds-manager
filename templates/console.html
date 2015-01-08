@@ -71,6 +71,8 @@ background-color: navajowhite;
   position: relative;
   border-bottom: 3px solid;
   border-color: darkgrey;
+  margin: -8px;
+  margin-bottom: 40px;
 }
 
 #header span {
@@ -117,17 +119,34 @@ background-color: navajowhite;
   position: relative;
   border-top: 3px solid;
   border-color: darkgrey;
-  margin-top: 40px;
+  margin: 40px -8px 0px;
+}
+
+#footer a {
+  margin: 10px 20px 30px 0px;
+  color:darkorange;
+  text-decoration: none;
+  margin-left: 40px;
+  position: relative;
+  bottom: -14px;
+}
+
+#footer a:hover {
+  text-decoration: underline;
+}
+
+#footer a:visited {
+  color: navajowhite;
 }
 
 #introtext {
-background-color: dimgrey;
-color:navajowhite;
-padding: 10px;
-margin-right: 460px;
-border: 2px solid;
-border-radius: 4px;
-border-color: navajowhite;
+  background-color: dimgrey;
+  color:navajowhite;
+  padding: 10px;
+  margin-right: 460px;
+  border: 2px solid;
+  border-radius: 4px;
+  border-color: navajowhite;
 }
 
 .loginfield {
@@ -136,11 +155,15 @@ border-color: navajowhite;
   margin: 1px 0px;
   height: 20px;
   background-color: linen;
+  border-radius: 3px;
+  -webkit-box-shadow: inset 0 1px 1px rgba(0, 0, 0, 0.075);
+  -webkit-transition: border linear 0.2s, box-shadow linear 0.2s;
 }
 
 .section {
   margin: 10px;
   margin-left: 0px;
+  margin-top:20px;
 }
 
 .section h3{
@@ -233,29 +256,15 @@ border-color: navajowhite;
 <!-- ACCOUNT DETAILS -->
 
   <p>Account: {{name}} </p>
+  <p>Rate Limit remaining: {{acct['limit'][0]}} / {{acct['limit'][1]}} </p>
   {% if acct['balance'] %}
   {% set balance = acct['balance']['balance'] %}
-  <p>Balance:</p>
-  <table id="balancetable" class="tg">
-    <thead>
-      <tr>
-        <th class="tg-031e">Plan</th>
-        <th class="tg-031e">Remaining DPUs</th>
-        <th class="tg-031e">Cost</th>
-        <th class="tg-031e">Cost Limit</th>
-      </tr>
-    </thead>
-    <tbody>
-      <tr>
-        <td class="tg-031e">{{balance['plan']}}</td>
-        <td class="tg-031e">{{balance['remaining_dpus']}}</td>
-        <td class="tg-031e">{{balance['cost']}}</td>
-        <td class="tg-031e">{{balance['tdreshold']}}</td>
-      </tr>
-    </tbody>
-  </table>
+  <p>Plan: {{balance['plan']}}</p>
+  <p>Remaining DPUs: {{balance['remaining_dpus']}}</p>
+  <p>Cost: {{balance['cost']}}</p>
+  <p>Cost Limit: {{balance['tdreshold']}}</p>
   {% endif %}
-  <p>Rate Limit remaining: {{acct['limit'][0]}} / {{acct['limit'][1]}} </p>
+  
   <p>&nbsp;</p>
 
 
@@ -379,5 +388,8 @@ border-color: navajowhite;
   </div>
   {% endif %}
   <div id="footer">
+    <a href="http://status.datasift.com/">Platform Status</a>
+    <a href="https://console.datasift.com/">DataSift Console</a>
+    <a href="http://datasift.com/">Web UI</a>
   </div>
 </body>

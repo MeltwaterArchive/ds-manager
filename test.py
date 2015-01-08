@@ -88,7 +88,7 @@ def push_get_raw():
                 if p['id'] == r:
                     raw.append(p)
             #look it up and jsonify the stuff.
-        return jsonify(out=raw)
+    return jsonify(out=raw)
 
 
 @app.route('/push_delete')
@@ -165,11 +165,11 @@ def source_get():
 @app.route('/source_get_raw')
 def source_get_raw():
     raw = []
-    for s in session['source']:
-        for r in request.args:
-            if s['id'] == r:
-                raw.append(s)
-        #look it up and jsonify the stuff.
+    if 'source' in session.keys():
+        for s in session['source']:
+            for r in request.args:
+                if s['id'] == r:
+                    raw.append(s)
     return jsonify(out=raw)
 
 @app.route('/source_delete')

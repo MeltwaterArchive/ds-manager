@@ -196,19 +196,34 @@ background-color: navajowhite;
   $SCRIPT_ROOT = {{ request.script_root|tojson|safe }};
 
   $(document).ready(function() {
+
     // hide/show tables
     $('#push').click(function() {
-      $.get($SCRIPT_ROOT + '/push_get', function(data){
-        $('#pushget').html(data).slideToggle("fast");
-      });
+      //only get data if we're opening 
+      if ($('#pushget').css('display') == 'none'){
+        $.get($SCRIPT_ROOT + '/push_get', function(data){
+          $('#pushget').html(data).slideToggle("fast");
+        });
+      }
+      else{
+        $('#pushget').slideToggle("fast");
+      }
     });
+
     $('#historics').click(function() {
       $('#historicsget').slideToggle("fast");
     });
+
     $('#sources').click(function() {
-      $.get($SCRIPT_ROOT + '/source_get', function(data){
-        $('#sourceget').html(data).slideToggle("fast");
-      });
+      //only get data if we're opening 
+      if ($('#sourceget').css('display') == 'none'){
+        $.get($SCRIPT_ROOT + '/source_get', function(data){
+          $('#sourceget').html(data).slideToggle("fast");
+        });
+      }
+      else{
+        $('#sourceget').slideToggle("fast");
+      }
     });
     $('#usage').click(function() {
       $('#usageget').slideToggle("fast");
@@ -216,8 +231,6 @@ background-color: navajowhite;
 
     //sort tables
     $('#usagetable').tablesorter();
-
-    
     
   });
 </script>
@@ -255,14 +268,22 @@ background-color: navajowhite;
 
 <!-- ACCOUNT DETAILS -->
 
-  <p>Account: {{name}} </p>
-  <p>Rate Limit remaining: {{acct['limit'][0]}} / {{acct['limit'][1]}} </p>
+  <p>Account: <b>{{name}}</b> </p>
+  {% set third = acct['limit'][1]|float()/3 %}
+  {% set color = 'green' %}
+  {% if acct['limit'][0] < third %}
+  {% set color = 'red' %}
+  {% endif %}
+  <p>Rate Limit remaining: 
+    <span style="color:{{color}};font-weight:bold;">
+      {{acct['limit'][0]}}
+    </span> / {{acct['limit'][1]}} </p>
   {% if acct['balance'] %}
   {% set balance = acct['balance']['balance'] %}
   <p>Plan: {{balance['plan']}}</p>
   <p>Remaining DPUs: {{balance['remaining_dpus']}}</p>
   <p>Cost: {{balance['cost']}}</p>
-  <p>Cost Limit: {{balance['tdreshold']}}</p>
+  <p>Cost Limit: {{balance['threshold']}}</p>
   {% endif %}
   
   <p>&nbsp;</p>
@@ -378,7 +399,7 @@ background-color: navajowhite;
   <!-- no login message -->
   <div id="introtext">
     <p>Welcome to the DataSift Console.</p>
-    <p>Login with your account's user name and api key, to get a comprehensive account summary. This includes usage, Live Streams, Historic Streams, and Managed Sources. Additional features include:
+    <p>Login with your account's user name and api key to get a comprehensive account summary. This includes usage, Live Streams, Historic Streams, and Managed Sources. Additional features include:
       <ul>
         <li>Live Streams: delete, stop, pause, and resume streams. push/get and log output</li>
         <li>Historic Streams: (to do)</li>

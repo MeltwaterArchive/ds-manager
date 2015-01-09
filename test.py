@@ -67,6 +67,19 @@ def logout():
     pop_session()
     return redirect(url_for('log_the_user_in'))
 
+@app.route('/reset_push')
+def reset_push():
+    if 'push' in session.keys():
+        session.pop('push', None)
+    return 'push reset'
+
+@app.route('/reset_sources')
+def reset_sources():
+    if 'sources' in session.keys():
+        session.pop('sources', None)
+    return 'sources reset'
+    
+
 '''
 PUSH 
 '''

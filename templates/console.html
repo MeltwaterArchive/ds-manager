@@ -184,6 +184,11 @@ background-color: navajowhite;
   border-style:solid;border-width:1px;
 }
 
+.load {
+  margin-left: 40px;
+  margin-top: 12px;
+}
+
 </style>
 <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='themes/orange/style.css') }}">
 
@@ -196,13 +201,19 @@ background-color: navajowhite;
   $SCRIPT_ROOT = {{ request.script_root|tojson|safe }};
 
   $(document).ready(function() {
+    // remove push and sources session info on page load
+    $.get($SCRIPT_ROOT + '/reset_push');
+    $.get($SCRIPT_ROOT + '/reset_sources');
 
     // hide/show tables
     $('#push').click(function() {
       //only get data if we're opening 
       if ($('#pushget').css('display') == 'none'){
+        // loading gif
+        $('#push_load').css('display', 'block');
         $.get($SCRIPT_ROOT + '/push_get', function(data){
           $('#pushget').html(data).slideToggle("fast");
+          $('#push_load').css('display', 'none');
         });
       }
       else{
@@ -217,8 +228,10 @@ background-color: navajowhite;
     $('#sources').click(function() {
       //only get data if we're opening 
       if ($('#sourceget').css('display') == 'none'){
+        $('#sources_load').css('display', 'block');
         $.get($SCRIPT_ROOT + '/source_get', function(data){
           $('#sourceget').html(data).slideToggle("fast");
+          $('#sources_load').css('display', 'none');
         });
       }
       else{
@@ -328,8 +341,7 @@ background-color: navajowhite;
 <!-- PUSH SUBSCRIPTIONS -->
   <div id="push" class="section">
     <h3 id="showstreams"> Live Streams </h3>
-    <!-- this doesn't work.. -->
-    <img src="static/ajax-loader.gif" alt="loading.." id="push_load" style="display: none;">
+    <img src="static/ajax-loader.gif" alt="loading.." id="push_load" class="load" style="display: none;">
   </div>
   <div id="pushget" style="display: none;"></div>
 
@@ -390,7 +402,7 @@ background-color: navajowhite;
   
   <div id="sources" class="section">
     <h3 id="showsources"> Managed Sources </h3>
-    <img src="static/ajax-loader.gif" alt="loading.." id="source_load" style="display: none;">
+    <img src="static/ajax-loader.gif" alt="loading.." id="sources_load" class="load" style="display: none;">
   </div>
   <div id="sourceget" style="display: none;"></div>
 

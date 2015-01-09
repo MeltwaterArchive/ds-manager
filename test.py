@@ -90,6 +90,8 @@ def push_get():
     if not 'push' in session.keys():
         push_get = push_get_all()
         session['push'] = [p for p in push_get if type(p) is dict and 'hash_type' in p.keys() and p['hash_type'] != "historic"]
+        # avoid another push/get if we've already loaded live steams
+        session['push_historics'] = [p for p in push_get if type(p) is dict and 'hash_type' in p.keys() and p['hash_type'] == "historic"]
     return make_response(render_template('push.html', push=session['push']))
 
 @app.route('/push_get_raw')
@@ -163,6 +165,21 @@ def push_log():
         return jsonify(out=out)
     except:
         return jsonify(out="Issues getting log")
+
+'''
+HISTORICS 
+'''
+
+@app.route('/historics_get', methods=['POST', 'GET'])
+def historics_get():
+    # do push/get request only when asked
+    if not 'historics' in session.keys():
+        session['historics'] = historic_get_all()
+    if not 'push_historics' in session.keys():
+        push_get = push_get_all()
+        session['push_historics'] = [p for p in push_get if type(p) is dict and 'hash_type' in p.keys() and p['hash_type'] == "historic"]
+    historics_push = historic_push(session['historics'], session['push_historics'])
+    return make_response(render_template('historics.html', historics=historics_push))
 
 '''
 MANAGED SOURCES

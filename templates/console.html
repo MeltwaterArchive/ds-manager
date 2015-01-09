@@ -189,6 +189,17 @@ background-color: navajowhite;
   margin-top: 12px;
 }
 
+.sub {
+  width: 100%;
+  height: 2em;
+}
+
+.hist {
+  color:darkred;
+  position:relative;
+  margin:6px;
+}
+
 </style>
 <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='themes/orange/style.css') }}">
 
@@ -222,7 +233,16 @@ background-color: navajowhite;
     });
 
     $('#historics').click(function() {
-      $('#historicsget').slideToggle("fast");
+      if ($('#historicsget').css('display') == 'none'){
+        $('#historics_load').css('display', 'block');
+        $.get($SCRIPT_ROOT + '/historics_get', function(data){
+          $('#historicsget').html(data).slideToggle("fast");
+          $('#historics_load').css('display', 'none');
+        });
+      }
+      else{
+        $('#historicsget').slideToggle("fast");
+      }
     });
 
     $('#sources').click(function() {
@@ -348,7 +368,8 @@ background-color: navajowhite;
 
 <!-- HISTORICS -->
   <div id="historics" class="section">
-    <h3 id="showhistorics"> Historic Streams </h3>
+    <h3 id="showhistorics"> Historics Streams </h3>
+    <img src="static/ajax-loader.gif" alt="loading.." id="historics_load" class="load" style="display: none;">
   </div>
 
   <div id="historicsget" style="display: none;">
@@ -423,6 +444,6 @@ background-color: navajowhite;
   <div id="footer">
     <a href="http://status.datasift.com/">Platform Status</a>
     <a href="https://console.datasift.com/">DataSift Console</a>
-    <a href="http://datasift.com/">Web UI</a>
+    <a href="https://datasift.com/dashboard">DataSift Dashboard (Web UI)</a>
   </div>
 </body>

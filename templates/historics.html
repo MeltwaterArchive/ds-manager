@@ -1,0 +1,171 @@
+<head>
+<link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='themes/orange/style.css') }}">
+
+<script src="//ajax.googleapis.com/ajax/libs/jquery/1.9.1/jquery.min.js"></script>
+<script>window.jQuery || document.write('<script src="{{
+  url_for('static', filename='jquery.js') }}">\x3C/script>')</script>
+<script type="text/javascript" src="{{
+  url_for('static', filename='jquery.tablesorter.js') }}"></script>
+<script type=text/javascript>
+  $SCRIPT_ROOT = {{ request.script_root|tojson|safe }};
+
+  $(document).ready(function() {
+
+    $('#historicstable').tablesorter();
+
+        //historics subscription actions
+
+    $('input#historics_raw').bind('click', function() {
+      $.getJSON($SCRIPT_ROOT + '/historics_get_raw',
+      $( ".historics:checked"), 
+      function(data) {
+        var formatted = "";
+        for (i = 0; i < data.out.length; i++){
+          var stringify = JSON.stringify(data.out[i], null, 4) 
+          formatted = formatted + "<pre>" + stringify + "</pre>";
+        }
+        $("#historics_output").html(formatted);
+      });
+      return false;
+    });
+
+    $('input#historics_delete').bind('click', function() {
+      $.getJSON($SCRIPT_ROOT + '/historics_delete',
+      $( ".historics:checked"), 
+      function(data) {
+        $("#historics_output").text("Deleted: " + data.success + "\nNot deleted: " + data.fail);
+        $.each(data.success, function( index, id ){
+          $("#historics_row_"+id).remove()
+        });
+      });
+      return false;
+    });
+
+
+    $('input#historics_stop').bind('click', function() {
+      $.getJSON($SCRIPT_ROOT + '/historics_stop',
+      $( ".historics:checked"), 
+      function(data) {
+        $("#historics_output").text("Stopped: " + data.success + "\nNot stopped: " + data.fail);
+        $.each(data.success, function( index, id ){
+          $("#historics_status_"+id).text("stopped")
+        });
+      });
+      return false;
+    });
+
+    $('input#historics_pause').bind('click', function() {
+      $.getJSON($SCRIPT_ROOT + '/historics_pause',
+      $( ".historics:checked"), 
+      function(data) {
+        $("#historics_output").text("Paused: " + data.success + "\nNot paused: " + data.fail);
+        $.each(data.success, function( index, id ){
+          $("#historics_status_"+id).text("paused")
+        });
+      });
+      return false;
+    });
+
+    $('input#historics_resume').bind('click', function() {
+      $.getJSON($SCRIPT_ROOT + '/historics_resume',
+      $( ".historics:checked"), 
+      function(data) {
+        $("#historics_output").text(data.out);
+      });
+      return false;
+    });
+
+    $('input#historics_log').bind('click', function() {
+      $.getJSON($SCRIPT_ROOT + '/historics_log',
+      $( ".historics:checked"), 
+      function(data) {
+        var formatted = "";
+        for (i = 0; i < data.out.length; i++){
+          var stringify = JSON.stringify(data.out[i], null, 4) 
+          formatted = formatted + "<pre>" + stringify + "</pre>";
+        }
+        $("#historics_output").html(formatted);
+      });
+      return false;
+    });
+    });
+</script>
+
+</head>
+<body>
+
+    <input type="button" id=historics_raw value="raw historicstable">
+    <input type="button" id=historics_delete value=delete>
+    <input type="button" id=historics_stop value=stop>
+    <input type="button" id=historics_pause value=pause>
+    <input type="button" id=historics_resume value=resume>
+    <div id=historics_output class="out">[output]</div>
+    <table id="historicstable" class="tablesorter">
+      <thead>
+        <tr>
+          <th class="tg-031e"></th>
+          <th class="tg-031e">ID</th>
+          <th class="tg-031e">Name</th>
+          <th class="tg-031e">Hash</th>
+          <th class="tg-031e">Created At</th>
+          <th class="tg-031e">Last Request</th>
+          <th class="tg-031e">Last Success</th>
+          <th class="tg-031e">Sample</th>
+          <th class="tg-031e">Start</th>
+          <th class="tg-031e">End</th>
+          <th class="tg-031e">Sources</th>
+          <th class="tg-031e">Progress</th>
+          <th class="tg-031e">Lost Data</th>
+          <th class="tg-031e">Output</th>
+          <th class="tg-031e">Count</th>
+          <th class="tg-031e">Status</th>
+        </tr>
+      </thead>
+      <tbody>
+    {% for entry in historics %}
+      {% set h = historics[entry]['historic'] %}
+      {% set subs = historics[entry]['subscriptions'] %}
+      {% for s in subs if subs|length > 0 %}
+      <!-- probably won't include historics without subs as is -->
+        <tr id="historics_row_{{s['id']}}">
+          <td class="tg-031e"><input type="checkbox" class="historics" name="{{s['id']}}"></td>
+          <td class="tg-031e"><div class="sub">{{s['id']}}</div><div class="hist">{{h['id']}}</div></td>
+          <td class="tg-031e"><div class="sub">{{s['name']}}</div><div class="hist">{{h['name']}}</div></td>
+          <td class="tg-031e"><div class="sub">&nbsp;</div><div class="hist">{{h['definition_id']}}</div></td>
+          <td class="tg-031e"><div class="sub">{{s['created_at']}}</div><div class="hist">{{h['created_at']}}</div></td>
+          <td class="tg-031e"><div class="sub">{{s['last_request']}}</div></td>
+          <td class="tg-031e"><div class="sub">{{s['last_success']}}</div></td>
+          <td class="tg-031e"><div class="sub">&nbsp;</div><div class="hist">{{h['sample']}}</div></td>
+          <td class="tg-031e"><div class="sub">&nbsp;</div><div class="hist">{{h['start']}}</div></td>
+          <td class="tg-031e"><div class="sub">&nbsp;</div><div class="hist">{{h['end']}}</div></td>
+          <td class="tg-031e"><div class="sub">&nbsp;</div><div class="hist">{{h['sources']}}</div></td>
+          <td class="tg-031e"><div class="sub">&nbsp;</div><div class="hist">{{h['progress']}}</div></td>
+          <td class="tg-031e"><div class="sub">{{s['lost_data']}}</div></td>
+          <td class="tg-031e"><div class="sub">{{s['output_type']}}</div></td>
+          <td class="tg-031e"><div class="sub">{{s['interaction_count']}}</div></td>
+          <td class="tg-031e" id="historics_status_{{s['id']}}"><div class="sub">{{s['status']}}</div><div class="hist">{{h['status']}}</div></td>
+        </tr>
+      {% endfor %}
+      {% else %}
+        <tr id="historics_row_{{h['id']}}">
+          <td class="tg-031e"><input type="checkbox" class="historics" name="{{h['id']}}"></td>
+          <td class="tg-031e"><div class="sub">&nbsp;</div><div class="hist">{{h['id']}}</div></td>
+          <td class="tg-031e"><div class="sub">&nbsp;</div><div class="hist">{{h['name']}}</div></td>
+          <td class="tg-031e"><div class="sub">&nbsp;</div><div class="hist">{{h['definition_id']}}</div></td>
+          <td class="tg-031e"><div class="sub">&nbsp;</div><div class="hist">{{h['created_at']}}</div></td>
+          <td class="tg-031e"></td>
+          <td class="tg-031e"></td>
+          <td class="tg-031e"><div class="hist">{{h['sample']}}</td>
+          <td class="tg-031e"><div class="hist">{{h['start']}}</td>
+          <td class="tg-031e"><div class="hist">{{h['end']}}</td>
+          <td class="tg-031e"><div class="hist">{{h['sources']}}</td>
+          <td class="tg-031e"><div class="hist">{{h['progress']}}</td>
+          <td class="tg-031e"></td>
+          <td class="tg-031e"></td>
+          <td class="tg-031e"></td>
+          <td class="tg-031e" id="historics_status_{{h['id']}}"><div class="sub">&nbsp;</div><div class="hist">{{h['status']}}</div></td>
+        </tr>
+    {% endfor %}
+      </tbody>
+    </table>
+</body>

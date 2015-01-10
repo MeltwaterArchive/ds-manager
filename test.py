@@ -181,6 +181,21 @@ def historics_get():
     historics_push = historic_push(session['historics'], session['push_historics'])
     return make_response(render_template('historics.html', historics=historics_push))
 
+@app.route('/historics_get_raw')
+def historics_get_raw():
+    raw = []
+    if 'push_historics' in session.keys() and 'historics' in session.keys():
+        for p in session['push_historics']:
+            for r in request.args:
+                if p['id'] == r:
+                    # find the historic matching this sub
+                    for h in session['historics']:
+                        if p['hash'] == h['id']:
+                            raw.append(h)
+                    raw.append(p)
+            #look it up and jsonify the stuff.
+    return jsonify(out=raw)
+
 '''
 MANAGED SOURCES
 '''

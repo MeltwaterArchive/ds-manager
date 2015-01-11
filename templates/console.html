@@ -177,6 +177,23 @@ background-color: navajowhite;
   text-shadow: 1px 1px 1px dimgrey;
 }
 
+.output_buttons{
+  margin-right: 8px;
+}
+
+.clear_output{
+  text-decoration: underline;
+  font-family: monospace;
+}
+
+.control_buttons{
+  margin-right: 8px;
+}
+
+.update_buttons{
+
+}
+
 .out {
   margin: 10px;
   padding: 10px;
@@ -373,52 +390,7 @@ background-color: navajowhite;
     <img src="static/ajax-loader.gif" alt="loading.." id="historics_load" class="load" style="display: none;">
   </div>
 
-  <div id="historicsget" style="display: none;">
-    <table class="tg">
-      <tr>
-        <th class="tg-031e">Historic ID</th>
-        <th class="tg-031e">Push ID</th>
-        <th class="tg-031e">Name</th>
-        <th class="tg-031e">Hash</th>
-        <th class="tg-031e">Created At</th>
-        <th class="tg-031e">Start</th>
-        <th class="tg-031e">End</th>
-        <th class="tg-031e">Status</th>
-        <th class="tg-031e">Count</th>
-        <th class="tg-031e">Delivery</th>
-      </tr>
-    {% for entry in historic %}
-    {% set h = historic[entry]['historic'] %}
-      <tr>
-        <th class="tg-031e">{{h['id']}}</th>
-        <th class="tg-031e"></th>
-        <th class="tg-031e">{{h['name']}}</th>
-        <th class="tg-031e">{{h['hash']}}</th>
-        <th class="tg-031e">{{h['created_at']}}</th>
-        <th class="tg-031e">{{h['start']}}</th>
-        <th class="tg-031e">{{h['end']}}</th>
-        <th class="tg-031e">{{h['status']}} <BR> {{h['progress']}}</th>
-        <th class="tg-031e">{{h['delivery_count']}}</th>
-        <th class="tg-031e"></th>
-      </tr>
-    {% set subs = historic[entry]['subscriptions'] %}
-    {% for s in subs %}
-      <tr>
-        <th class="tg-031e"></th>
-        <th class="tg-031e">{{s['id']}}</th>
-        <th class="tg-031e">{{s['name']}}</th>
-        <th class="tg-031e">{{s['hash']}}</th>
-        <th class="tg-031e">{{s['created_at']}}</th>
-        <th class="tg-031e">{{s['start']}}</th>
-        <th class="tg-031e"></th>
-        <th class="tg-031e">{{s['status']}}</th>
-        <th class="tg-031e">{{h['interaction_count']}}</th>
-        <th class="tg-031e"></th>
-      </tr>
-    {% endfor %}
-    {% endfor %}
-    </table>
-  </div>
+  <div id="historicsget" style="display: none;"></div>
 
 <!--  MANAGED SOURCES -->
   

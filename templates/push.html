@@ -13,6 +13,8 @@
 
     $('#pushtable').tablesorter();
 
+    var clear_output= "<div><span class='clear_output' onclick='document.getElementById(\"push_output\").innerHTML = \"\";'>clear output</span></div>";
+
         //push subscription actions
 
     $('input#push_raw').bind('click', function() {
@@ -24,6 +26,22 @@
           var stringify = JSON.stringify(data.out[i], null, 4) 
           formatted = formatted + "<pre>" + stringify + "</pre>";
         }
+        formatted = formatted + clear_output;
+        $("#push_output").html(formatted);
+      });
+      return false;
+    });
+
+    $('input#push_log').bind('click', function() {
+      $.getJSON($SCRIPT_ROOT + '/push_log',
+      $( ".push:checked"), 
+      function(data) {
+        var formatted = "";
+        for (i = 0; i < data.out.length; i++){
+          var stringify = JSON.stringify(data.out[i], null, 4) 
+          formatted = formatted + "<pre>" + stringify + "</pre>";
+        }
+        formatted = formatted + clear_output;
         $("#push_output").html(formatted);
       });
       return false;
@@ -75,64 +93,54 @@
       return false;
     });
 
-    $('input#push_log').bind('click', function() {
-      $.getJSON($SCRIPT_ROOT + '/push_log',
-      $( ".push:checked"), 
-      function(data) {
-        var formatted = "";
-        for (i = 0; i < data.out.length; i++){
-          var stringify = JSON.stringify(data.out[i], null, 4) 
-          formatted = formatted + "<pre>" + stringify + "</pre>";
-        }
-        $("#push_output").html(formatted);
-      });
-      return false;
-    });
-    });
+  });
 </script>
 
 </head>
 <body>
-
-    <input type="button" id=push_raw value="raw output">
-    <input type="button" id=push_delete value=delete>
-    <input type="button" id=push_stop value=stop>
-    <input type="button" id=push_pause value=pause>
-    <input type="button" id=push_resume value=resume>
-    <input type="button" id=push_log value=log>
-    <div id=push_output class="out">[output]</div>
-    <table id="pushtable" class="tablesorter">
-      <thead>
-        <tr>
-          <th class="tg-031e"></th>
-          <th class="tg-031e">Push ID</th>
-          <th class="tg-031e">Name</th>
-          <th class="tg-031e">Hash</th>
-          <th class="tg-031e">Last Request</th>
-          <th class="tg-031e">Last Success</th>
-          <th class="tg-031e">Created</th>
-          <th class="tg-031e">Lost Data</th>
-          <th class="tg-031e">Count</th>
-          <th class="tg-031e">Output</th>
-          <th class="tg-031e">Status</th>
-        </tr>
-      </thead>
-      <tbody>
-    {% for entry in push %}
-        <tr id="push_row_{{entry['id']}}">
-          <td class="tg-031e"><input type="checkbox" class="push" name="{{entry['id']}}"></td>
-          <td class="tg-031e">{{entry['id']}}</td>
-          <td class="tg-031e">{{entry['name']}}</td>
-          <td class="tg-031e">{{entry['hash']}}</td>
-          <td class="tg-031e">{{entry['last_request']}}</td>
-          <td class="tg-031e">{{entry['last_success']}}</td>
-          <td class="tg-031e">{{entry['start']}}</td>
-          <td class="tg-031e">{{entry['lost_data']}}</td>
-          <td class="tg-031e">{{entry['interaction_count']}}</td>
-          <td class="tg-031e">{{entry['output_type']}}</td>
-          <td class="tg-031e" id="push_status_{{entry['id']}}">{{entry['status']}}</td>
-        </tr>
-    {% endfor %}
-      </tbody>
-    </table>
+  <span class="output_buttons"> 
+    <input type="button" id="push_raw" value="raw output">
+    <input type="button" id="push_log" value=log>
+  </span>
+  <span class="control_buttons">
+    <input type="button" id="push_pause" value=pause>
+    <input type="button" id="push_resume" value=resume>
+    <input type="button" id="push_stop" value=stop>
+    <input type="button" id="push_delete" value=delete>
+  </span>
+  <div id=push_output class="out">[output]</div>
+  <table id="pushtable" class="tablesorter">
+    <thead>
+      <tr>
+        <th class="tg-031e"></th>
+        <th class="tg-031e">Push ID</th>
+        <th class="tg-031e">Name</th>
+        <th class="tg-031e">Hash</th>
+        <th class="tg-031e">Last Request</th>
+        <th class="tg-031e">Last Success</th>
+        <th class="tg-031e">Created</th>
+        <th class="tg-031e">Lost Data</th>
+        <th class="tg-031e">Count</th>
+        <th class="tg-031e">Output</th>
+        <th class="tg-031e">Status</th>
+      </tr>
+    </thead>
+    <tbody>
+  {% for entry in push %}
+      <tr id="push_row_{{entry['id']}}">
+        <td class="tg-031e"><input type="checkbox" class="push" name="{{entry['id']}}"></td>
+        <td class="tg-031e">{{entry['id']}}</td>
+        <td class="tg-031e">{{entry['name']}}</td>
+        <td class="tg-031e">{{entry['hash']}}</td>
+        <td class="tg-031e">{{entry['last_request']}}</td>
+        <td class="tg-031e">{{entry['last_success']}}</td>
+        <td class="tg-031e">{{entry['start']}}</td>
+        <td class="tg-031e">{{entry['lost_data']}}</td>
+        <td class="tg-031e">{{entry['interaction_count']}}</td>
+        <td class="tg-031e">{{entry['output_type']}}</td>
+        <td class="tg-031e" id="push_status_{{entry['id']}}">{{entry['status']}}</td>
+      </tr>
+  {% endfor %}
+    </tbody>
+  </table>
 </body>

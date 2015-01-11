@@ -13,6 +13,8 @@
 
     $('#sourcestable').tablesorter(); 
 
+    var clear_output= "<div><span class='clear_output' onclick='document.getElementById(\"source_output\").innerHTML = \"\";'>clear output</span></div>";
+
   //Managed Sources actions
 
     $('input#source_raw').bind('click', function() {
@@ -24,6 +26,22 @@
           var stringify = JSON.stringify(data.out[i], null, 4)
           formatted = formatted + "<pre>" + stringify + "</pre>";
         }
+        formatted = formatted + clear_output;
+        $("#source_output").html(formatted);
+      });
+      return false;
+    });
+
+    $('input#source_log').bind('click', function() {
+      $.getJSON($SCRIPT_ROOT + '/source_log',
+      $( ".source:checked"), 
+      function(data) {
+        var formatted = "";
+        for (i = 0; i < data.out.length; i++){
+          var stringify = JSON.stringify(data.out[i], null, 4)
+          formatted = formatted + "<pre>" + stringify + "</pre>";
+        }
+        formatted = formatted + clear_output;
         $("#source_output").html(formatted);
       });
       return false;
@@ -66,19 +84,7 @@
       return false;
     });
 
-    $('input#source_log').bind('click', function() {
-      $.getJSON($SCRIPT_ROOT + '/source_log',
-      $( ".source:checked"), 
-      function(data) {
-        var formatted = "";
-        for (i = 0; i < data.out.length; i++){
-          var stringify = JSON.stringify(data.out[i], null, 4)
-          formatted = formatted + "<pre>" + stringify + "</pre>";
-        }
-        $("#source_output").html(formatted);
-      });
-      return false;
-    });
+    //load new tokens to Managed Sources
 
     $('input#source_token').bind('click', function() {
       var formatted = ""
@@ -113,30 +119,39 @@
 
 </head>
 <body>
-
+  <span class="output_buttons"> 
     <input type="button" id=source_raw value="raw output">
-    <input type="button" id=source_delete value=delete>
-    <input type="button" id=source_start value=start>
-    <input type="button" id=source_stop value=stop>
-    <input type="button" id=source_log value=log>
+    <input type="button" id="source_log" value=log>
+  </span>
+  <span class="control_buttons"> 
+    <input type="button" id="source_start" value=start>
+    <input type="button" id="source_stop" value=stop>
+    <input type="button" id="source_delete" value=delete>
+  </span>
+  <span class="update_buttons">
     <input type="button" id=source_token value="add token">
-    <div id=source_output class="out">[output] </div>
-    <table id="sourcestable" class="tablesorter">
-      <thead>
-        <tr>
-          <th class="tg-031e"></th>
-          <th class="tg-031e">Source Type</th>
-          <th class="tg-031e">Name</th>
-          <th class="tg-031e">ID</th>
-          <th class="tg-031e">Resources</th>
-          <th class="tg-031e">Parameters</th>
-          <th class="tg-031e">Auth</th>
-          <th class="tg-031e">Created At (UTC)</th>
-          <th class="tg-031e">Status</th>
-        </tr>  
-      </thead>
-      <tbody>
-    {% for entry in source %}
+  </span>
+
+  <div id=source_output class="out">
+    [output] 
+  </div>
+
+  <table id="sourcestable" class="tablesorter">
+    <thead>
+      <tr>
+        <th class="tg-031e"></th>
+        <th class="tg-031e">Source Type</th>
+        <th class="tg-031e">Name</th>
+        <th class="tg-031e">ID</th>
+        <th class="tg-031e">Resources</th>
+        <th class="tg-031e">Parameters</th>
+        <th class="tg-031e">Auth</th>
+        <th class="tg-031e">Created At (UTC)</th>
+        <th class="tg-031e">Status</th>
+      </tr>  
+    </thead>
+    <tbody>
+  {% for entry in source %}
       <tr id="source_row_{{entry['id']}}">
         <td class="tg-031e"><input type="checkbox" class="source" name="{{entry['id']}}"></td>
         <td class="tg-031e">{{entry['source_type']}}</td>
@@ -144,40 +159,40 @@
         <td class="tg-031e">{{entry['id']}}</td>
         <td class="tg-031e">
           <ul>
-    {% for r in entry['resources'] %}
+  {% for r in entry['resources'] %}
             <li>
               {{r['resource_id']}}
               <ul>
-    {% for p in r['parameters'] %}
+  {% for p in r['parameters'] %}
                 <li>{{p}}:{{r['parameters'][p]}}</li>
-    {% endfor %}
+  {% endfor %}
               </ul>
             </li>
-    {% endfor %}
+  {% endfor %}
           </ul>
         </td>
         <td class="tg-031e">
           <ul>
-    {% for p in entry['parameters'] %}
+  {% for p in entry['parameters'] %}
           <li>{{p}}: {{entry['parameters'][p]}}</li> 
-    {% endfor %}
+  {% endfor %}
           </ul>
         </td>
         <td class="tg-031e">
           <ul>
-    {% for a in entry['auth'] %}
+  {% for a in entry['auth'] %}
             <li>id: {{a['identity_id']}}
-    {% for k in a['parameters'] %}
+  {% for k in a['parameters'] %}
               <ul><li>{{k}}: {{a['parameters'][k]}}</li></ul>
-    {% endfor %}
+  {% endfor %}
             </li>
-    {% endfor %}
+  {% endfor %}
           </ul>
         </td>
         <td class="tg-031e">{{entry['created_at']}}</td>
         <td class="tg-031e" id="status_{{entry['id']}}">{{entry['status']}}</td>
       </tr>
-    {% endfor %}
+  {% endfor %}
     </tbody>
-    </table>
+  </table>
 </body>

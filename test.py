@@ -150,12 +150,15 @@ def push_pause():
 @app.route('/push_resume')
 def push_resume():
     client = Client(session['username'],session['apikey'])
-    try:
-        for r in request.args:
+    success = []
+    fail = []
+    for r in request.args:
+        try:
             client.push.resume(r)
-        return jsonify(out="Success")
-    except:
-        return jsonify(out="Issues resuming")
+            success.append(r)
+        except:
+            fail.append(r)
+    return jsonify(success=success,fail=fail)
 
 @app.route('/push_log')
 def push_log():

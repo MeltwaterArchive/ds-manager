@@ -47,7 +47,7 @@
       return false;
     });
 
-    $('input#historics_delete').bind('click', function() {
+    $('input#historics_push_delete').bind('click', function() {
       $.getJSON($SCRIPT_ROOT + '/push_delete',
       $( ".historics:checked"), 
       function(data) {
@@ -60,35 +60,38 @@
       return false;
     });
 
-    $('input#historics_stop').bind('click', function() {
+    $('input#historics_push_stop').bind('click', function() {
       $.getJSON($SCRIPT_ROOT + '/push_stop',
       $( ".historics:checked"), 
       function(data) {
         $("#historics_output").text("Stopped: " + data.success + "\nNot stopped: " + data.fail);
         $.each(data.success, function( index, id ){
-          $("#historics_status_"+id).text("stopped")
+          $(".sub", "#historics_status_"+id).text("stopped")
         });
       });
       return false;
     });
 
-    $('input#historics_pause').bind('click', function() {
+    $('input#historics_push_pause').bind('click', function() {
       $.getJSON($SCRIPT_ROOT + '/push_pause',
       $( ".historics:checked"), 
       function(data) {
         $("#historics_output").text("Paused: " + data.success + "\nNot paused: " + data.fail);
         $.each(data.success, function( index, id ){
-          $("#historics_status_"+id).text("paused")
+          $(".sub", "#historics_status_"+id).text("paused")
         });
       });
       return false;
     });
 
-    $('input#historics_resume').bind('click', function() {
+    $('input#historics_push_resume').bind('click', function() {
       $.getJSON($SCRIPT_ROOT + '/push_resume',
       $( ".historics:checked"), 
       function(data) {
-        $("#historics_output").text(data.out);
+        $("#historics_output").text("Resumed: " + data.success + "\nNot resumed: " + data.fail);
+        $.each(data.success, function( index, id ){
+          $(".sub", "#historics_status_"+id).text("active")
+        });
       });
       return false;
     });
@@ -114,10 +117,10 @@
     <input type="button" id="historics_log" value="log">
   </span>
   <span class="control_buttons">
-    <input type="button" id="historics_pause" value=pause>
-    <input type="button" id="historics_resume" value=resume>
-    <input type="button" id="historics_stop" value=stop>
-    <input type="button" id="historics_delete" value=delete>
+    <input type="button" id="historics_push_pause" value="p pause">
+    <input type="button" id="historics_push_resume" value="p resume">
+    <input type="button" id="historics_push_stop" value="p stop">
+    <input type="button" id="historics_push_delete" value="p delete">
   </span>
   <span class="update_buttons">
     <input type="button" id="historics_refresh" class=refresh title="reload" value=" ">

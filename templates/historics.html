@@ -93,6 +93,16 @@
       return false;
     });
 
+    $('#historics_refresh').bind('click', function() {
+      $('#historicsget').css('display') == 'none';
+      $('#historicsget').slideToggle("fast");
+      // loading gif
+      $('#historics_load').css('display', 'block');
+      $.get($SCRIPT_ROOT + '/historics_get', 'reload=1', function(data){
+        $('#historicsget').html(data).slideToggle("fast");
+          $('#historics_load').css('display', 'none');
+      });
+    });
 
   });
 </script>
@@ -108,6 +118,9 @@
     <input type="button" id="historics_resume" value=resume>
     <input type="button" id="historics_stop" value=stop>
     <input type="button" id="historics_delete" value=delete>
+  </span>
+  <span class="update_buttons">
+    <input type="button" id="historics_refresh" class=refresh title="reload" value=" ">
   </span>
 
   <div id=historics_output class="out">

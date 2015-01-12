@@ -87,7 +87,7 @@ PUSH
 @app.route('/push_get', methods=['POST', 'GET'])
 def push_get():
     # do push/get request only when asked
-    if not 'push' in session.keys():
+    if not 'push' in session.keys() or 'reload' in request.args:
         push_get = push_get_all()
         session['push'] = [p for p in push_get if type(p) is dict and 'hash_type' in p.keys() and p['hash_type'] != "historic"]
         # avoid another push/get if we've already loaded live steams
@@ -173,9 +173,9 @@ HISTORICS
 @app.route('/historics_get', methods=['POST', 'GET'])
 def historics_get():
     # do push/get request only when asked
-    if not 'historics' in session.keys():
+    if not 'historics' in session.keys() or 'reload' in request.args:
         session['historics'] = historic_get_all()
-    if not 'push_historics' in session.keys():
+    if not 'push_historics' in session.keys() or 'reload' in request.args:
         push_get = push_get_all()
         session['push_historics'] = [p for p in push_get if type(p) is dict and 'hash_type' in p.keys() and p['hash_type'] == "historic"]
     historics_push = historic_push(session['historics'], session['push_historics'])
@@ -203,7 +203,7 @@ MANAGED SOURCES
 @app.route('/source_get', methods=['POST', 'GET'])
 def source_get():
     # do push/get request only when asked
-    if not 'source' in session.keys():
+    if not 'source' in session.keys() or 'reload' in request.args:
         session['source'] = source_get_all()
     return make_response(render_template('sources.html', source=session['source']))
 

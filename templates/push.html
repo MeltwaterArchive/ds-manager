@@ -93,6 +93,18 @@
       return false;
     });
 
+    $('#push_refresh').bind('click', function() {
+      //only get data if we're opening 
+      $('#pushget').css('display') == 'none';
+      $('#pushget').slideToggle("fast");
+      // loading gif
+      $('#push_load').css('display', 'block');
+      $.get($SCRIPT_ROOT + '/push_get', 'reload=1', function(data){
+        $('#pushget').html(data).slideToggle("fast");
+        $('#push_load').css('display', 'none');
+      });
+    });
+
   });
 </script>
 
@@ -108,6 +120,10 @@
     <input type="button" id="push_stop" value=stop>
     <input type="button" id="push_delete" value=delete>
   </span>
+  <span class="update_buttons">
+    <input type="button" id="push_refresh" class=refresh title="reload" value=" ">
+  </span>
+
   <div id=push_output class="out">[output]</div>
   <table id="pushtable" class="tablesorter">
     <thead>

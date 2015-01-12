@@ -114,6 +114,17 @@
       });
       return false;
     });
+
+    $('#source_refresh').bind('click', function() {
+      $('#sourceget').css('display') == 'none';
+      $('#sourceget').slideToggle("fast");
+      // loading gif
+      $('#sources_load').css('display', 'block');
+      $.get($SCRIPT_ROOT + '/source_get', 'reload=1', function(data){
+        $('#sourceget').html(data).slideToggle("fast");
+        $('#sources_load').css('display', 'none');
+      });
+    });
   });
 </script>
 
@@ -127,9 +138,10 @@
     <input type="button" id="source_start" value=start>
     <input type="button" id="source_stop" value=stop>
     <input type="button" id="source_delete" value=delete>
+    <input type="button" id="source_token" value="add token">
   </span>
   <span class="update_buttons">
-    <input type="button" id=source_token value="add token">
+    <input type="button" id="source_refresh" class=refresh title="reload" value=" ">
   </span>
 
   <div id=source_output class="out">

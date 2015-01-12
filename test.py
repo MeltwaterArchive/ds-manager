@@ -37,6 +37,7 @@ def log_the_user_in():
     if request.method == 'POST':
         client = valid_login(request.form['username'], request.form['apikey'])
         if client:
+            #clear old session data 
             pop_session()
             session['username'] = request.form['username']
             session['apikey'] = request.form['apikey']
@@ -88,11 +89,12 @@ PUSH
 def push_get():
     # do push/get request only when asked
     if not 'push' in session.keys() or 'reload' in request.args:
+        session['reload_time'] = datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S +0000")
         push_get = push_get_all()
         session['push'] = [p for p in push_get if type(p) is dict and 'hash_type' in p.keys() and p['hash_type'] != "historic"]
         # avoid another push/get if we've already loaded live steams
         session['push_historics'] = [p for p in push_get if type(p) is dict and 'hash_type' in p.keys() and p['hash_type'] == "historic"]
-    return make_response(render_template('push.html', push=session['push']))
+    return make_response(render_template('push.html', push=session['push'], reload_time=session['reload_time']))
 
 @app.route('/push_get_raw')
 def push_get_raw():
@@ -174,12 +176,13 @@ HISTORICS
 def historics_get():
     # do push/get request only when asked
     if not 'historics' in session.keys() or 'reload' in request.args:
+        session['reload_time'] = datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S +0000")
         session['historics'] = historic_get_all()
     if not 'push_historics' in session.keys() or 'reload' in request.args:
         push_get = push_get_all()
         session['push_historics'] = [p for p in push_get if type(p) is dict and 'hash_type' in p.keys() and p['hash_type'] == "historic"]
     historics_push = historic_push(session['historics'], session['push_historics'])
-    return make_response(render_template('historics.html', historics=historics_push))
+    return make_response(render_template('historics.html', historics=historics_push, reload_time=session['reload_time']))
 
 @app.route('/historics_get_raw')
 def historics_get_raw():
@@ -205,7 +208,8 @@ def source_get():
     # do push/get request only when asked
     if not 'source' in session.keys() or 'reload' in request.args:
         session['source'] = source_get_all()
-    return make_response(render_template('sources.html', source=session['source']))
+        session['reload_time'] = datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S +0000")
+    return make_response(render_template('sources.html', source=session['source'], reload_time=session['reload_time']))
 
 @app.route('/source_get_raw')
 def source_get_raw():

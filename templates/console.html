@@ -233,13 +233,13 @@ background-color: navajowhite;
 }
 
 </style>
-<link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='themes/orange/style.css') }}">
+<link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='tablesorter/themes/orange/style.css') }}">
 
 <script src="//ajax.googleapis.com/ajax/libs/jquery/1.9.1/jquery.min.js"></script>
 <script>window.jQuery || document.write('<script src="{{
   url_for('static', filename='jquery.js') }}">\x3C/script>')</script>
 <script type="text/javascript" src="{{
-  url_for('static', filename='jquery.tablesorter.js') }}"></script>
+  url_for('static', filename='tablesorter/jquery.tablesorter.js') }}"></script>
 <script type=text/javascript>
   $SCRIPT_ROOT = {{ request.script_root|tojson|safe }};
 

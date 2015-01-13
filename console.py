@@ -2,11 +2,15 @@ from flask import Flask, render_template,request,session,redirect,url_for,jsonif
 from datasift import Client
 from datasift.push import Push
 from datasift.request import PartialRequest, DatasiftAuth
-from pprint import pformat
+from flask_kvsession import KVSessionExtension
+from simplekv.fs import FilesystemStore
 import datetime
-import json
 
 app = Flask(__name__)
+
+# use local filesystem for session storage instead of default client sessions
+store = FilesystemStore("./data")
+KVSessionExtension(store, app)
 
 @app.route('/')
 def index():
@@ -48,18 +52,11 @@ def log_the_user_in():
         if 'username' in session.keys():
             name=session['username']
 
-    '''
-    # separate 'live streams' from historics and their push subscriptions
-    session['push'] = [p for p in push_get if type(p) is dict and 'hash_type' in p.keys() and p['hash_type'] != "historic"]
-    hp = historic_push(historic_get,push_get)
-    '''
-    hp = []
     return render_template(
         'console.html',
         error=error,
         name=name,
-        acct=account_all(),
-        historic=hp)
+        acct=account_all())
 
 
 @app.route('/logout')
@@ -89,7 +86,7 @@ PUSH
 def push_get():
     # do push/get request only when asked
     if not 'push' in session.keys() or 'reload' in request.args:
-        session['reload_time'] = datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S +0000")
+        session['reload_time'] = datetime.datetime.utcnow().strftime("%Y-%m-%d %H:%M:%S +0000")
         push_get = push_get_all()
         session['push'] = [p for p in push_get if type(p) is dict and 'hash_type' in p.keys() and p['hash_type'] != "historic"]
         # avoid another push/get if we've already loaded live steams
@@ -104,7 +101,6 @@ def push_get_raw():
             for r in request.args:
                 if p['id'] == r:
                     raw.append(p)
-            #look it up and jsonify the stuff.
     return jsonify(out=raw)
 
 
@@ -179,7 +175,7 @@ HISTORICS
 def historics_get():
     # do push/get request only when asked
     if not 'historics' in session.keys() or 'reload' in request.args:
-        session['reload_time'] = datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S +0000")
+        session['reload_time'] = datetime.datetime.utcnow().strftime("%Y-%m-%d %H:%M:%S +0000")
         session['historics'] = historic_get_all()
     if not 'push_historics' in session.keys() or 'reload' in request.args:
         push_get = push_get_all()
@@ -199,7 +195,6 @@ def historics_get_raw():
                         if p['hash'] == h['id']:
                             raw.append(h)
                     raw.append(p)
-            #look it up and jsonify the stuff.
     return jsonify(out=raw)
 
 '''
@@ -211,7 +206,7 @@ def source_get():
     # do push/get request only when asked
     if not 'source' in session.keys() or 'reload' in request.args:
         session['source'] = source_get_all()
-        session['reload_time'] = datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S +0000")
+        session['reload_time'] = datetime.datetime.utcnow().strftime("%Y-%m-%d %H:%M:%S +0000")
     return make_response(render_template('sources.html', source=session['source'], reload_time=session['reload_time']))
 
 @app.route('/source_get_raw')

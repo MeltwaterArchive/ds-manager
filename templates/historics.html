@@ -159,8 +159,8 @@
     <input type="button" id="historics_push_stop" value="p stop">
     <input type="button" id="historics_push_delete" value="p delete">
     <input type="button" id="historics_pause" value="h pause">
-    <input type="button" id="historics_resume" value="p resume">
-    <input type="button" id="historics_delete" value="p delete">
+    <input type="button" id="historics_resume" value="h resume">
+    <input type="button" id="historics_delete" value="h delete">
   </span>
   <span class="update_buttons">
     <input type="button" id="historics_refresh" class=refresh title="reload" value=" ">
@@ -213,7 +213,7 @@
         <td class="tg-031e"><div class="sub">&nbsp;</div><div class="hist">{{h['progress']}}</div></td>
         <td class="tg-031e"><div class="sub">{{s['lost_data']}}</div></td>
         <td class="tg-031e"><div class="sub">{{s['output_type']}}</div></td>
-        <td class="tg-031e"><div class="sub">{{s['interaction_count']}}</div></td>
+        <td class="tg-031e"><div class="sub">{{s['interaction_count']}}</div><div class="hist">{{h['delivery_count']}}</div></td>
         <td class="tg-031e" id="historics_status_{{s['id']}}"><div class="sub">{{s['status']}}</div><div class="hist">{{h['status']}}</div></td>
       </tr>
     {% else %}
@@ -232,7 +232,7 @@
         <td class="tg-031e"><div class="sub">&nbsp;</div><div class="hist">{{h['progress']}}</td>
         <td class="tg-031e"></td>
         <td class="tg-031e"></td>
-        <td class="tg-031e"></td>
+        <td class="tg-031e"><div class="sub">&nbsp;</div><div class="hist">{{h['delivery_count']}}</div></td>
         <td class="tg-031e" id="historics_status_{{h['id']}}"><div class="sub">&nbsp;</div><div class="hist">{{h['status']}}</div></td>
       </tr>
     <!-- still need to cover case where there's a sub but no historic.. --> 

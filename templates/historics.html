@@ -96,6 +96,43 @@
       return false;
     });
 
+    $('input#historics_pause').bind('click', function() {
+      $.getJSON($SCRIPT_ROOT + '/historics_pause',
+      $( ".historics:checked"), 
+      function(data) {
+        $("#historics_output").text("Paused: " + data.success + "\nNot paused: " + data.fail);
+        $.each(data.success, function( index, id ){
+          $(".hist", "#historics_status_"+id).text("paused")
+        });
+      });
+      return false;
+    });
+
+    $('input#historics_resume').bind('click', function() {
+      $.getJSON($SCRIPT_ROOT + '/historics_resume',
+      $( ".historics:checked"), 
+      function(data) {
+        $("#historics_output").text("Resumed: " + data.success + "\nNot resumed: " + data.fail);
+        $.each(data.success, function( index, id ){
+          $(".hist", "#historics_status_"+id).text("active")
+        });
+      });
+      return false;
+    });
+
+    $('input#historics_delete').bind('click', function() {
+      $.getJSON($SCRIPT_ROOT + '/historics_delete',
+      $( ".historics:checked"), 
+      function(data) {
+        $("#historics_output").text(
+          "Deleted: " + data.success + "\nNot deleted: " + data.fail);
+        $.each(data.success, function( index, id ){
+          $("#historics_row_"+id).remove()
+        });
+      });
+      return false;
+    });
+
     $('#historics_refresh').bind('click', function() {
       $('#historicsget').css('display') == 'none';
       $('#historicsget').slideToggle("fast");
@@ -121,6 +158,9 @@
     <input type="button" id="historics_push_resume" value="p resume">
     <input type="button" id="historics_push_stop" value="p stop">
     <input type="button" id="historics_push_delete" value="p delete">
+    <input type="button" id="historics_pause" value="h pause">
+    <input type="button" id="historics_resume" value="p resume">
+    <input type="button" id="historics_delete" value="p delete">
   </span>
   <span class="update_buttons">
     <input type="button" id="historics_refresh" class=refresh title="reload" value=" ">
@@ -176,7 +216,6 @@
         <td class="tg-031e"><div class="sub">{{s['interaction_count']}}</div></td>
         <td class="tg-031e" id="historics_status_{{s['id']}}"><div class="sub">{{s['status']}}</div><div class="hist">{{h['status']}}</div></td>
       </tr>
-    {% endfor %}
     {% else %}
       <tr id="historics_row_{{h['id']}}">
         <td class="tg-031e"><input type="checkbox" class="historics" name="{{h['id']}}"></td>
@@ -186,16 +225,18 @@
         <td class="tg-031e"><div class="sub">&nbsp;</div><div class="hist">{{h['created_at']}}</div></td>
         <td class="tg-031e"></td>
         <td class="tg-031e"></td>
-        <td class="tg-031e"><div class="hist">{{h['sample']}}</td>
-        <td class="tg-031e"><div class="hist">{{h['start']}}</td>
-        <td class="tg-031e"><div class="hist">{{h['end']}}</td>
-        <td class="tg-031e"><div class="hist">{{h['sources']}}</td>
-        <td class="tg-031e"><div class="hist">{{h['progress']}}</td>
+        <td class="tg-031e"><div class="sub">&nbsp;</div><div class="hist">{{h['sample']}}</td>
+        <td class="tg-031e"><div class="sub">&nbsp;</div><div class="hist">{{h['start']}}</td>
+        <td class="tg-031e"><div class="sub">&nbsp;</div><div class="hist">{{h['end']}}</td>
+        <td class="tg-031e"><div class="sub">&nbsp;</div><div class="hist">{{h['sources']}}</td>
+        <td class="tg-031e"><div class="sub">&nbsp;</div><div class="hist">{{h['progress']}}</td>
         <td class="tg-031e"></td>
         <td class="tg-031e"></td>
         <td class="tg-031e"></td>
         <td class="tg-031e" id="historics_status_{{h['id']}}"><div class="sub">&nbsp;</div><div class="hist">{{h['status']}}</div></td>
       </tr>
+    <!-- still need to cover case where there's a sub but no historic.. --> 
+  {% endfor %}
   {% endfor %}
     </tbody>
   </table>

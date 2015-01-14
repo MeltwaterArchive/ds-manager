@@ -197,6 +197,45 @@ def historics_get_raw():
                     raw.append(p)
     return jsonify(out=raw)
 
+@app.route('/historics_pause')
+def historics_pause():
+    client = Client(session['username'],session['apikey'])
+    success = []
+    fail = []
+    for r in request.args:
+        try:
+            client.historics.pause(r)
+            success.append(r)
+        except:
+            fail.append(r)
+    return jsonify(success=success,fail=fail)
+
+@app.route('/historics_resume')
+def historics_resume():
+    client = Client(session['username'],session['apikey'])
+    success = []
+    fail = []
+    for r in request.args:
+        try:
+            client.historics.resume(r)
+            success.append(r)
+        except:
+            fail.append(r)
+    return jsonify(success=success,fail=fail)
+
+@app.route('/historics_delete')
+def historics_delete():
+    client = Client(session['username'],session['apikey'])
+    success = []
+    fail = []
+    for r in request.args:
+        try:
+            client.historics.delete(r)
+            success.append(r)
+        except:
+            fail.append(r)
+    return jsonify(success=success,fail=fail)
+
 '''
 MANAGED SOURCES
 '''
@@ -305,13 +344,33 @@ def pop_session():
 def historic_push(historic_get,push_get):
     ''' get dictionary of historics with list of push subscription dicts  '''
     hp = {}
+
+    '''
     for h in historic_get:
+        print historic_get
         if type(h) is dict:
             hp[h['id']]={'historic':h}
             hp[h['id']]['subscriptions'] = []
             for p in push_get:
                 if h['id'] == p['hash']:
                     hp[h['id']]['subscriptions'].append(p)
+    '''
+    for p in push_get:
+        if type(p) is dict:
+            print p['hash']
+            #case of multiple subscriptions for 1 historic
+            if p['hash'] in hp:
+                hp[h['id']]['subscriptions'].append(p)
+            else:
+                for h in historic_get:
+                    if p['hash'] == h['id']:
+                        print h['id']
+                        hp[h['id']]={'historic': h, 'subscriptions':[]}
+                        hp[h['id']]['subscriptions'].append(p)
+    for h in historic_get:
+        hid = h['id']
+        if not hid in hp:
+            hp[hid]={'historic':h}
     return hp
 
 

@@ -186,6 +186,7 @@ def historics_get():
 @app.route('/historics_get_raw')
 def historics_get_raw():
     raw = []
+    already_added_h = []
     if 'push_historics' in session.keys() and 'historics' in session.keys():
         for p in session['push_historics']:
             for r in request.args:
@@ -194,7 +195,15 @@ def historics_get_raw():
                     for h in session['historics']:
                         if p['hash'] == h['id']:
                             raw.append(h)
+                            already_added_h = h['id']
                     raw.append(p)
+        # historic only - no subscription
+        for r in request.args:
+            if not r in already_added_h:
+                for h in session['historics']:
+                    if r == h['id']:
+                        raw.append(h)
+
     return jsonify(out=raw)
 
 @app.route('/historics_pause')
@@ -345,26 +354,14 @@ def historic_push(historic_get,push_get):
     ''' get dictionary of historics with list of push subscription dicts  '''
     hp = {}
 
-    '''
-    for h in historic_get:
-        print historic_get
-        if type(h) is dict:
-            hp[h['id']]={'historic':h}
-            hp[h['id']]['subscriptions'] = []
-            for p in push_get:
-                if h['id'] == p['hash']:
-                    hp[h['id']]['subscriptions'].append(p)
-    '''
     for p in push_get:
         if type(p) is dict:
-            print p['hash']
             #case of multiple subscriptions for 1 historic
             if p['hash'] in hp:
                 hp[h['id']]['subscriptions'].append(p)
             else:
                 for h in historic_get:
                     if p['hash'] == h['id']:
-                        print h['id']
                         hp[h['id']]={'historic': h, 'subscriptions':[]}
                         hp[h['id']]['subscriptions'].append(p)
     for h in historic_get:

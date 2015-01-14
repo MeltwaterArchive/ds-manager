@@ -209,7 +209,13 @@
         <td class="tg-031e"><div class="sub">&nbsp;</div><div class="hist">{{h['sample']}}</div></td>
         <td class="tg-031e"><div class="sub">&nbsp;</div><div class="hist">{{h['start']}}</div></td>
         <td class="tg-031e"><div class="sub">&nbsp;</div><div class="hist">{{h['end']}}</div></td>
-        <td class="tg-031e"><div class="sub">&nbsp;</div><div class="hist">{{h['sources']}}</div></td>
+        <td class="tg-031e"><div class="sub">&nbsp;</div>
+          <div class="hist">
+            {% for c in h['sources'] %}
+              {{ c }} &nbsp;
+            {% endfor %}
+          </div>
+        </td>
         <td class="tg-031e"><div class="sub">&nbsp;</div><div class="hist">{{h['progress']}}</div></td>
         <td class="tg-031e"><div class="sub">{{s['lost_data']}}</div></td>
         <td class="tg-031e"><div class="sub">{{s['output_type']}}</div></td>
@@ -232,7 +238,14 @@
         <td class="tg-031e"><div class="sub">&nbsp;</div><div class="hist">{{h['progress']}}</td>
         <td class="tg-031e"></td>
         <td class="tg-031e"></td>
-        <td class="tg-031e"><div class="sub">&nbsp;</div><div class="hist">{{h['delivery_count']}}</div></td>
+        <td class="tg-031e">
+          <div class="sub">&nbsp;</div>
+          <div class="hist">
+            {% for c in h['sources'] %}
+              {{ c }} &nbsp;
+            {% endfor %}
+          </div>
+        </td>
         <td class="tg-031e" id="historics_status_{{h['id']}}"><div class="sub">&nbsp;</div><div class="hist">{{h['status']}}</div></td>
       </tr>
     <!-- still need to cover case where there's a sub but no historic.. --> 

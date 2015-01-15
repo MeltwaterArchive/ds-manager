@@ -158,7 +158,7 @@
         <th class="tg-031e">ID</th>
         <th class="tg-031e">Resources</th>
         <th class="tg-031e">Parameters</th>
-        <th class="tg-031e">Auth</th>
+        <th class="sourcesauth">Auth</th>
         <th class="tg-031e">Created At (UTC)</th>
         <th class="tg-031e">Status</th>
       </tr>  
@@ -191,7 +191,7 @@
   {% endfor %}
           </ul>
         </td>
-        <td class="tg-031e">
+        <td class="sourcesauth">
           <ul>
   {% for a in entry['auth'] %}
             <li>id: {{a['identity_id']}}

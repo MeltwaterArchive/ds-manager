@@ -159,13 +159,14 @@ def push_resume():
 @app.route('/push_log')
 def push_log():
     client = Client(session['username'],session['apikey'])
-    try:
-        out = []
-        for r in request.args:
+    out = []
+    for r in request.args:
+        try:
             out.append(client.push.log(subscription_id=r))
-        return jsonify(out=out)
-    except:
-        return jsonify(out="Issues getting log")
+        except:
+            # historics..
+            out.append("")
+    return jsonify(out=out)
 
 '''
 HISTORICS 

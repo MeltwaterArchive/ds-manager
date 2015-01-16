@@ -48,27 +48,41 @@
     });
 
     $('input#historics_push_delete').bind('click', function() {
-      $.getJSON($SCRIPT_ROOT + '/push_delete',
-      $( ".historics:checked"), 
-      function(data) {
-        $("#historics_output").text(
-          "Deleted: " + data.success + "\nNot deleted: " + data.fail);
-        $.each(data.success, function( index, id ){
-          $("#historics_row_"+id).remove()
-        });
+      var subs = "";
+      $( ".historics:checked").each(function(){
+        subs = subs + "\n" + $( this ).attr('name');
       });
+      var confirm_delete = confirm("Are you sure you want to delete subscriptions:\n " + subs);
+      if (confirm_delete == true){
+        $.getJSON($SCRIPT_ROOT + '/push_delete',
+        $( ".historics:checked"), 
+        function(data) {
+          $("#historics_output").text(
+            "Deleted: " + data.success + "\nNot deleted: " + data.fail);
+          $.each(data.success, function( index, id ){
+            $("#historics_row_"+id).remove()
+          });
+        });
+      }
       return false;
     });
 
     $('input#historics_push_stop').bind('click', function() {
-      $.getJSON($SCRIPT_ROOT + '/push_stop',
-      $( ".historics:checked"), 
-      function(data) {
-        $("#historics_output").text("Stopped: " + data.success + "\nNot stopped: " + data.fail);
-        $.each(data.success, function( index, id ){
-          $(".sub", "#historics_status_"+id).text("stopped")
-        });
+      var subs = "";
+      $( ".historics:checked").each(function(){
+        subs = subs + "\n" + $( this ).attr('name');
       });
+      var confirm_delete = confirm("Are you sure you want to stop subscriptions:\n " + subs);
+      if (confirm_delete == true){
+        $.getJSON($SCRIPT_ROOT + '/push_stop',
+        $( ".historics:checked"), 
+        function(data) {
+          $("#historics_output").text("Stopped: " + data.success + "\nNot stopped: " + data.fail);
+          $.each(data.success, function( index, id ){
+            $(".sub", "#historics_status_"+id).text("stopped")
+          });
+        });
+      }
       return false;
     });
 
@@ -121,15 +135,22 @@
     });
 
     $('input#historics_delete').bind('click', function() {
-      $.getJSON($SCRIPT_ROOT + '/historics_delete',
-      $( ".historics:checked"), 
-      function(data) {
-        $("#historics_output").text(
-          "Deleted: " + data.success + "\nNot deleted: " + data.fail);
-        $.each(data.success, function( index, id ){
-          $("#historics_row_"+id).remove()
-        });
+      var hists = "";
+      $( ".historics:checked").each(function(){
+        hists = hists + "\n" + $( this ).attr('name');
       });
+      var confirm_delete = confirm("Are you sure you want to delete historics:\n " + hists);
+      if (confirm_delete == true){
+        $.getJSON($SCRIPT_ROOT + '/historics_delete',
+        $( ".historics:checked"), 
+        function(data) {
+          $("#historics_output").text(
+            "Deleted: " + data.success + "\nNot deleted: " + data.fail);
+          $.each(data.success, function( index, id ){
+            $("#historics_row_"+id).remove()
+          });
+        });
+      }
       return false;
     });
 

@@ -358,7 +358,7 @@ def historic_push(historic_get,push_get):
     for p in push_get:
         if type(p) is dict:
             #case of multiple subscriptions for 1 historic
-            if p['hash'] in hp:
+            if p['hash'] in hp and 'subscriptions' in hp[p['hash']]:
                 hp[h['id']]['subscriptions'].append(p)
             else:
                 for h in historic_get:

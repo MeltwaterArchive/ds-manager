@@ -140,13 +140,15 @@ background-color: navajowhite;
 }
 
 #introtext {
-  background-color: dimgrey;
-  color:navajowhite;
-  padding: 10px;
-  margin-right: 460px;
-  border: 2px solid;
-  border-radius: 4px;
-  border-color: navajowhite;
+background-color: navajowhite;
+color: dimgrey;
+padding: 10px;
+width: 800px;
+margin-right: auto;
+border: 2px solid;
+border-radius: 4px;
+border-color: dimgrey;
+margin-left: auto;
 }
 
 .loginfield {
@@ -423,12 +425,11 @@ background-color: navajowhite;
   {% else %}
   <!-- no login message -->
   <div id="introtext">
-    <p>Welcome to the DataSift Console.</p>
-    <p>Login with your account's user name and api key to get a comprehensive account summary. This includes usage, Live Streams, Historic Streams, and Managed Sources. Additional features include:
+    <p>Login with a user name and api key to get a comprehensive account summary, including: usage, Live Streams, Historic Streams, and Managed Sources monitoring. Additional features include:
       <ul>
-        <li>Live Streams: delete, stop, pause, and resume streams. push/get and log output</li>
-        <li>Historic Streams: (to do)</li>
-        <li>Managed Sources: add tokens, delete, stop, and start Managed Sources. push/get and log output</li>
+        <li>Live Streams: delete, stop, pause, and resume push subscriptions. push/get and log output</li>
+        <li>Historic Streams: delete, stop, pause, and resume historics and associated push subscriptions. push/get and log output</li>
+        <li>Managed Sources: add tokens, delete, stop, and start Managed Sources. source/get and log output</li>
       </ul>
     </p>
   </div>

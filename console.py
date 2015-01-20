@@ -5,6 +5,7 @@ from datasift.request import PartialRequest, DatasiftAuth
 from flask_kvsession import KVSessionExtension
 from simplekv.fs import FilesystemStore
 import datetime
+import time
 
 app = Flask(__name__)
 
@@ -89,12 +90,12 @@ def push_get():
     # do push/get request only when asked
     if not 'push' in session.keys() or 'reload' in request.args:
         session['push_out'] = ""
-        session['reload_time'] = datetime.datetime.utcnow().strftime("%Y-%m-%d %H:%M:%S +0000")
+        session['push_reload_time'] = datetime.datetime.utcnow()
         push_get = push_get_all()
         session['push'] = [p for p in push_get if type(p) is dict and 'hash_type' in p.keys() and p['hash_type'] != "historic"]
         # avoid another push/get if we've already loaded live steams
         session['push_historics'] = [p for p in push_get if type(p) is dict and 'hash_type' in p.keys() and p['hash_type'] == "historic"]
-    return make_response(render_template('push.html', push=session['push'], reload_time=session['reload_time']))
+    return make_response(render_template('push.html', push=session['push'], reload_time=format_time(session['push_reload_time'])))
 
 @app.route('/push_get_raw')
 def push_get_raw():
@@ -192,16 +193,21 @@ HISTORICS
 
 @app.route('/historics_get', methods=['POST', 'GET'])
 def historics_get():
-    # do push/get request only when asked
+    # do historics/get request only when asked
     if not 'historics' in session.keys() or 'reload' in request.args:
-        session['reload_time'] = datetime.datetime.utcnow().strftime("%Y-%m-%d %H:%M:%S +0000")
+        session['historics_reload_time'] = datetime.datetime.utcnow()
         session['historics_out'] = ""
         session['historics'] = historic_get_all()
-    if not 'push_historics' in session.keys() or 'reload' in request.args:
+
+    # only do a new push/get request if it hasn't been done/is "stale"
+    staleness = session['historics_reload_time'] - session['push_reload_time']
+    stale_threshold = datetime.timedelta(seconds=60*15)
+    if not 'push_historics' in session.keys() or 'reload' in request.args or stale_threshold > staleness:
         push_get = push_get_all()
+        session['push_reload_time'] = datetime.datetime.utcnow()
         session['push_historics'] = [p for p in push_get if type(p) is dict and 'hash_type' in p.keys() and p['hash_type'] == "historic"]
     historics_push = historic_push(session['historics'], session['push_historics'])
-    return make_response(render_template('historics.html', historics=historics_push, reload_time=session['reload_time']))
+    return make_response(render_template('historics.html', historics=historics_push, reload_time=format_time(session['historics_reload_time'])))
 
 @app.route('/historics_get_raw')
 def historics_get_raw():
@@ -291,8 +297,8 @@ def source_get():
     if not 'source' in session.keys() or 'reload' in request.args:
         session['source_out'] = ""
         session['source'] = source_get_all()
-        session['reload_time'] = datetime.datetime.utcnow().strftime("%Y-%m-%d %H:%M:%S +0000")
-    return make_response(render_template('sources.html', source=session['source'], reload_time=session['reload_time']))
+        session['source_reload_time'] = datetime.datetime.utcnow()
+    return make_response(render_template('sources.html', source=session['source'], reload_time=format_time(session['source_reload_time'])))
 
 @app.route('/source_get_raw')
 def source_get_raw():
@@ -516,6 +522,9 @@ def account_all():
         'x-ratelimit-remaining':"",
         'x-ratelimit-limit':""}
     return acct
+
+def format_time(timestamp):
+    return timestamp.strftime("%Y-%m-%d %H:%M:%S +0000")
 
 app.secret_key = 'A0Zr98j/3yX R~XHH!jmN]LWX/,?RT'
 

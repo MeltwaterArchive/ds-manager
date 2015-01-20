@@ -69,13 +69,15 @@ def logout():
 def reset_push():
     if 'push' in session.keys():
         session.pop('push', None)
-    return 'push reset'
+    response = make_response("",204)
+    return response
 
 @app.route('/reset_sources')
 def reset_sources():
     if 'sources' in session.keys():
         session.pop('sources', None)
-    return 'sources reset'
+    response = make_response("",204)
+    return response
     
 
 '''
@@ -86,6 +88,7 @@ PUSH
 def push_get():
     # do push/get request only when asked
     if not 'push' in session.keys() or 'reload' in request.args:
+        session['push_out'] = ""
         session['reload_time'] = datetime.datetime.utcnow().strftime("%Y-%m-%d %H:%M:%S +0000")
         push_get = push_get_all()
         session['push'] = [p for p in push_get if type(p) is dict and 'hash_type' in p.keys() and p['hash_type'] != "historic"]
@@ -103,6 +106,17 @@ def push_get_raw():
                     raw.append(p)
     return jsonify(out=raw)
 
+@app.route('/push_log')
+def push_log():
+    client = Client(session['username'],session['apikey'])
+    out = []
+    for r in request.args:
+        try:
+            out.append(client.push.log(subscription_id=r))
+        except:
+            # historics..
+            out.append("")
+    return jsonify(out=out)
 
 @app.route('/push_delete')
 def push_delete():
@@ -156,17 +170,22 @@ def push_resume():
             fail.append(r)
     return jsonify(success=success,fail=fail)
 
-@app.route('/push_log')
-def push_log():
-    client = Client(session['username'],session['apikey'])
-    out = []
-    for r in request.args:
-        try:
-            out.append(client.push.log(subscription_id=r))
-        except:
-            # historics..
-            out.append("")
-    return jsonify(out=out)
+@app.route('/set_push_export', methods=['POST'])
+def set_push_export():
+    # store jquery formatted output in session data
+    session['push_out'] = str(request.form['output'])
+    response = make_response("",204)
+    return response
+
+@app.route('/get_push_export/output.txt')
+def get_push_export():
+    response = make_response(session['push_out'])
+    response.headers['Content-Type'] = 'text/xml'
+    # This is the key: Set the right header for the response
+    # to be downloaded, instead of just printed on the browser
+    response.headers["Content-Disposition"] = "attachment; filename=output.txt"
+    return response
+
 
 '''
 HISTORICS 
@@ -177,6 +196,7 @@ def historics_get():
     # do push/get request only when asked
     if not 'historics' in session.keys() or 'reload' in request.args:
         session['reload_time'] = datetime.datetime.utcnow().strftime("%Y-%m-%d %H:%M:%S +0000")
+        session['historics_out'] = ""
         session['historics'] = historic_get_all()
     if not 'push_historics' in session.keys() or 'reload' in request.args:
         push_get = push_get_all()
@@ -204,7 +224,7 @@ def historics_get_raw():
                 for h in session['historics']:
                     if r == h['id']:
                         raw.append(h)
-
+    session['historics_out'] = raw
     return jsonify(out=raw)
 
 @app.route('/historics_pause')
@@ -254,6 +274,7 @@ MANAGED SOURCES
 def source_get():
     # do push/get request only when asked
     if not 'source' in session.keys() or 'reload' in request.args:
+        session['source_out'] = ""
         session['source'] = source_get_all()
         session['reload_time'] = datetime.datetime.utcnow().strftime("%Y-%m-%d %H:%M:%S +0000")
     return make_response(render_template('sources.html', source=session['source'], reload_time=session['reload_time']))
@@ -266,6 +287,7 @@ def source_get_raw():
             for r in request.args:
                 if s['id'] == r:
                     raw.append(s)
+    session['source_out'] = raw
     return jsonify(out=raw)
 
 @app.route('/source_delete')
@@ -314,6 +336,7 @@ def source_log():
         out = []
         for r in request.args:
             out.append(client.managed_sources.log(r))
+        session['push_out'] = out
         return jsonify(out=out)
     except:
         return jsonify(out="Issues getting log")

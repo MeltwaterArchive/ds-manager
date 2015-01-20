@@ -186,6 +186,21 @@ def get_push_export():
     response.headers["Content-Disposition"] = "attachment; filename=output.txt"
     return response
 
+@app.route('/set_source_export', methods=['POST'])
+def set_source_export():
+    # store jquery formatted output in session data
+    session['source_out'] = str(request.form['output'])
+    response = make_response("",204)
+    return response
+
+@app.route('/get_source_export/output.txt')
+def get_source_export():
+    response = make_response(session['source_out'])
+    response.headers['Content-Type'] = 'text/xml'
+    # This is the key: Set the right header for the response
+    # to be downloaded, instead of just printed on the browser
+    response.headers["Content-Disposition"] = "attachment; filename=output.txt"
+    return response
 
 '''
 HISTORICS 

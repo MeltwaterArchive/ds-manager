@@ -13,21 +13,16 @@
 
     $('#sourcestable').tablesorter(); 
 
-    var clear_output= "<div><span class='output_control' onclick='document.getElementById(\"source_output\").innerHTML = \"\";'>clear output</span></div>";
-
   //Managed Sources actions
 
     $('input#source_raw').bind('click', function() {
       $.getJSON($SCRIPT_ROOT + '/source_get_raw',
       $( ".source:checked"), 
       function(data) {
-        var formatted = "";
-        for (i = 0; i < data.out.length; i++){
-          var stringify = JSON.stringify(data.out[i], null, 4)
-          formatted = formatted + "<pre>" + stringify + "</pre>";
-        }
-        formatted = formatted + clear_output;
-        $("#source_output").html(formatted);
+        formatted = source_output_format(data);
+        var html_formatted = source_output_format_html(formatted);
+        $.post($SCRIPT_ROOT + '/set_source_export', {output:formatted});
+        $("#source_output").html(html_formatted);
       });
       return false;
     });
@@ -36,13 +31,10 @@
       $.getJSON($SCRIPT_ROOT + '/source_log',
       $( ".source:checked"), 
       function(data) {
-        var formatted = "";
-        for (i = 0; i < data.out.length; i++){
-          var stringify = JSON.stringify(data.out[i], null, 4)
-          formatted = formatted + "<pre>" + stringify + "</pre>";
-        }
-        formatted = formatted + clear_output;
-        $("#source_output").html(formatted);
+        formatted = source_output_format(data);
+        var html_formatted = source_output_format_html(formatted);
+        $.post($SCRIPT_ROOT + '/set_source_export', {output:formatted});
+        $("#source_output").html(html_formatted);
       });
       return false;
     });
@@ -132,6 +124,29 @@
         $('#sources_load').css('display', 'none');
       });
     });
+
+    //helper functions
+
+    //stringify the json so that its formatted nicely for output (we export this as well)
+    var source_output_format = function(data){
+      var formatted = "";
+
+      for (i = 0; i < data.out.length; i++){
+        formatted = formatted + JSON.stringify(data.out[i], null, 4) + "\n\n";
+      }
+      return formatted;
+    }
+
+    //add the rest of the output html to the formatted output
+    var source_output_format_html = function(formatted){
+      var html_formatted = "";
+      var clear_output= "<span class='output_control' onclick='document.getElementById(\"source_output\").innerHTML = \"\";'>clear output</span>";
+      var export_output= "<span class='output_control'><a href='/get_source_export/output.txt' style='color:dimgray;'>export output.txt</a></span>";
+      var output_control = "<div>" + clear_output + export_output + "</div>";
+      html_formatted = "<pre>" + formatted + "</pre>" + output_control;
+
+      return html_formatted;
+    }
   });
 </script>
 

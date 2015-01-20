@@ -140,8 +140,8 @@
     //add the rest of the output html to the formatted output
     var source_output_format_html = function(formatted){
       var html_formatted = "";
-      var clear_output= "<span class='output_control' onclick='document.getElementById(\"source_output\").innerHTML = \"\";'>clear output</span>";
-      var export_output= "<span class='output_control'><a href='/get_source_export/output.txt' style='color:dimgray;'>export output.txt</a></span>";
+      var clear_output= "<span class='output_control' onclick='document.getElementById(\"source_output\").innerHTML = \"\";'><a href='#sources'>clear output</a></span>";
+      var export_output= "<span class='output_control'><a href='/get_source_export/output.txt'>export output.txt</a></span>";
       var output_control = "<div>" + clear_output + export_output + "</div>";
       html_formatted = "<pre>" + formatted + "</pre>" + output_control;
 

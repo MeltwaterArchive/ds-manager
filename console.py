@@ -5,7 +5,7 @@ from datasift.request import PartialRequest, DatasiftAuth
 from flask_kvsession import KVSessionExtension
 from simplekv.fs import FilesystemStore
 import datetime
-import time
+from collections import OrderedDict
 
 app = Flask(__name__)
 
@@ -425,6 +425,7 @@ def historic_push(historic_get,push_get):
             if p['hash'] in hp and 'subscriptions' in hp[p['hash']]:
                 hp[h['id']]['subscriptions'].append(p)
                 no_hist = False
+            # match subscription to historic
             else:
                 for h in historic_get:
                     if p['hash'] == h['id']:
@@ -434,12 +435,20 @@ def historic_push(historic_get,push_get):
             # case where there's no historic for this hist sub
             if no_hist:
                 hp[p['hash']] = {'subscriptions':[p]}
+    # case where there's no sub for the historic
     for h in historic_get:
         if type(h) is dict:
             hid = h['id']
             if not hid in hp:
                 hp[hid]={'historic':h}
-    return hp
+    
+    # BLACK MAGIC - order hp by sub 'created_at', or hist 'created_at' if there's no sub
+    sorted_hp = OrderedDict(
+        sorted(
+            hp.items(),
+            key=lambda histpush: histpush[1]['subscriptions'][0]['created_at'] if 'subscriptions' in histpush[1] else histpush[1]['historic']['created_at'],
+            reverse=True))
+    return sorted_hp
 
 
 def push_get_all():

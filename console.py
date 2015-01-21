@@ -200,9 +200,12 @@ def historics_get():
         session['historics'] = historic_get_all()
 
     # only do a new push/get request if it hasn't been done/is "stale"
-    staleness = session['historics_reload_time'] - session['push_reload_time']
+    if 'push_reload_time' in session.keys():
+        staleness = session['historics_reload_time'] -  session['push_reload_time']
+    else:
+        staleness = session['historics_reload_time']
     stale_threshold = datetime.timedelta(seconds=60*15)
-    if not 'push_historics' in session.keys() or 'reload' in request.args or stale_threshold > staleness:
+    if not 'push_historics' in session.keys() or 'reload' in request.args or stale_threshold < staleness:
         push_get = push_get_all()
         session['push_reload_time'] = datetime.datetime.utcnow()
         session['push_historics'] = [p for p in push_get if type(p) is dict and 'hash_type' in p.keys() and p['hash_type'] == "historic"]
@@ -426,9 +429,10 @@ def historic_push(historic_get,push_get):
                         hp[h['id']]={'historic': h, 'subscriptions':[]}
                         hp[h['id']]['subscriptions'].append(p)
     for h in historic_get:
-        hid = h['id']
-        if not hid in hp:
-            hp[hid]={'historic':h}
+        if type(h) is dict:
+            hid = h['id']
+            if not hid in hp:
+                hp[hid]={'historic':h}
     return hp
 
 

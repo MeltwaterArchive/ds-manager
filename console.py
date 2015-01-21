@@ -419,15 +419,21 @@ def historic_push(historic_get,push_get):
     hp = {}
 
     for p in push_get:
+        no_hist = True
         if type(p) is dict:
-            #case of multiple subscriptions for 1 historic
+            #case of multiple subscriptions for 1 historic - hist already added to hp
             if p['hash'] in hp and 'subscriptions' in hp[p['hash']]:
                 hp[h['id']]['subscriptions'].append(p)
+                no_hist = False
             else:
                 for h in historic_get:
                     if p['hash'] == h['id']:
                         hp[h['id']]={'historic': h, 'subscriptions':[]}
                         hp[h['id']]['subscriptions'].append(p)
+                        no_hist = False
+            # case where there's no historic for this hist sub
+            if no_hist:
+                hp[p['hash']] = {'subscriptions':[p]}
     for h in historic_get:
         if type(h) is dict:
             hid = h['id']

@@ -277,6 +277,7 @@ background-color: navajowhite;
         $.get($SCRIPT_ROOT + '/push_get', function(data){
           $('#pushget').html(data).slideToggle("fast");
           $('#push_load').css('display', 'none');
+          $('html,body').animate({scrollTop: $('#push').offset().top}, 'slow');
         });
       }
       else{
@@ -290,6 +291,7 @@ background-color: navajowhite;
         $.get($SCRIPT_ROOT + '/historics_get', function(data){
           $('#historicsget').html(data).slideToggle("fast");
           $('#historics_load').css('display', 'none');
+          $('html,body').animate({scrollTop: $('#historics').offset().top}, 'slow');
         });
       }
       else{
@@ -304,6 +306,7 @@ background-color: navajowhite;
         $.get($SCRIPT_ROOT + '/source_get', function(data){
           $('#sourceget').html(data).slideToggle("fast");
           $('#sources_load').css('display', 'none');
+          $('html,body').animate({scrollTop: $('#sources').offset().top}, 'slow');
         });
       }
       else{

@@ -415,7 +415,7 @@ def pop_session():
         session.pop(k, None)
 
 def historic_push(historic_get,push_get):
-    ''' get dictionary of historics with list of push subscription dicts  '''
+    ''' get *ordered* dictionary of historics with list of push subscription dicts  '''
     hp = {}
 
     for p in push_get:

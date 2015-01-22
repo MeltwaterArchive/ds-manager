@@ -46,10 +46,12 @@
       });
       var confirm_delete = confirm("Are you sure you want to delete Managed Sources:\n " + srcs);
       if (confirm_delete == true){
+        source_output_wait();
         $.getJSON($SCRIPT_ROOT + '/source_delete',
         $( ".source:checked"), 
         function(data) {
-          $("#source_output").text("Deleted: " + data.success + "\nNot deleted: " + data.fail);
+          formatted = source_control_output_format(data,"deleted");
+          $("#source_output").html(formatted);
           $.each(data.success, function( index, id ){
             $("#source_row_"+id).remove()
           });
@@ -59,10 +61,12 @@
     });
 
     $('input#source_stop').bind('click', function() {
+      source_output_wait();
       $.getJSON($SCRIPT_ROOT + '/source_stop',
       $( ".source:checked"), 
       function(data) {
-        $("#source_output").text("Stopped: " + data.success + "\nNot stopped: " + data.fail);
+        formatted = source_control_output_format(data,"stopped");
+        $("#source_output").html(formatted);
         $.each(data.success, function( index, id ){
           $("#status_"+id).text("stopped")
         });
@@ -72,10 +76,12 @@
 
 
     $('input#source_start').bind('click', function() {
+      source_output_wait();
       $.getJSON($SCRIPT_ROOT + '/source_start',
       $( ".source:checked"), 
       function(data) {
-        $("#source_output").text("Started: " + data.success + "\nNot started: " + data.fail);
+        formatted = source_control_output_format(data,"started");
+        $("#source_output").html(formatted);
         $.each(data.success, function( index, id ){
           $("#status_"+id).text("running")
         });
@@ -101,11 +107,12 @@
     });
 
     $('#source_output').on('click', '#token_submit', function() {
+      source_output_wait();
       $.getJSON($SCRIPT_ROOT + '/source_token',
       $( ".token:text"), 
       function(data) {
-        $("#source_output").text("Added: " + data.success + "\nNot added: " + data.fail);
-      
+        formatted = source_control_output_format(data,"added");
+        $("#source_output").html(formatted);
         $.each(data.success, function( index, id ){
           $("#status_"+id).text("running")
 
@@ -126,6 +133,28 @@
     });
 
     //helper functions
+
+    var source_output_wait = function(){
+      $("#source_output").text("[ please wait ]");
+    }
+
+    // html formatted success/fail response for push control actions
+    var source_control_output_format = function(data,action){
+      var formatted = ""
+      if (data.success.length > 0){
+        formatted += action + ":<BR>";
+        for (i = 0; i < data.success.length; i++){
+          formatted += "<ul>" + data.success[i] + "</ul>";
+        }
+      }
+      if (data.fail.length > 0){
+        formatted += "not " + action + ":<BR>";
+        for (i = 0; i < data.fail.length; i++){
+          formatted += "<ul>" + data.fail[i] + "</ul>";
+        }
+      }
+      return formatted;
+    }
 
     //stringify the json so that its formatted nicely for output (we export this as well)
     var source_output_format = function(data){

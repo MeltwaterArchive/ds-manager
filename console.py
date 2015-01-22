@@ -199,16 +199,18 @@ def historics_get():
         session['historics_out'] = ""
         session['historics'] = historic_get_all()
 
-    # only do a new push/get request if it hasn't been done/is "stale"
+    # determine relative staleness of historic vs live stream loads
     if 'push_reload_time' in session.keys():
         staleness = session['historics_reload_time'] -  session['push_reload_time']
     else:
         staleness = session['historics_reload_time']
     stale_threshold = datetime.timedelta(seconds=60*15)
+    # only do push/get request if it hasn't been done before or reload or its stale
     if not 'push_historics' in session.keys() or 'reload' in request.args or stale_threshold < staleness:
         push_get = push_get_all()
         session['push_reload_time'] = datetime.datetime.utcnow()
         session['push_historics'] = [p for p in push_get if type(p) is dict and 'hash_type' in p.keys() and p['hash_type'] == "historic"]
+        session['push'] = [p for p in push_get if type(p) is dict and 'hash_type' in p.keys() and p['hash_type'] != "historic"]
     historics_push = historic_push(session['historics'], session['push_historics'])
     return make_response(render_template('historics.html', historics=historics_push, reload_time=format_time(session['historics_reload_time'])))
 

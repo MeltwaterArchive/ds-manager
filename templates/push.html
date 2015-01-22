@@ -48,18 +48,19 @@
       var confirm_delete = confirm("Are you sure you want to delete subscriptions:\n " + subs);
       // delete subs
       if (confirm_delete == true){
+        push_output_wait();
         $.getJSON($SCRIPT_ROOT + '/push_delete',
         $( ".push:checked"), 
         function(data) {
-          $("#push_output").text("Deleted: " + data.success + "\nNot deleted: " + data.fail);
+          formatted = push_control_output_format(data,"Deleted");
+          $("#push_output").html(formatted);
           $.each(data.success, function( index, id ){
-            $("#push_row_"+id).remove()
+            $("#push_row_"+id).remove();
           });
         });
       }
       return false;
     });
-
 
     $('input#push_stop').bind('click', function() {
       var subs = "";
@@ -68,10 +69,12 @@
       });
       var confirm_delete = confirm("Are you sure you want to stop subscriptions:\n " + subs);
       if (confirm_delete == true){
+        push_output_wait();
         $.getJSON($SCRIPT_ROOT + '/push_stop',
         $( ".push:checked"), 
         function(data) {
-          $("#push_output").text("Stopped: " + data.success + "\nNot stopped: " + data.fail);
+          formatted = push_control_output_format(data,"Stopped");
+          $("#push_output").html(formatted);
           $.each(data.success, function( index, id ){
             $("#push_status_"+id).text("stopped")
           });
@@ -81,10 +84,12 @@
     });
 
     $('input#push_pause').bind('click', function() {
+      push_output_wait();
       $.getJSON($SCRIPT_ROOT + '/push_pause',
       $( ".push:checked"), 
       function(data) {
-        $("#push_output").text("Paused: " + data.success + "\nNot paused: " + data.fail);
+        formatted = push_control_output_format(data,"Paused");
+        $("#push_output").html(formatted);
         $.each(data.success, function( index, id ){
           $("#push_status_"+id).text("paused")
         });
@@ -93,10 +98,15 @@
     });
 
     $('input#push_resume').bind('click', function() {
+      push_output_wait();
       $.getJSON($SCRIPT_ROOT + '/push_resume',
       $( ".push:checked"), 
       function(data) {
-        $("#push_output").text(data.out);
+        formatted = push_control_output_format(data,"Resumed");  
+        $("#push_output").html(formatted);
+        $.each(data.success, function( index, id ){
+          $("#push_status_"+id).text("active")
+        });
       });
       return false;
     });
@@ -115,6 +125,28 @@
 
 
     //helper functions
+
+    var push_output_wait = function(){
+      $("#push_output").text("[ please wait ]");
+    }
+
+    // html formatted success/fail response for push control actions
+    var push_control_output_format = function(data,action){
+      var formatted = ""
+      if (data.success.length > 0){
+        formatted += action + ":<BR>";
+        for (i = 0; i < data.success.length; i++){
+          formatted += "<ul>" + data.success[i] + "</ul>";
+        }
+      }
+      if (data.fail.length > 0){
+        formatted += "Not " + action + ":<BR>";
+        for (i = 0; i < data.fail.length; i++){
+          formatted += "<ul>" + data.fail[i] + "</ul>";
+        }
+      }
+      return formatted;
+    }
 
     //stringify the json so that its formatted nicely for output (we export this as well)
     var push_output_format = function(data){

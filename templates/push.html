@@ -16,6 +16,7 @@
         //push subscription actions
 
     $('input#push_raw').bind('click', function() {
+      push_output_wait();
       $.getJSON($SCRIPT_ROOT + '/push_get_raw',
       $( ".push:checked"), 
       function(data) {
@@ -28,6 +29,7 @@
     });
 
     $('input#push_log').bind('click', function() {
+      push_output_wait();
       $.getJSON($SCRIPT_ROOT + '/push_log',
       $( ".push:checked"), 
       function(data) {
@@ -52,7 +54,7 @@
         $.getJSON($SCRIPT_ROOT + '/push_delete',
         $( ".push:checked"), 
         function(data) {
-          formatted = push_control_output_format(data,"Deleted");
+          formatted = push_control_output_format(data,"deleted");
           $("#push_output").html(formatted);
           $.each(data.success, function( index, id ){
             $("#push_row_"+id).remove();
@@ -73,7 +75,7 @@
         $.getJSON($SCRIPT_ROOT + '/push_stop',
         $( ".push:checked"), 
         function(data) {
-          formatted = push_control_output_format(data,"Stopped");
+          formatted = push_control_output_format(data,"stopped");
           $("#push_output").html(formatted);
           $.each(data.success, function( index, id ){
             $("#push_status_"+id).text("stopped")
@@ -88,7 +90,7 @@
       $.getJSON($SCRIPT_ROOT + '/push_pause',
       $( ".push:checked"), 
       function(data) {
-        formatted = push_control_output_format(data,"Paused");
+        formatted = push_control_output_format(data,"paused");
         $("#push_output").html(formatted);
         $.each(data.success, function( index, id ){
           $("#push_status_"+id).text("paused")
@@ -102,7 +104,7 @@
       $.getJSON($SCRIPT_ROOT + '/push_resume',
       $( ".push:checked"), 
       function(data) {
-        formatted = push_control_output_format(data,"Resumed");  
+        formatted = push_control_output_format(data,"resumed");  
         $("#push_output").html(formatted);
         $.each(data.success, function( index, id ){
           $("#push_status_"+id).text("active")
@@ -140,7 +142,7 @@
         }
       }
       if (data.fail.length > 0){
-        formatted += "Not " + action + ":<BR>";
+        formatted += "not " + action + ":<BR>";
         for (i = 0; i < data.fail.length; i++){
           formatted += "<ul>" + data.fail[i] + "</ul>";
         }

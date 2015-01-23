@@ -16,6 +16,7 @@
   //Managed Sources actions
 
     $('input#source_raw').bind('click', function() {
+      source_output_wait();
       $.getJSON($SCRIPT_ROOT + '/source_get_raw',
       $( ".source:checked"), 
       function(data) {
@@ -28,6 +29,7 @@
     });
 
     $('input#source_log').bind('click', function() {
+      source_output_wait();
       $.getJSON($SCRIPT_ROOT + '/source_log',
       $( ".source:checked"), 
       function(data) {

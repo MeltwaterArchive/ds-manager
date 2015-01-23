@@ -18,6 +18,7 @@
     //historics subscription actions
 
     $('input#historics_raw').bind('click', function() {
+      historics_output_wait();
       $.getJSON($SCRIPT_ROOT + '/historics_get_raw',
       $( ".historics:checked"), 
       function(data) {
@@ -30,6 +31,7 @@
     });
 
     $('input#historics_log').bind('click', function() {
+      historics_output_wait();
       $.getJSON($SCRIPT_ROOT + '/push_log',
       $( ".historics:checked"), 
       function(data) {
@@ -48,13 +50,14 @@
       });
       var confirm_delete = confirm("Are you sure you want to delete subscriptions:\n " + subs);
       if (confirm_delete == true){
+        historics_output_wait();
         $.getJSON($SCRIPT_ROOT + '/push_delete',
         $( ".historics:checked"), 
         function(data) {
-          $("#historics_output").text(
-            "Deleted: " + data.success + "\nNot deleted: " + data.fail);
+          formatted = historics_control_output_format(data,"deleted");
+          $("#historics_output").html(formatted);
           $.each(data.success, function( index, id ){
-            $("#historics_row_"+id).remove()
+            $("#historics_row_"+id).remove();
           });
         });
       }
@@ -68,12 +71,14 @@
       });
       var confirm_delete = confirm("Are you sure you want to stop subscriptions:\n " + subs);
       if (confirm_delete == true){
+        historics_output_wait();
         $.getJSON($SCRIPT_ROOT + '/push_stop',
         $( ".historics:checked"), 
         function(data) {
-          $("#historics_output").text("Stopped: " + data.success + "\nNot stopped: " + data.fail);
+          formatted = historics_control_output_format(data,"stopped");
+          $("#historics_output").html(formatted);
           $.each(data.success, function( index, id ){
-            $(".sub", "#historics_status_"+id).text("stopped")
+            $("#historics_row_"+id).remove();
           });
         });
       }
@@ -81,50 +86,58 @@
     });
 
     $('input#historics_push_pause').bind('click', function() {
+      historics_output_wait();
       $.getJSON($SCRIPT_ROOT + '/push_pause',
       $( ".historics:checked"), 
       function(data) {
-        $("#historics_output").text("Paused: " + data.success + "\nNot paused: " + data.fail);
+        formatted = historics_control_output_format(data,"paused");
+        $("#historics_output").html(formatted);
         $.each(data.success, function( index, id ){
-          $(".sub", "#historics_status_"+id).text("paused")
+          $("#historics_row_"+id).remove();
         });
       });
       return false;
     });
 
     $('input#historics_push_resume').bind('click', function() {
+      historics_output_wait();
       $.getJSON($SCRIPT_ROOT + '/push_resume',
       $( ".historics:checked"), 
       function(data) {
-        $("#historics_output").text("Resumed: " + data.success + "\nNot resumed: " + data.fail);
-        $.each(data.success, function( index, id ){
-          $(".sub", "#historics_status_"+id).text("active")
+          formatted = historics_control_output_format(data,"resumed");
+          $("#historics_output").html(formatted);
+          $.each(data.success, function( index, id ){
+            $("#historics_row_"+id).remove();
+          });
         });
-      });
       return false;
     });
 
     $('input#historics_pause').bind('click', function() {
+      historics_output_wait();
       $.getJSON($SCRIPT_ROOT + '/historics_pause',
       $( ".historics:checked"), 
       function(data) {
-        $("#historics_output").text("Paused: " + data.success + "\nNot paused: " + data.fail);
-        $.each(data.success, function( index, id ){
-          $(".hist", "#historics_status_"+id).text("paused")
+          formatted = historics_control_output_format(data,"paused");
+          $("#historics_output").html(formatted);
+          $.each(data.success, function( index, id ){
+            $("#historics_row_"+id).remove();
+          });
         });
-      });
       return false;
     });
 
     $('input#historics_resume').bind('click', function() {
+      historics_output_wait();
       $.getJSON($SCRIPT_ROOT + '/historics_resume',
       $( ".historics:checked"), 
       function(data) {
-        $("#historics_output").text("Resumed: " + data.success + "\nNot resumed: " + data.fail);
-        $.each(data.success, function( index, id ){
-          $(".hist", "#historics_status_"+id).text("active")
+          formatted = historics_control_output_format(data,"resumed");
+          $("#historics_output").html(formatted);
+          $.each(data.success, function( index, id ){
+            $("#historics_row_"+id).remove();
+          });
         });
-      });
       return false;
     });
 
@@ -135,13 +148,14 @@
       });
       var confirm_delete = confirm("Are you sure you want to delete historics:\n " + hists);
       if (confirm_delete == true){
+        historics_output_wait();
         $.getJSON($SCRIPT_ROOT + '/historics_delete',
         $( ".historics:checked"), 
         function(data) {
-          $("#historics_output").text(
-            "Deleted: " + data.success + "\nNot deleted: " + data.fail);
+          formatted = historics_control_output_format(data,"deleted");
+          $("#historics_output").html(formatted);
           $.each(data.success, function( index, id ){
-            $("#historics_row_"+id).remove()
+            $("#historics_row_"+id).remove();
           });
         });
       }
@@ -160,6 +174,28 @@
     });
 
     //helper functions
+
+    var historics_output_wait = function(){
+      $("#historics_output").text("[ please wait ]");
+    }
+
+    // html formatted success/fail response for push control actions
+    var historics_control_output_format = function(data,action){
+      var formatted = ""
+      if (data.success.length > 0){
+        formatted += action + ":<BR>";
+        for (i = 0; i < data.success.length; i++){
+          formatted += "<ul>" + data.success[i] + "</ul>";
+        }
+      }
+      if (data.fail.length > 0){
+        formatted += "not " + action + ":<BR>";
+        for (i = 0; i < data.fail.length; i++){
+          formatted += "<ul>" + data.fail[i] + "</ul>";
+        }
+      }
+      return formatted;
+    }
 
     //stringify the json so that its formatted nicely for output (we export this as well)
     var historics_output_format = function(data){

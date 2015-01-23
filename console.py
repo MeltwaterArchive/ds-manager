@@ -116,7 +116,7 @@ def push_log():
             out.append(client.push.log(subscription_id=r))
         except:
             # historics..
-            out.append("")
+            out.append({})
     return jsonify(out=out)
 
 @app.route('/push_delete')

@@ -191,7 +191,11 @@
       if (data.fail.length > 0){
         formatted += "not " + action + ":<BR>";
         for (i = 0; i < data.fail.length; i++){
-          formatted += "<ul>" + data.fail[i] + "</ul>";
+          var message = "";
+          if ('fail_message' in data){
+            message = " - " + data.fail_message[i]
+          }
+          formatted += "<ul>" + data.fail[i] + message + "</ul>";
         }
       }
       return formatted;

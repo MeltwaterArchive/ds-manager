@@ -124,52 +124,60 @@ def push_delete():
     client = Client(session['username'],session['apikey'])
     success = []
     fail = []
+    fail_message = []
     for r in request.args:
         try:
             client.push.delete(r)
             success.append(r)
-        except:
+        except Exception, e:
             fail.append(r)
-    return jsonify(success=success,fail=fail)
+            fail_message.append(e.message)
+    return jsonify(success=success,fail=fail,fail_message=fail_message)
 
 @app.route('/push_stop')
 def push_stop():
     client = Client(session['username'],session['apikey'])
     success = []
     fail = []
+    fail_message = []
     for r in request.args:
         try:
             client.push.stop(r)
             success.append(r)
-        except:
+        except Exception, e:
             fail.append(r)
-    return jsonify(success=success,fail=fail)
+            fail_message.append(e.message)
+    return jsonify(success=success,fail=fail,fail_message=fail_message)
 
 @app.route('/push_pause')
 def push_pause():
     client = Client(session['username'],session['apikey'])
     success = []
     fail = []
+    fail_message = []
     for r in request.args:
         try:
             client.push.pause(r)
             success.append(r)
-        except:
+        except Exception, e:
             fail.append(r)
-    return jsonify(success=success,fail=fail)
+            fail_message.append(e.message)
+    return jsonify(success=success,fail=fail,fail_message=fail_message)
 
 @app.route('/push_resume')
 def push_resume():
     client = Client(session['username'],session['apikey'])
     success = []
     fail = []
+    fail_message = []
     for r in request.args:
         try:
             client.push.resume(r)
             success.append(r)
-        except:
+        except Exception, e:
             fail.append(r)
-    return jsonify(success=success,fail=fail)
+            fail_message.append(e.message)
+    return jsonify(success=success,fail=fail,fail_message=fail_message)
 
 @app.route('/set_push_export', methods=['POST'])
 def set_push_export():
@@ -242,39 +250,45 @@ def historics_pause():
     client = Client(session['username'],session['apikey'])
     success = []
     fail = []
+    fail_message = []
     for r in request.args:
         try:
             client.historics.pause(r)
             success.append(r)
-        except:
+        except Exception, e:
             fail.append(r)
-    return jsonify(success=success,fail=fail)
+            fail_message.append(e.message)
+    return jsonify(success=success,fail=fail,fail_message=fail_message)
 
 @app.route('/historics_resume')
 def historics_resume():
     client = Client(session['username'],session['apikey'])
     success = []
     fail = []
+    fail_message = []
     for r in request.args:
         try:
             client.historics.resume(r)
             success.append(r)
-        except:
+        except Exception, e:
             fail.append(r)
-    return jsonify(success=success,fail=fail)
+            fail_message.append(e.message)
+    return jsonify(success=success,fail=fail,fail_message=fail_message)
 
 @app.route('/historics_delete')
 def historics_delete():
     client = Client(session['username'],session['apikey'])
     success = []
     fail = []
+    fail_message = []
     for r in request.args:
         try:
             client.historics.delete(r)
             success.append(r)
-        except:
+        except Exception, e:
             fail.append(r)
-    return jsonify(success=success,fail=fail)
+            fail_message.append(e.message)
+    return jsonify(success=success,fail=fail,fail_message=fail_message)
 
 @app.route('/set_historics_export', methods=['POST'])
 def set_historics_export():
@@ -321,39 +335,45 @@ def source_delete():
     client = Client(session['username'],session['apikey'])
     success = []
     fail = []
+    fail_message = []
     for r in request.args:
         try:
             client.managed_sources.delete(r)
             success.append(r)
-        except:
+        except Exception, e:
             fail.append(r)
-    return jsonify(success=success,fail=fail)
+            fail_message.append(e.message)
+    return jsonify(success=success,fail=fail,fail_message=fail_message)
 
 @app.route('/source_stop')
 def source_stop():
     client = Client(session['username'],session['apikey'])
     success = []
     fail = []
+    fail_message = []
     for r in request.args:
         try:
             client.managed_sources.stop(r)
             success.append(r)
-        except:
+        except Exception, e:
             fail.append(r)
-    return jsonify(success=success,fail=fail)
+            fail_message.append(e.message)
+    return jsonify(success=success,fail=fail,fail_message=fail_message)
 
 @app.route('/source_start')
 def source_start():
     client = Client(session['username'],session['apikey'])
     success = []
     fail = []
+    fail_message = []
     for r in request.args:
         try:
             client.managed_sources.start(r)
             success.append(r)
-        except:
+        except Exception, e:
             fail.append(r)
-    return jsonify(success=success,fail=fail)
+            fail_message.append(e.message)
+    return jsonify(success=success,fail=fail,fail_message=fail_message)
 
 @app.route('/source_log')
 def source_log():
@@ -372,6 +392,7 @@ def source_token():
     client = Client(session['username'],session['apikey'])
     success = []
     fail = []
+    fail_message = []
     for r in request.args:
         try:
             source = client.managed_sources.get(r)
@@ -380,9 +401,10 @@ def source_token():
             client.managed_sources.update(
                 r, source['source_type'], source['name'], source['resources'], auth, parameters=source['parameters'])
             success.append(r)
-        except Exception as e:
+        except Exception, e:
             fail.append(r)
-    return jsonify(success=success,fail=fail)
+            fail_message.append(e.message)
+    return jsonify(success=success,fail=fail,fail_message=fail_message)
 
 @app.route('/set_source_export', methods=['POST'])
 def set_source_export():

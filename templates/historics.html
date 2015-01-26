@@ -141,6 +141,27 @@
       return false;
     });
 
+    $('input#historics_stop').bind('click', function() {
+      var hists = "";
+      $( ".historics:checked").each(function(){
+        hists = hists + "\n" + $( this ).attr('name');
+      });
+      var confirm_stop = confirm("Are you sure you want to stop historics:\n " + hists);
+      if (confirm_stop == true){
+        historics_output_wait();
+        $.getJSON($SCRIPT_ROOT + '/historics_stop',
+        $( ".historics:checked"), 
+        function(data) {
+          formatted = historics_control_output_format(data,"stopped");
+          $("#historics_output").html(formatted);
+          $.each(data.success, function( index, id ){
+            $("#historics_row_"+id).remove();
+          });
+        });
+      }
+      return false;
+    });
+
     $('input#historics_delete').bind('click', function() {
       var hists = "";
       $( ".historics:checked").each(function(){
@@ -235,8 +256,11 @@
     <input type="button" id="historics_push_resume" value="p resume">
     <input type="button" id="historics_push_stop" value="p stop">
     <input type="button" id="historics_push_delete" value="p delete">
+  </span>
+  <span class="control_buttons">
     <input type="button" id="historics_pause" value="h pause">
     <input type="button" id="historics_resume" value="h resume">
+    <input type="button" id="historics_stop" value="h stop">
     <input type="button" id="historics_delete" value="h delete">
   </span>
   <span class="update_buttons">

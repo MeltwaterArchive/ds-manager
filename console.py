@@ -256,8 +256,19 @@ def historics_pause():
             client.historics.pause(r)
             success.append(r)
         except Exception, e:
-            fail.append(r)
-            fail_message.append(e.message)
+            # see if request arg is a historic
+            for ph in session['push_historics']:
+                if ph['id'] == r:
+                    try:
+                        client.historics.pause(ph['hash'])
+                        success.append(ph['hash'])
+                    except Exception, e:
+                        fail.append(ph['hash'])
+                        fail_message.append(e.message)
+                    break
+            else:
+                fail.append(r)
+                fail_message.append(e.message)
     return jsonify(success=success,fail=fail,fail_message=fail_message)
 
 @app.route('/historics_resume')
@@ -271,8 +282,45 @@ def historics_resume():
             client.historics.resume(r)
             success.append(r)
         except Exception, e:
-            fail.append(r)
-            fail_message.append(e.message)
+            # see if request arg is a historic
+            for ph in session['push_historics']:
+                if ph['id'] == r:
+                    try:
+                        client.historics.resume(ph['hash'])
+                        success.append(ph['hash'])
+                    except Exception, e:
+                        fail.append(ph['hash'])
+                        fail_message.append(e.message)
+                    break
+            else:
+                fail.append(r)
+                fail_message.append(e.message)
+    return jsonify(success=success,fail=fail,fail_message=fail_message)
+
+@app.route('/historics_stop')
+def historics_stop():
+    client = Client(session['username'],session['apikey'])
+    success = []
+    fail = []
+    fail_message = []
+    for r in request.args:
+        try:
+            client.historics.stop(r)
+            success.append(r)
+        except Exception, e:
+            # see if request arg is a historic
+            for ph in session['push_historics']:
+                if ph['id'] == r:
+                    try:
+                        client.historics.stop(ph['hash'])
+                        success.append(ph['hash'])
+                    except Exception, e:
+                        fail.append(ph['hash'])
+                        fail_message.append(e.message)
+                    break
+            else:
+                fail.append(r)
+                fail_message.append(e.message)
     return jsonify(success=success,fail=fail,fail_message=fail_message)
 
 @app.route('/historics_delete')
@@ -286,8 +334,19 @@ def historics_delete():
             client.historics.delete(r)
             success.append(r)
         except Exception, e:
-            fail.append(r)
-            fail_message.append(e.message)
+            # see if request arg is a historic
+            for ph in session['push_historics']:
+                if ph['id'] == r:
+                    try:
+                        client.historics.delete(ph['hash'])
+                        success.append(ph['hash'])
+                    except Exception, e:
+                        fail.append(ph['hash'])
+                        fail_message.append(e.message)
+                    break
+            else:
+                fail.append(r)
+                fail_message.append(e.message)
     return jsonify(success=success,fail=fail,fail_message=fail_message)
 
 @app.route('/set_historics_export', methods=['POST'])

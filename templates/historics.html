@@ -56,8 +56,9 @@
         function(data) {
           formatted = historics_control_output_format(data,"deleted");
           $("#historics_output").html(formatted);
+          //just remove the sub info
           $.each(data.success, function( index, id ){
-            $("#historics_row_"+id).remove();
+            $("#historics_row_"+id).find(".sub").text("");
           });
         });
       }
@@ -78,7 +79,7 @@
           formatted = historics_control_output_format(data,"stopped");
           $("#historics_output").html(formatted);
           $.each(data.success, function( index, id ){
-            $("#historics_row_"+id).remove();
+            $("#historics_status_"+id + "> .sub").text("stopped")
           });
         });
       }
@@ -93,7 +94,7 @@
         formatted = historics_control_output_format(data,"paused");
         $("#historics_output").html(formatted);
         $.each(data.success, function( index, id ){
-          $("#historics_row_"+id).remove();
+          $("#historics_status_"+id + "> .sub").text("paused")
         });
       });
       return false;
@@ -107,8 +108,8 @@
           formatted = historics_control_output_format(data,"resumed");
           $("#historics_output").html(formatted);
           $.each(data.success, function( index, id ){
-            $("#historics_row_"+id).remove();
-          });
+          $("#historics_status_"+id + "> .sub").text("active")
+        });
         });
       return false;
     });
@@ -118,12 +119,12 @@
       $.getJSON($SCRIPT_ROOT + '/historics_pause',
       $( ".historics:checked"), 
       function(data) {
-          formatted = historics_control_output_format(data,"paused");
-          $("#historics_output").html(formatted);
-          $.each(data.success, function( index, id ){
-            $("#historics_row_"+id).remove();
-          });
+        formatted = historics_control_output_format(data,"paused");
+        $("#historics_output").html(formatted);
+        $.each(data.success, function( index, id ){
+          $("#historics_status_"+id + "> .hist").text("paused")
         });
+      });
       return false;
     });
 
@@ -132,12 +133,12 @@
       $.getJSON($SCRIPT_ROOT + '/historics_resume',
       $( ".historics:checked"), 
       function(data) {
-          formatted = historics_control_output_format(data,"resumed");
-          $("#historics_output").html(formatted);
-          $.each(data.success, function( index, id ){
-            $("#historics_row_"+id).remove();
-          });
+        formatted = historics_control_output_format(data,"running");
+        $("#historics_output").html(formatted);
+        $.each(data.success, function( index, id ){
+          $("#historics_status_"+id + "> .hist").text("running")
         });
+      });
       return false;
     });
 
@@ -155,7 +156,7 @@
           formatted = historics_control_output_format(data,"stopped");
           $("#historics_output").html(formatted);
           $.each(data.success, function( index, id ){
-            $("#historics_row_"+id).remove();
+            $("#historics_status_"+id + "> .hist").text("stopped")
           });
         });
       }
@@ -176,7 +177,7 @@
           formatted = historics_control_output_format(data,"deleted");
           $("#historics_output").html(formatted);
           $.each(data.success, function( index, id ){
-            $("#historics_row_"+id).remove();
+            $("#historics_row_"+id).find(".hist").text("");
           });
         });
       }

@@ -1,0 +1,16 @@
+.DS_Store
+*.pyc
+data/
+static/tablesorter/LICENSE
+static/tablesorter/README.md
+static/tablesorter/addons/
+static/tablesorter/build.xml
+static/tablesorter/build/
+static/tablesorter/changelog
+static/tablesorter/docs/
+static/tablesorter/jquery-latest.js
+static/tablesorter/jquery.metadata.js
+static/tablesorter/jquery.tablesorter.min.js
+static/tablesorter/themes/blue/
+static/tablesorter/themes/green/
+venv/

@@ -9,6 +9,9 @@ from collections import OrderedDict
 
 app = Flask(__name__)
 
+app.logger.addHandler(logging.StreamHandler(sys.stdout))
+app.logger.setLevel(logging.ERROR)
+
 # use local filesystem for session storage instead of default client sessions
 store = FilesystemStore("./data")
 KVSessionExtension(store, app)
@@ -681,5 +684,5 @@ def format_time(timestamp):
 app.secret_key = 'A0Zr98j/3yX R~XHH!jmN]LWX/,?RT'
 
 if __name__ == '__main__':
-    app.debug = True
+    app.debug = False
     app.run()

@@ -14,8 +14,12 @@ app = Flask(__name__)
 app.logger.addHandler(logging.StreamHandler(sys.stdout))
 app.logger.setLevel(logging.ERROR)
 
+data_directory = "./data"
+if not os.path.exists(data_directory):
+    os.makedirs(data_directory)
+
 # use local filesystem for session storage instead of default client sessions
-store = FilesystemStore("./data")
+store = FilesystemStore(data_directory)
 KVSessionExtension(store, app)
 
 @app.route('/')

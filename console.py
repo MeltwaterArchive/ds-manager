@@ -91,7 +91,7 @@ def usage_get():
     if not 'usage' in session.keys() or 'reload' in request.args:
         session['usage_out'] = ""
         session['usage_reload_time'] = datetime.datetime.utcnow()
-        session['usage'] = account_all()
+        session['usage'] = usage_all()
     return render_template(
         'usage.html',
         acct=session['usage'],
@@ -644,6 +644,16 @@ def source_get_all():
     except:
         sourcegetlist = ["No Managed Source API access"]
     return sourcegetlist
+
+def usage_all():
+    usage = {}
+    try:
+        client = Client(session['username'],session['apikey'])
+        usage = client.usage(period='day')
+    except:
+        usage = ["No usage available"]
+    return usage
+
 
 def account_all():
     ''' get dictionary of usage, balance, and rate limit '''

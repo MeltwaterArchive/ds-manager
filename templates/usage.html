@@ -67,8 +67,8 @@
   </span>
   <div id=usage_output class="out">[output]</div>
 
-    <p>Period: ({{ acct['usage_period'][0] }} - {{ acct['usage_period'][1] }})</p>
-    {% if acct['usage_streams'] %}
+    <p>Period: ({{ acct['start'] }} - {{ acct['end'] }})</p>
+    {% if acct['streams'] %}
     <table id="usagetable" class="tablesorter">
       <thead>
         <tr>
@@ -78,17 +78,17 @@
         </tr>
       </thead>
       <tbody>
-    {% for s in acct['usage_streams'] %}
+    {% for s in acct['streams'] %}
         <tr>
-          <td class="tg-031e">{{s[0]}}</td>
+          <td class="tg-031e">{{s}}</td>
           <td class="tg-031e">
             <ul>
-    {% for l in s[1]['licenses'] %}
-            <li> {{l}} : {{s[1]['licenses'][l]}} </li>
+    {% for l in acct['streams'][s]['licenses'] %}
+            <li> {{l}} : {{acct['streams'][s]['licenses'][l]}} </li>
     {% endfor %}
             </ul>
           </td>
-          <td class="tg-031e">{{s[1]['seconds']}}</td>
+          <td class="tg-031e">{{acct['streams'][s]['seconds']}}</td>
         </tr>
     {% endfor %}
       </tbody>

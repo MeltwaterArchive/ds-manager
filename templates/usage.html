@@ -1,0 +1,99 @@
+<head>
+<link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='tablesorter/themes/orange/style.css') }}">
+
+<script src="//ajax.googleapis.com/ajax/libs/jquery/1.9.1/jquery.min.js"></script>
+<script>window.jQuery || document.write('<script src="{{
+  url_for('static', filename='jquery.js') }}">\x3C/script>')</script>
+<script type="text/javascript" src="{{
+  url_for('static', filename='tablesorter/jquery.tablesorter.js') }}"></script>
+<script type=text/javascript>
+  $SCRIPT_ROOT = {{ request.script_root|tojson|safe }};
+
+  $(document).ready(function() {
+
+    $('#usagetable').tablesorter();
+
+    $('input#usage_raw').bind('click', function() {
+      $.getJSON($SCRIPT_ROOT + '/usage_get_raw', 
+      function(data) {
+        formatted = usage_output_format(data);
+        var html_formatted = usage_output_format_html(formatted);
+        $.post($SCRIPT_ROOT + '/set_usage_export', {output:formatted});
+        $("#usage_output").html(html_formatted);
+      });
+      return false;
+    });
+
+    $('#usage_refresh').bind('click', function() {
+      //only get data if we're opening 
+      $('#usageget').css('display') == 'none';
+      $('#usageget').slideToggle("fast");
+      // loading gif
+      $('#usage_load').css('display', 'block');
+      $.get($SCRIPT_ROOT + '/usage_get', 'reload=1', function(data){
+        $('#usageget').html(data).slideToggle("fast");
+        $('#usage_load').css('display', 'none');
+      });
+    });
+
+    // helper functions
+
+    //stringify the json so that its formatted nicely for output (we export this as well)
+    var usage_output_format = function(data){
+      return JSON.stringify(data.out, null, 4);
+    }
+
+    //add the rest of the output html to the formatted output
+    var usage_output_format_html = function(formatted){
+      var html_formatted = "";
+      var clear_output= "<span class='output_control' onclick='document.getElementById(\"usage_output\").innerHTML = \"\";'><a href='#usage'>clear output</a></span>";
+      var export_output= "<span class='output_control'><a href='/get_usage_export/output.txt'>export output.txt</a></span>";
+      var output_control = "<div>" + clear_output + export_output + "</div>";
+      html_formatted = "<pre>" + formatted + "</pre>" + output_control;
+
+      return html_formatted;
+    }
+
+  });
+</script>
+</head>
+<body>
+  <span class="output_buttons"> 
+    <input type="button" id="usage_raw" value="raw output">
+  </span>
+  <span class="update_buttons">
+    <input type="button" id="usage_refresh" class=refresh title="reload" value=" ">
+    <span class="reload_time"> loaded at: {{ reload_time }} </span>
+  </span>
+  <div id=usage_output class="out">[output]</div>
+
+    <p>Period: ({{ acct['usage_period'][0] }} - {{ acct['usage_period'][1] }})</p>
+    {% if acct['usage_streams'] %}
+    <table id="usagetable" class="tablesorter">
+      <thead>
+        <tr>
+          <th class="tg-031e">Stream Hash</th>
+          <th class="tg-031e">License Volumes</th>
+          <th class="tg-031e">Running Time (seconds)</th>
+        </tr>
+      </thead>
+      <tbody>
+    {% for s in acct['usage_streams'] %}
+        <tr>
+          <td class="tg-031e">{{s[0]}}</td>
+          <td class="tg-031e">
+            <ul>
+    {% for l in s[1]['licenses'] %}
+            <li> {{l}} : {{s[1]['licenses'][l]}} </li>
+    {% endfor %}
+            </ul>
+          </td>
+          <td class="tg-031e">{{s[1]['seconds']}}</td>
+        </tr>
+    {% endfor %}
+      </tbody>
+    </table>
+    {% else %}
+    <p> [ No usage data for this period ] </p>
+    {% endif %}
+</body>

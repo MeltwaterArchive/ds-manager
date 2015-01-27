@@ -82,6 +82,46 @@ def reset_sources():
     
 
 '''
+USAGE
+'''
+
+@app.route('/usage_get', methods=['POST', 'GET'])
+def usage_get():
+    # do push/get request only when asked
+    if not 'usage' in session.keys() or 'reload' in request.args:
+        session['usage_out'] = ""
+        session['usage_reload_time'] = datetime.datetime.utcnow()
+        session['usage'] = account_all()
+    return render_template(
+        'usage.html',
+        acct=session['usage'],
+        reload_time=format_time(session['usage_reload_time']))
+
+@app.route('/usage_get_raw')
+def usage_get_raw():
+    print type(session['usage'])
+    if 'usage' in session.keys():
+        return jsonify(out=session['usage'])
+    else:
+        return jsonify(out="usage data not available..")
+
+@app.route('/set_usage_export', methods=['POST'])
+def set_usage_export():
+    # store jquery formatted output in session data
+    session['usage_out'] = str(request.form['output'])
+    response = make_response("",204)
+    return response
+
+@app.route('/get_usage_export/output.txt')
+def get_usage_export():
+    response = make_response(session['usage_out'])
+    response.headers['Content-Type'] = 'text/xml'
+    # This is the key: Set the right header for the response
+    # to be downloaded, instead of just printed on the browser
+    response.headers["Content-Disposition"] = "attachment; filename=output.txt"
+    return response
+
+'''
 PUSH 
 '''
 

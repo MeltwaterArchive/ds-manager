@@ -281,7 +281,29 @@ td {
     $.get($SCRIPT_ROOT + '/reset_push');
     $.get($SCRIPT_ROOT + '/reset_sources');
 
+    $.get($SCRIPT_ROOT + '/usage_get', function(data){
+      $('#usage_load').css('display', 'none');
+      $('#usageget').html(data);
+    });
+
     // hide/show tables
+    $('#usage').click(function() {
+      //only get data if we're opening 
+      if ($('#usageget').css('display') == 'none'){
+        // loading gif
+        $('#usage_load').css('display', 'block');
+        $.get($SCRIPT_ROOT + '/usage_get', function(data){
+          $('#usageget').html(data).slideToggle("fast");
+          $('#usage_load').css('display', 'none');
+          $('html,body').animate({scrollTop: $('#usage').offset().top}, 'slow');
+        });
+      }
+      else{
+        $('#usageget').slideToggle("fast");
+      }
+    });
+
+
     $('#push').click(function() {
       //only get data if we're opening 
       if ($('#pushget').css('display') == 'none'){
@@ -326,12 +348,7 @@ td {
         $('#sourceget').slideToggle("fast");
       }
     });
-    $('#usage').click(function() {
-      $('#usageget').slideToggle("fast");
-    });
 
-    //sort tables
-    $('#usagetable').tablesorter();
     
   });
 </script>
@@ -393,38 +410,9 @@ td {
 <!-- USAGE -->
   <div id="usage" class="section">
     <h3 id="showusage"> Usage </h3>
+    <img src="static/ajax-loader.gif" alt="loading.." id="usage_load" class="load" style="display: block;">
   </div>
-  <div id="usageget" class="section">
-    <p>Period: ({{ acct['usage_period'][0] }} - {{ acct['usage_period'][1] }})</p>
-    {% if acct['usage_streams'] %}
-    <table id="usagetable" class="tablesorter">
-      <thead>
-        <tr>
-          <th class="tg-031e">Stream Hash</th>
-          <th class="tg-031e">License Volumes</th>
-          <th class="tg-031e">Running Time (seconds)</th>
-        </tr>
-      </thead>
-      <tbody>
-    {% for s in acct['usage_streams'] %}
-        <tr>
-          <td class="tg-031e">{{s[0]}}</td>
-          <td class="tg-031e">
-            <ul>
-    {% for l in s[1]['licenses'] %}
-            <li> {{l}} : {{s[1]['licenses'][l]}} </li>
-    {% endfor %}
-            </ul>
-          </td>
-          <td class="tg-031e">{{s[1]['seconds']}}</td>
-        </tr>
-    {% endfor %}
-      </tbody>
-    </table>
-    {% else %}
-    <p> [ No usage data for this period ] </p>
-    {% endif %}
-  </div>
+  <div id="usageget" class="section"></div>
 
 <!-- PUSH SUBSCRIPTIONS -->
   <div id="push" class="section">

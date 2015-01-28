@@ -109,7 +109,6 @@ def usage_get():
 
 @app.route('/usage_get_raw')
 def usage_get_raw():
-    print type(session['usage'])
     if 'usage' in session.keys():
         return jsonify(out=session['usage'])
     else:

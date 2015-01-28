@@ -41,6 +41,19 @@
       return false;
     });
 
+    $('input#push_dpus').bind('click', function() {
+      push_output_wait();
+      $.getJSON($SCRIPT_ROOT + '/push_dpus',
+      $( ".push:checked"), 
+      function(data) {
+        formatted = push_output_format(data);
+        var html_formatted = push_output_format_html(formatted);
+        $.post($SCRIPT_ROOT + '/set_push_export', {output:formatted});
+        $("#push_output").html(html_formatted);
+      });
+      return false;
+    });
+
     $('input#push_delete').bind('click', function() {
       // confirm that we should delete subs before doing it
       var subs = "";
@@ -182,6 +195,7 @@
   <span class="output_buttons"> 
     <input type="button" id="push_raw" value="raw output">
     <input type="button" id="push_log" value=log>
+    <input type="button" id="push_dpus" value=dpus>
   </span>
   <span class="control_buttons">
     <input type="button" id="push_pause" value=pause>

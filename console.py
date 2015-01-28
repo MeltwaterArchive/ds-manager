@@ -168,6 +168,17 @@ def push_log():
             out.append({})
     return jsonify(out=out)
 
+@app.route('/push_dpus')
+def push_dpus():
+    hashes = []
+    if 'push' in session.keys():
+        for p in session['push']:
+            for r in request.args:
+                if p['id'] == r:
+                    hashes.append(p['hash'])
+    cost = dpu_cost(hashes)
+    return jsonify(out=cost)
+
 @app.route('/push_delete')
 def push_delete():
     client = Client(session['username'],session['apikey'])
@@ -684,11 +695,23 @@ def account_all():
         'x-ratelimit-limit':""}
     return acct
 
+def dpu_cost(hashes):
+    '''get ordered dict of hourly dpu cost'''
+    hash_costs = []
+    try:
+        client = Client(session['username'],session['apikey'])
+        for h in hashes:
+            dpus = client.dpu(h)
+            hash_costs.append({h: dpus})
+    except Exception, e:
+        print e.message
+    return hash_costs
+
 def format_time(timestamp):
     return timestamp.strftime("%Y-%m-%d %H:%M:%S +0000")
 
 app.secret_key = 'A0Zr98j/3yX R~XHH!jmN]LWX/,?RT'
 
 if __name__ == '__main__':
-    app.debug = False
+    app.debug = True
     app.run()

@@ -305,6 +305,21 @@ def historics_get_raw():
     session['historics_out'] = raw
     return jsonify(out=raw)
 
+@app.route('/historics_dpus')
+def historics_dpus():
+    #TODO - need to calculate historics dpu overall cost
+    hashes = []
+    if 'push_historics' in session.keys():
+        for p in session['push_historics']:
+            for r in request.args:
+                if p['id'] == r:
+                    # find the historic matching this sub
+                    for h in session['historics']:
+                        if p['hash'] == h['id']:
+                            hashes.append(h['definition_id'])
+    cost = dpu_cost(hashes)
+    return jsonify(out=cost)
+
 @app.route('/historics_pause')
 def historics_pause():
     client = Client(session['username'],session['apikey'])

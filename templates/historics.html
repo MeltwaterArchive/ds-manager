@@ -43,6 +43,19 @@
       return false;
     });
 
+    $('input#historics_dpus').bind('click', function() {
+      historics_output_wait();
+      $.getJSON($SCRIPT_ROOT + '/historics_dpus',
+      $( ".historics:checked"), 
+      function(data) {
+        formatted = historics_output_format(data);
+        var html_formatted = historics_output_format_html(formatted);
+        $.post($SCRIPT_ROOT + '/set_historics_export', {output:formatted});
+        $("#historics_output").html(html_formatted);
+      });
+      return false;
+    });
+
     $('input#historics_push_delete').bind('click', function() {
       var subs = "";
       $( ".historics:checked").each(function(){
@@ -251,6 +264,7 @@
   <span class="output_buttons"> 
     <input type="button" id="historics_raw" value="raw output">
     <input type="button" id="historics_log" value="log">
+    <input type="button" id="historics_dpus" value=dpus>
   </span>
   <span class="control_buttons">
     <input type="button" id="historics_push_pause" value="p pause">

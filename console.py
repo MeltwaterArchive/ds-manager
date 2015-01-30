@@ -76,6 +76,13 @@ def logout():
     pop_session()
     return redirect(url_for('log_the_user_in'))
 
+@app.route('/reset_usage')
+def reset_usage():
+    if 'usage' in session.keys():
+        session.pop('push', None)
+    response = make_response("",204)
+    return response
+
 @app.route('/reset_push')
 def reset_push():
     if 'push' in session.keys():
@@ -581,7 +588,7 @@ def historic_push(historic_get,push_get):
         if type(p) is dict:
             #case of multiple subscriptions for 1 historic - hist already added to hp
             if p['hash'] in hp and 'subscriptions' in hp[p['hash']]:
-                hp[h['id']]['subscriptions'].append(p)
+                hp[p['hash']]['subscriptions'].append(p)
                 no_hist = False
             # match subscription to historic
             else:

@@ -234,11 +234,18 @@ td {
   border-style:solid;border-width:1px;
   word-wrap:break-word;
   font-family: monospace;
+  box-shadow: 1px 1px 1px #afafaf;
+  -webkit-box-shadow: 1px 1px 1px #afafaf;
+  -moz-box-shadow: 1px 1px 1px #afafaf;
 }
 
 .load {
   margin-left: 40px;
   margin-top: 12px;
+}
+
+.time_col {
+  min-width: 12ch;
 }
 
 .sub {
@@ -278,9 +285,17 @@ td {
   $SCRIPT_ROOT = {{ request.script_root|tojson|safe }};
 
   $(document).ready(function() {
-    // remove push and sources session info on page load
+    // INITIALIZE - remove push and sources session info on page load
+    $.get($SCRIPT_ROOT + '/reset_usage');
     $.get($SCRIPT_ROOT + '/reset_push');
     $.get($SCRIPT_ROOT + '/reset_sources');
+
+    if( $("#usage").length == 0 ) {
+      $('#login_button').val("Log in")
+    }
+    else {
+      $('#login_button').val("Switch users")
+    }
 
     $.get($SCRIPT_ROOT + '/usage_get', function(data){
       $('#usage_load').css('display', 'none');
@@ -374,7 +389,7 @@ td {
           <label for="username">User name:</label> <input type="text"  class="loginfield" name="username">
           <label for="apikey">API Key:</label> <input type="text"  class="loginfield" name="apikey" >
           <div id="loginlogout">
-            <input type="submit" value="Login" >
+            <input type="submit" id="login_button" value="Login" >
             <input type="button" value="Log out" onClick="javascript:location.href='/logout';">
           </div>
         </fieldset>

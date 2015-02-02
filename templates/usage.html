@@ -36,6 +36,13 @@
       });
     });
 
+    //update ratelimit
+    $(':button,h3').click(function() {
+      $.get($SCRIPT_ROOT + '/update_ratelimit', function(data){
+        $('#ratelimit').text(data);
+      });
+    });
+
     // helper functions
 
     //stringify the json so that its formatted nicely for output (we export this as well)

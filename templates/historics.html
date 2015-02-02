@@ -208,6 +208,13 @@
       });
     });
 
+    //update ratelimit
+    $(':button,h3').click(function() {
+      $.get($SCRIPT_ROOT + '/update_ratelimit', function(data){
+        $('#ratelimit').text(data);
+      });
+    });
+
     //helper functions
 
     var historics_output_wait = function(){

@@ -365,7 +365,6 @@ td {
       }
     });
 
-    
   });
 </script>
 <link rel="shortcut icon" href="http://www.google.com/s2/favicons?domain=dev.datasift.com">
@@ -409,7 +408,7 @@ td {
   {% set color = 'red' %}
   {% endif %}
   <p>Rate Limit remaining: 
-    <span style="color:{{color}};font-weight:bold;">
+    <span id="ratelimit" style="color:{{color}};font-weight:bold;">
       {{acct['limit'][0]}}
     </span> / {{acct['limit'][1]}} </p>
   {% if acct['balance'] %}

@@ -96,7 +96,14 @@ def reset_sources():
         session.pop('sources', None)
     response = make_response("",204)
     return response
-    
+
+@app.route('/update_ratelimit')
+def update_ratelimit():
+    if 'ratelimit' in session.keys():
+        response = make_response(session['ratelimit'],200)
+    else:
+        response = make_response("",200)
+    return response
 
 '''
 USAGE
@@ -579,7 +586,8 @@ HELPER FUNCTIONS
 def valid_login(user,apikey):
     try:
         client = Client(user,apikey)
-        client.balance()
+        balance = client.balance()
+        session['ratelimit'] = balance.headers['x-ratelimit-remaining']
         return client
     except:
         return None
@@ -662,6 +670,8 @@ def push_get_all():
         for p in pushgetlist:
             if p['last_request']:
                 p['last_request'] = datetime.datetime.fromtimestamp(p['last_request'])
+
+        session['ratelimit'] = pushget.headers['x-ratelimit-remaining']
     except:
         pushgetlist = ["No Push API access"]
     return pushgetlist
@@ -676,6 +686,7 @@ def historic_get_all():
         pages = client.historics.get()['count']/per_page + 2
         for i in xrange(1,pages):
             historicget = client.historics.get(maximum=per_page,page=i)
+            session['ratelimit'] = historicget.headers['x-ratelimit-remaining']
             historicgetlist.extend([h for h in historicget['data']])
     except:
         historicgetlist = ["No Historic API access"]
@@ -691,6 +702,7 @@ def source_get_all():
         pages = client.managed_sources.get()['count']/per_page + 2
         for i in xrange(1,pages):
             sourceget = client.managed_sources.get(per_page=per_page,page=i)
+            session['ratelimit'] = sourceget.headers['x-ratelimit-remaining']
             sourcegetlist.extend([s for s in sourceget['sources']])
     except:
         sourcegetlist = ["No Managed Source API access"]
@@ -701,6 +713,7 @@ def usage_all():
     try:
         client = Client(session['username'],session['apikey'])
         usage = client.usage(period='day')
+        session['ratelimit'] = usage.headers['x-ratelimit-remaining']
     except:
         usage = ["No usage available"]
     return usage
@@ -715,6 +728,7 @@ def account_all():
         usage_streams = usage['streams'].items()
         usage_period = (usage['start'],usage['end'])
         limit = (usage.headers['x-ratelimit-remaining'], usage.headers['x-ratelimit-limit'])
+        session['ratelimit'] = usage.headers['x-ratelimit-remaining']
         acct = {'balance':client.balance(),
         'usage_streams':usage_streams,
         'usage_period': usage_period,
@@ -734,6 +748,8 @@ def dpu_cost(hashes):
         for h in hashes:
             dpus = client.dpu(h)
             hash_costs.append({h: dpus})
+        if dpus:
+            session['ratelimit'] = dpus.headers['x-ratelimit-remaining']
     except Exception, e:
         print e.message
     return hash_costs

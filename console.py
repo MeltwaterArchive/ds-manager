@@ -316,6 +316,7 @@ def historics_get_raw():
 def historics_dpus():
     #TODO - need to calculate historics dpu overall cost
     hashes = []
+    already_added_h = []
     if 'push_historics' in session.keys():
         for p in session['push_historics']:
             for r in request.args:
@@ -324,6 +325,14 @@ def historics_dpus():
                     for h in session['historics']:
                         if p['hash'] == h['id']:
                             hashes.append(h['definition_id'])
+                            already_added_h = h['id']
+                            break
+        # historic only - no subscription
+        for r in request.args:
+            if not r in already_added_h:
+                for h in session['historics']:
+                    if r == h['id']:
+                        hashes.append(h['definition_id'])
     cost = dpu_cost(hashes)
     return jsonify(out=cost)
 

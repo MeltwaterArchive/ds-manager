@@ -55,8 +55,8 @@
       var html_formatted = "";
       var clear_output= "<span class='output_control' onclick='document.getElementById(\"usage_output\").innerHTML = \"\";'><a href='#usage'>clear output</a></span>";
       var export_output= "<span class='output_control'><a href='/get_usage_export/output.txt'>export output.txt</a></span>";
-      var output_control = "<div>" + clear_output + export_output + "</div>";
-      html_formatted = "<pre>" + formatted + "</pre>" + output_control;
+      var output_control = "<div class='output_control_container'>" + clear_output + export_output + "</div>";
+      html_formatted = "<div class='inner_output'><pre>" + formatted + "</pre></div>" + output_control;
 
       return html_formatted;
     }

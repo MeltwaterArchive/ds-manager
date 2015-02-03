@@ -43,7 +43,13 @@ def login():
     # was GET or the credentials were invalid
     return render_template('login.html', error=error)
 
-@app.route('/ds_console', methods=['POST', 'GET'])
+
+@app.route('/ds_console')
+def ds_console():
+    # redirect from old endpoint
+    return redirect(url_for('log_the_user_in'))
+
+@app.route('/manager', methods=['POST', 'GET'])
 def log_the_user_in():
     
     # login dialog, set session stuff
@@ -87,6 +93,13 @@ def reset_usage():
 def reset_push():
     if 'push' in session.keys():
         session.pop('push', None)
+    response = make_response("",204)
+    return response
+
+@app.route('/reset_historics')
+def reset_historics():
+    if 'historics' in session.keys():
+        session.pop('historics', None)
     response = make_response("",204)
     return response
 

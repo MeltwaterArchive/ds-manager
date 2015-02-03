@@ -89,7 +89,7 @@ td {
   margin: 70px 40px;
 }
 
-#consoletext {
+#managertext {
   position: absolute;
   left: 100px;
   bottom: -4px;
@@ -190,26 +190,6 @@ td {
   margin-right: 8px;
 }
 
-.output_control{
-  text-decoration: underline;
-  font-family: monospace;
-  margin: 6px;
-
-}
-
-.output_control a{
-  color:dimgrey;
-}
-
-.output_control:hover a{
-  color:darkorange;
-  font-weight: bold;
-}
-
-.output_control_container {
-  margin-top:10px;
-}
-
 .control_buttons{
   margin-right: 8px;
 }
@@ -247,6 +227,26 @@ td {
 .out .inner_output {
   overflow: scroll;
   max-height: 500px;
+}
+
+.output_control{
+  text-decoration: underline;
+  font-family: monospace;
+  margin: 6px;
+
+}
+
+.output_control a{
+  color:dimgrey;
+}
+
+.output_control:hover a{
+  color:darkorange;
+  font-weight: bold;
+}
+
+.output_control_container {
+  margin-top:10px;
 }
 
 .load {
@@ -298,6 +298,7 @@ td {
     // INITIALIZE - remove push and sources session info on page load
     $.get($SCRIPT_ROOT + '/reset_usage');
     $.get($SCRIPT_ROOT + '/reset_push');
+    $.get($SCRIPT_ROOT + '/reset_historics');
     $.get($SCRIPT_ROOT + '/reset_sources');
 
     if( $("#usage").length == 0 ) {
@@ -380,11 +381,11 @@ td {
 <link rel="shortcut icon" href="http://www.google.com/s2/favicons?domain=dev.datasift.com">
 </head>
 <body>
-  <title>DataSift Console</title>
+  <title>DataSift Manager</title>
   <div id="header">
     <span title="DataSift">
-      <div id="consoletext">
-        console
+      <div id="managertext">
+        manager
       </div>
     </span>
     <div id="login">
@@ -467,7 +468,9 @@ td {
   {% else %}
   <!-- no login message -->
   <div id="introtext">
-    <p>Login with a user name and api key to get a comprehensive account summary, including: usage, Live Streams, Historic Streams, and Managed Sources monitoring. Additional features include:
+    <p>Login with a user name and api key to monitor: account usage, Live Streams, Historic Streams, and Managed Sources. 
+      <br>
+      Management features include:
       <ul>
         <li>Live Streams: delete, stop, pause, and resume push subscriptions. push/get and log output</li>
         <li>Historic Streams: delete, stop, pause, and resume historics and associated push subscriptions. push/get and log output</li>

@@ -70,7 +70,7 @@ def log_the_user_in():
             name=session['username']
 
     return render_template(
-        'console.html',
+        'manager.html',
         error=error,
         name=name,
         acct=account_all())

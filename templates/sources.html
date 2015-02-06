@@ -234,7 +234,7 @@
         <td class="tg-031e">{{entry['source_type']}}</td>
         <td class="tg-031e">{{entry['name']}}</td>
         <td class="tg-031e">{{entry['id']}}</td>
-        <td class="tg-031e">
+        <td class="sourcescol">
           <ul>
   {% for r in entry['resources'] %}
             <li>
@@ -255,7 +255,7 @@
   {% endfor %}
           </ul>
         </td>
-        <td class="sourcesauth">
+        <td class="sourcescol">
           <ul>
   {% for a in entry['auth'] %}
             <li>id: {{a['identity_id']}}

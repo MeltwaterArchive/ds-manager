@@ -79,23 +79,23 @@
     <table id="usagetable" class="tablesorter">
       <thead>
         <tr>
-          <th class="tg-031e">Stream Hash</th>
-          <th class="tg-031e">License Volumes</th>
-          <th class="tg-031e">Running Time (seconds)</th>
+          <th>Stream Hash</th>
+          <th>License Volumes</th>
+          <th>Running Time (seconds)</th>
         </tr>
       </thead>
       <tbody>
     {% for s in acct['streams'] %}
         <tr>
-          <td class="tg-031e">{{s}}</td>
-          <td class="tg-031e">
+          <td>{{s}}</td>
+          <td>
             <ul>
     {% for l in acct['streams'][s]['licenses'] %}
             <li> {{l}} : {{acct['streams'][s]['licenses'][l]}} </li>
     {% endfor %}
             </ul>
           </td>
-          <td class="tg-031e">{{acct['streams'][s]['seconds']}}</td>
+          <td>{{acct['streams'][s]['seconds']}}</td>
         </tr>
     {% endfor %}
       </tbody>

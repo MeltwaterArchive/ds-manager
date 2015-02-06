@@ -218,33 +218,33 @@
   <table id="pushtable" class="tablesorter">
     <thead>
       <tr>
-        <th class="tg-031e"></th>
-        <th class="tg-031e">Push ID</th>
-        <th class="tg-031e">Name</th>
-        <th class="tg-031e">Hash</th>
-        <th class="tg-031e time_col">Last Request</th>
-        <th class="tg-031e time_col">Last Success</th>
-        <th class="tg-031e time_col">Created</th>
-        <th class="tg-031e">Lost Data</th>
-        <th class="tg-031e">Count</th>
-        <th class="tg-031e">Output</th>
-        <th class="tg-031e">Status</th>
+        <th></th>
+        <th>Push ID</th>
+        <th>Name</th>
+        <th>Hash</th>
+        <th class="time_col">Last Request</th>
+        <th class="time_col">Last Success</th>
+        <th class="time_col">Created</th>
+        <th>Lost Data</th>
+        <th>Count</th>
+        <th>Output</th>
+        <th>Status</th>
       </tr>
     </thead>
     <tbody>
   {% for entry in push %}
       <tr id="push_row_{{entry['id']}}">
-        <td class="tg-031e"><input type="checkbox" class="push" name="{{entry['id']}}"></td>
-        <td class="tg-031e">{{entry['id']}}</td>
-        <td class="tg-031e">{{entry['name']}}</td>
-        <td class="tg-031e">{{entry['hash']}}</td>
-        <td class="tg-031e">{{entry['last_request']}}</td>
-        <td class="tg-031e">{{entry['last_success']}}</td>
-        <td class="tg-031e">{{entry['start']}}</td>
-        <td class="tg-031e">{{entry['lost_data']}}</td>
-        <td class="tg-031e">{{entry['interaction_count']}}</td>
-        <td class="tg-031e">{{entry['output_type']}}</td>
-        <td class="tg-031e" id="push_status_{{entry['id']}}">{{entry['status']}}</td>
+        <td><input type="checkbox" class="push" name="{{entry['id']}}"></td>
+        <td>{{entry['id']}}</td>
+        <td>{{entry['name']}}</td>
+        <td>{{entry['hash']}}</td>
+        <td>{{entry['last_request']}}</td>
+        <td>{{entry['last_success']}}</td>
+        <td>{{entry['start']}}</td>
+        <td>{{entry['lost_data']}}</td>
+        <td>{{entry['interaction_count']}}</td>
+        <td>{{entry['output_type']}}</td>
+        <td id="push_status_{{entry['id']}}">{{entry['status']}}</td>
       </tr>
   {% endfor %}
     </tbody>

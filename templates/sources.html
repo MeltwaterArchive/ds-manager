@@ -216,24 +216,24 @@
   <table id="sourcestable" class="tablesorter">
     <thead>
       <tr>
-        <th class="tg-031e"></th>
-        <th class="tg-031e">Source Type</th>
-        <th class="tg-031e">Name</th>
-        <th class="tg-031e">ID</th>
-        <th class="tg-031e">Resources</th>
-        <th class="tg-031e">Parameters</th>
+        <th></th>
+        <th>Source Type</th>
+        <th>Name</th>
+        <th>ID</th>
+        <th>Resources</th>
+        <th>Parameters</th>
         <th class="sourcesauth">Auth</th>
-        <th class="tg-031e time_col">Created At (UTC)</th>
-        <th class="tg-031e">Status</th>
+        <th class="time_col">Created At (UTC)</th>
+        <th>Status</th>
       </tr>  
     </thead>
     <tbody>
   {% for entry in source %}
       <tr id="source_row_{{entry['id']}}">
-        <td class="tg-031e"><input type="checkbox" class="source" name="{{entry['id']}}"></td>
-        <td class="tg-031e">{{entry['source_type']}}</td>
-        <td class="tg-031e">{{entry['name']}}</td>
-        <td class="tg-031e">{{entry['id']}}</td>
+        <td><input type="checkbox" class="source" name="{{entry['id']}}"></td>
+        <td>{{entry['source_type']}}</td>
+        <td>{{entry['name']}}</td>
+        <td>{{entry['id']}}</td>
         <td class="sourcescol">
           <ul>
   {% for r in entry['resources'] %}
@@ -248,7 +248,7 @@
   {% endfor %}
           </ul>
         </td>
-        <td class="tg-031e">
+        <td>
           <ul>
   {% for p in entry['parameters'] %}
           <li>{{p}}: {{entry['parameters'][p]}}</li> 
@@ -266,8 +266,8 @@
   {% endfor %}
           </ul>
         </td>
-        <td class="tg-031e">{{entry['created_at']}}</td>
-        <td class="tg-031e" id="status_{{entry['id']}}">{{entry['status']}}</td>
+        <td>{{entry['created_at']}}</td>
+        <td id="status_{{entry['id']}}">{{entry['status']}}</td>
       </tr>
   {% endfor %}
     </tbody>

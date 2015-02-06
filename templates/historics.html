@@ -297,20 +297,20 @@
   <table id="historicstable" class="tablesorter">
     <thead>
       <tr>
-        <th class="tg-031e"></th>
-        <th class="tg-031e">ID</th>
-        <th class="tg-031e">Name</th>
-        <th class="tg-031e">Hash</th>
-        <th class="tg-031e time_col">Created At</th>
-        <th class="tg-031e time_col">Last Request</th>
-        <th class="tg-031e time_col">Last Success</th>
-        <th class="tg-031e time_col">Start</th>
-        <th class="tg-031e time_col">End</th>
-        <th class="tg-031e">Progress</th>
-        <th class="tg-031e">Lost Data</th>
-        <th class="tg-031e">Output</th>
-        <th class="tg-031e">Count</th>
-        <th class="tg-031e">Status</th>
+        <th></th>
+        <th>ID</th>
+        <th>Name</th>
+        <th>Hash</th>
+        <th class="time_col">Created At</th>
+        <th class="time_col">Last Request</th>
+        <th class="time_col">Last Success</th>
+        <th class="time_col">Start</th>
+        <th class="time_col">End</th>
+        <th>Progress</th>
+        <th>Lost Data</th>
+        <th>Output</th>
+        <th>Count</th>
+        <th>Status</th>
       </tr>
     </thead>
     <tbody>
@@ -321,57 +321,57 @@
     <!-- case where there is a historic and sub -->
       {% if 'historic' in historics[entry] %}
       <tr id="historics_row_{{s['id']}}">
-        <td class="tg-031e"><input type="checkbox" class="historics" name="{{s['id']}}"></td>
-        <td class="tg-031e"><div class="sub">{{s['id']}}</div><div class="hist">{{h['id']}}</div></td>
-        <td class="tg-031e"><div class="sub">{{s['name']}}</div><div class="hist">{{h['name']}}</div></td>
-        <td class="tg-031e"><div class="sub">&nbsp;</div><div class="hist">{{h['definition_id']}}</div></td>
-        <td class="tg-031e"><div class="sub">{{s['created_at']}}</div><div class="hist">{{h['created_at']}}</div></td>
-        <td class="tg-031e"><div class="sub">{{s['last_request']}}</div><div class="hist">&nbsp;</div></td>
-        <td class="tg-031e"><div class="sub">{{s['last_success']}}</div><div class="hist">&nbsp;</div></td>
-        <td class="tg-031e"><div class="sub">&nbsp;</div><div class="hist">{{h['start']}}</div></td>
-        <td class="tg-031e"><div class="sub">&nbsp;</div><div class="hist">{{h['end']}}</div></td>
-        <td class="tg-031e"><div class="sub">&nbsp;</div><div class="hist">{{h['progress']}}</div></td>
-        <td class="tg-031e"><div class="sub">{{s['lost_data']}}</div><div class="hist">&nbsp;</div></td>
-        <td class="tg-031e"><div class="sub">{{s['output_type']}}</div><div class="hist">&nbsp;</div></td>
-        <td class="tg-031e"><div class="sub">{{s['interaction_count']}}</div><div class="hist">{{h['delivery_count']}}</div></td>
-        <td class="tg-031e" id="historics_status_{{s['id']}}"><div class="sub">{{s['status']}}</div><div class="hist">{{h['status']}}</div></td>
+        <td><input type="checkbox" class="historics" name="{{s['id']}}"></td>
+        <td><div class="sub">{{s['id']}}</div><div class="hist">{{h['id']}}</div></td>
+        <td><div class="sub">{{s['name']}}</div><div class="hist">{{h['name']}}</div></td>
+        <td><div class="sub">&nbsp;</div><div class="hist">{{h['definition_id']}}</div></td>
+        <td><div class="sub">{{s['created_at']}}</div><div class="hist">{{h['created_at']}}</div></td>
+        <td><div class="sub">{{s['last_request']}}</div><div class="hist">&nbsp;</div></td>
+        <td><div class="sub">{{s['last_success']}}</div><div class="hist">&nbsp;</div></td>
+        <td><div class="sub">&nbsp;</div><div class="hist">{{h['start']}}</div></td>
+        <td><div class="sub">&nbsp;</div><div class="hist">{{h['end']}}</div></td>
+        <td><div class="sub">&nbsp;</div><div class="hist">{{h['progress']}}</div></td>
+        <td><div class="sub">{{s['lost_data']}}</div><div class="hist">&nbsp;</div></td>
+        <td><div class="sub">{{s['output_type']}}</div><div class="hist">&nbsp;</div></td>
+        <td><div class="sub">{{s['interaction_count']}}</div><div class="hist">{{h['delivery_count']}}</div></td>
+        <td id="historics_status_{{s['id']}}"><div class="sub">{{s['status']}}</div><div class="hist">{{h['status']}}</div></td>
       </tr>
       {% else %}
       <!-- case where there is a sub, no historic -->
       <tr id="historics_row_{{s['id']}}">
-        <td class="tg-031e"><input type="checkbox" class="historics" name="{{s['id']}}"></td>
-        <td class="tg-031e"><div class="sub">{{s['id']}}</div><div class="hist">{{s['hash']}}</div></td>
-        <td class="tg-031e"><div class="sub">{{s['name']}}</div><div class="hist">&nbsp;</div></td>
-        <td class="tg-031e"><div class="sub">&nbsp;</div><div class="hist">&nbsp;</div></td>
-        <td class="tg-031e"><div class="sub">{{s['created_at']}}</div><div class="hist">&nbsp;</div></td>
-        <td class="tg-031e"><div class="sub">{{s['last_request']}}</div><div class="hist">&nbsp;</div></td>
-        <td class="tg-031e"><div class="sub">{{s['last_success']}}</div><div class="hist">&nbsp;</div></td>
-        <td class="tg-031e"><div class="sub">&nbsp;</div><div class="hist">&nbsp;</div></td>
-        <td class="tg-031e"><div class="sub">&nbsp;</div><div class="hist">&nbsp;</div></td>
-        <td class="tg-031e"><div class="sub">&nbsp;</div><div class="hist">&nbsp;</div></td>
-        <td class="tg-031e"><div class="sub">{{s['lost_data']}}</div><div class="hist">&nbsp;</div></td>
-        <td class="tg-031e"><div class="sub">{{s['output_type']}}</div><div class="hist">&nbsp;</div></td>
-        <td class="tg-031e"><div class="sub">{{s['interaction_count']}}</div><div class="hist">&nbsp;</div></td>
-        <td class="tg-031e" id="historics_status_{{s['id']}}"><div class="sub">{{s['status']}}</div><div class="hist">&nbsp;</div></td>
+        <td><input type="checkbox" class="historics" name="{{s['id']}}"></td>
+        <td><div class="sub">{{s['id']}}</div><div class="hist">{{s['hash']}}</div></td>
+        <td><div class="sub">{{s['name']}}</div><div class="hist">&nbsp;</div></td>
+        <td><div class="sub">&nbsp;</div><div class="hist">&nbsp;</div></td>
+        <td><div class="sub">{{s['created_at']}}</div><div class="hist">&nbsp;</div></td>
+        <td><div class="sub">{{s['last_request']}}</div><div class="hist">&nbsp;</div></td>
+        <td><div class="sub">{{s['last_success']}}</div><div class="hist">&nbsp;</div></td>
+        <td><div class="sub">&nbsp;</div><div class="hist">&nbsp;</div></td>
+        <td><div class="sub">&nbsp;</div><div class="hist">&nbsp;</div></td>
+        <td><div class="sub">&nbsp;</div><div class="hist">&nbsp;</div></td>
+        <td><div class="sub">{{s['lost_data']}}</div><div class="hist">&nbsp;</div></td>
+        <td><div class="sub">{{s['output_type']}}</div><div class="hist">&nbsp;</div></td>
+        <td><div class="sub">{{s['interaction_count']}}</div><div class="hist">&nbsp;</div></td>
+        <td id="historics_status_{{s['id']}}"><div class="sub">{{s['status']}}</div><div class="hist">&nbsp;</div></td>
       </tr>
       {% endif %}
       <!-- case where there is a historic but no subs -->
     {% else %}
       <tr id="historics_row_{{h['id']}}">
-        <td class="tg-031e"><input type="checkbox" class="historics" name="{{h['id']}}"></td>
-        <td class="tg-031e"><div class="sub">&nbsp;</div><div class="hist">{{h['id']}}</div></td>
-        <td class="tg-031e"><div class="sub">&nbsp;</div><div class="hist">{{h['name']}}</div></td>
-        <td class="tg-031e"><div class="sub">&nbsp;</div><div class="hist">{{h['definition_id']}}</div></td>
-        <td class="tg-031e"><div class="sub">&nbsp;</div><div class="hist">{{h['created_at']}}</div></td>
-        <td class="tg-031e"><div class="sub">&nbsp;</div><div class="hist">&nbsp;</div></td>
-        <td class="tg-031e"><div class="sub">&nbsp;</div><div class="hist">&nbsp;</div></td>
-        <td class="tg-031e"><div class="sub">&nbsp;</div><div class="hist">{{h['start']}}</td>
-        <td class="tg-031e"><div class="sub">&nbsp;</div><div class="hist">{{h['end']}}</td>
-        <td class="tg-031e"><div class="sub">&nbsp;</div><div class="hist">{{h['progress']}}</td>
-        <td class="tg-031e"><div class="sub">&nbsp;</div><div class="hist">&nbsp;</div></td>
-        <td class="tg-031e"><div class="sub">&nbsp;</div><div class="hist">&nbsp;</div></td>
-        <td class="tg-031e"><div class="sub">&nbsp;</div><div class="hist">{{h['delivery_count']}}</div></td>
-        <td class="tg-031e" id="historics_status_{{h['id']}}"><div class="sub">&nbsp;</div><div class="hist">{{h['status']}}</div></td>
+        <td><input type="checkbox" class="historics" name="{{h['id']}}"></td>
+        <td><div class="sub">&nbsp;</div><div class="hist">{{h['id']}}</div></td>
+        <td><div class="sub">&nbsp;</div><div class="hist">{{h['name']}}</div></td>
+        <td><div class="sub">&nbsp;</div><div class="hist">{{h['definition_id']}}</div></td>
+        <td><div class="sub">&nbsp;</div><div class="hist">{{h['created_at']}}</div></td>
+        <td><div class="sub">&nbsp;</div><div class="hist">&nbsp;</div></td>
+        <td><div class="sub">&nbsp;</div><div class="hist">&nbsp;</div></td>
+        <td><div class="sub">&nbsp;</div><div class="hist">{{h['start']}}</td>
+        <td><div class="sub">&nbsp;</div><div class="hist">{{h['end']}}</td>
+        <td><div class="sub">&nbsp;</div><div class="hist">{{h['progress']}}</td>
+        <td><div class="sub">&nbsp;</div><div class="hist">&nbsp;</div></td>
+        <td><div class="sub">&nbsp;</div><div class="hist">&nbsp;</div></td>
+        <td><div class="sub">&nbsp;</div><div class="hist">{{h['delivery_count']}}</div></td>
+        <td id="historics_status_{{h['id']}}"><div class="sub">&nbsp;</div><div class="hist">{{h['status']}}</div></td>
       </tr>
   {% endfor %}
   {% endfor %}

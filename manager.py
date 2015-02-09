@@ -144,7 +144,7 @@ def usage_get_raw():
 @app.route('/set_usage_export', methods=['POST'])
 def set_usage_export():
     # store jquery formatted output in session data
-    session['usage_out'] = str(request.form['output'])
+    session['usage_out'] = request.form['output'].encode('utf-8')
     response = make_response("",204)
     return response
 
@@ -269,7 +269,7 @@ def push_resume():
 @app.route('/set_push_export', methods=['POST'])
 def set_push_export():
     # store jquery formatted output in session data
-    session['push_out'] = str(request.form['output'])
+    session['push_out'] = request.form['output'].encode('utf-8')
     response = make_response("",204)
     return response
 
@@ -463,7 +463,7 @@ def historics_delete():
 @app.route('/set_historics_export', methods=['POST'])
 def set_historics_export():
     # store jquery formatted output in session data
-    session['historics_out'] = str(request.form['output'])
+    session['historics_out'] = request.form['output'].encode('utf-8')
     response = make_response("",204)
     return response
 
@@ -579,7 +579,8 @@ def source_token():
 @app.route('/set_source_export', methods=['POST'])
 def set_source_export():
     # store jquery formatted output in session data
-    session['source_out'] = str(request.form['output'])
+    # use encode() instead of str() to avoid encoding issues
+    session['source_out'] = request.form['output'].encode('utf-8')
     response = make_response("",204)
     return response
 

@@ -175,15 +175,56 @@ ul {
   margin-top:20px;
 }
 
-.section h3{
-  text-shadow: 1px 1px 1px darkorange;
+nav div a {
+  position: relative;
+  display: inline-block;
+  margin-left: 15px;
+  outline: none;
+  color: #009ACD;
+  text-decoration: none;
+  letter-spacing: 1px;
+  text-shadow: 0 0 2px #ADAFB2;
+  font-size: 1.35em;
 }
 
-.section:hover h3{
-  color:seashell;
-  text-decoration: underline;
-  cursor:pointer;
-  text-shadow: 1px 1px 1px dimgrey;
+nav div a:hover,
+nav div a:focus {
+  outline: none;
+}
+
+.cl-effect-13 div a::before,
+.cl-effect-13 div a::after {
+  display: inline-block;
+  opacity: 0;
+  -webkit-transition: -webkit-transform 0.3s, opacity 0.2s;
+  -moz-transition: -moz-transform 0.3s, opacity 0.2s;
+  transition: transform 0.3s, opacity 0.2s;
+}
+
+.cl-effect-13 div a::before {
+  margin-right: 10px;
+  content: '[';
+  -webkit-transform: translateX(20px);
+  -moz-transform: translateX(20px);
+  transform: translateX(20px);
+}
+
+.cl-effect-13 div a::after {
+  margin-left: 10px;
+  content: ']';
+  -webkit-transform: translateX(-20px);
+  -moz-transform: translateX(-20px);
+  transform: translateX(-20px);
+}
+
+.cl-effect-13 div a:hover::before,
+.cl-effect-13 div a:hover::after,
+.cl-effect-13 div a:focus::before,
+.cl-effect-13 div a:focus::after {
+  opacity: 1;
+  -webkit-transform: translateX(0px);
+  -moz-transform: translateX(0px);
+  transform: translateX(0px);
 }
 
 .output_buttons{
@@ -432,17 +473,17 @@ ul {
   
   <p>&nbsp;</p>
 
-
+<nav class="cl-effect-13" id="cl-effect-13">
 <!-- USAGE -->
   <div id="usage" class="section">
-    <h3 id="showusage"> Usage </h3>
+    <a id="showusage" href="#cl-effect-13"> Usage </a>
     <img src="static/ajax-loader.gif" alt="loading.." id="usage_load" class="load" style="display: block;">
   </div>
   <div id="usageget" class="section"></div>
 
 <!-- PUSH SUBSCRIPTIONS -->
   <div id="push" class="section">
-    <h3 id="showstreams"> Live Streams </h3>
+    <a id="showstreams" href="#cl-effect-13"> Live Streams </a>
     <img src="static/ajax-loader.gif" alt="loading.." id="push_load" class="load" style="display: none;">
   </div>
   <div id="pushget" style="display: none;"></div>
@@ -450,7 +491,7 @@ ul {
 
 <!-- HISTORICS -->
   <div id="historics" class="section">
-    <h3 id="showhistorics"> Historics Streams </h3>
+    <a id="showhistorics" href="#cl-effect-13"> Historics Streams </a>
     <img src="static/ajax-loader.gif" alt="loading.." id="historics_load" class="load" style="display: none;">
   </div>
 
@@ -459,10 +500,11 @@ ul {
 <!--  MANAGED SOURCES -->
   
   <div id="sources" class="section">
-    <h3 id="showsources"> Managed Sources </h3>
+    <a id="showsources" href="#cl-effect-13"> Managed Sources </a>
     <img src="static/ajax-loader.gif" alt="loading.." id="sources_load" class="load" style="display: none;">
   </div>
   <div id="sourceget" style="display: none;"></div>
+</nav>  
 
 
   {% else %}

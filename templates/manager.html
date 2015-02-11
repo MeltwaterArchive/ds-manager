@@ -175,6 +175,8 @@ ul {
   margin-top:20px;
 }
 
+/* animation effects for headers */
+
 nav div a {
   position: relative;
   display: inline-block;
@@ -278,7 +280,9 @@ nav div a:focus {
 }
 
 .output_control a{
-  color:dimgrey;
+  font-size: 1em;
+  text-shadow: unset;
+  text-decoration: underline;
 }
 
 .output_control:hover a{
@@ -476,14 +480,14 @@ nav div a:focus {
 <nav class="cl-effect-13" id="cl-effect-13">
 <!-- USAGE -->
   <div id="usage" class="section">
-    <a id="showusage" href="#cl-effect-13"> Usage </a>
+    <a id="showusage"> Usage </a>
     <img src="static/ajax-loader.gif" alt="loading.." id="usage_load" class="load" style="display: block;">
   </div>
   <div id="usageget" class="section"></div>
 
 <!-- PUSH SUBSCRIPTIONS -->
   <div id="push" class="section">
-    <a id="showstreams" href="#cl-effect-13"> Live Streams </a>
+    <a id="showstreams"> Live Streams </a>
     <img src="static/ajax-loader.gif" alt="loading.." id="push_load" class="load" style="display: none;">
   </div>
   <div id="pushget" style="display: none;"></div>
@@ -491,7 +495,7 @@ nav div a:focus {
 
 <!-- HISTORICS -->
   <div id="historics" class="section">
-    <a id="showhistorics" href="#cl-effect-13"> Historics Streams </a>
+    <a id="showhistorics"> Historics Streams </a>
     <img src="static/ajax-loader.gif" alt="loading.." id="historics_load" class="load" style="display: none;">
   </div>
 
@@ -500,7 +504,7 @@ nav div a:focus {
 <!--  MANAGED SOURCES -->
   
   <div id="sources" class="section">
-    <a id="showsources" href="#cl-effect-13"> Managed Sources </a>
+    <a id="showsources"> Managed Sources </a>
     <img src="static/ajax-loader.gif" alt="loading.." id="sources_load" class="load" style="display: none;">
   </div>
   <div id="sourceget" style="display: none;"></div>

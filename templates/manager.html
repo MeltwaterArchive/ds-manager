@@ -463,23 +463,29 @@ nav div a:focus {
 
 <!-- ACCOUNT DETAILS -->
 
-  <p>Account: <b>{{name}}</b> </p>
-  {% set third = acct['limit'][1]|float()/3 %}
-  {% set color = 'green' %}
-  {% if acct['limit'][0] < third %}
-  {% set color = 'red' %}
-  {% endif %}
-  <p>Rate Limit remaining: 
-    <span id="ratelimit" style="color:{{color}};font-weight:bold;">
-      {{acct['limit'][0]}}
-    </span> / {{acct['limit'][1]}} </p>
-  {% if acct['balance'] %}
-  {% set balance = acct['balance']['balance'] %}
-  <p>Plan: {{balance['plan']}}</p>
-  <p>Remaining DPUs: {{balance['remaining_dpus']}}</p>
-  <p>Cost: {{balance['cost']}}</p>
-  <p>Cost Limit: {{balance['threshold']}}</p>
-  {% endif %}
+    <p>Account: <b>{{name}}</b> </p>
+    {% if acct['limit'] %}
+      {% set third = acct['limit'][1]|float()/3 %}
+      {% set color = 'green' %}
+      {% if acct['limit'][0] < third %}
+        {% set color = 'red' %}
+      {% endif %}
+      <p>Rate Limit remaining: 
+        <span id="ratelimit" style="color:{{color}};font-weight:bold;">
+          {{acct['limit'][0]}}
+        </span> / {{acct['limit'][1]}} </p>
+      {% else %}
+      <p>[Rate Limit not available]</p>
+    {% endif %}
+    {% if acct['balance'] %}
+      {% set balance = acct['balance']['balance'] %}
+      <p>Plan: {{balance['plan']}}</p>
+      <p>Remaining DPUs: {{balance['remaining_dpus']}}</p>
+      <p>Cost: {{balance['cost']}}</p>
+      <p>Cost Limit: {{balance['threshold']}}</p>
+    {% else %}
+      <p>[Account details not available]</p>
+    {% endif %}
   
   <p>&nbsp;</p>
 

@@ -348,6 +348,7 @@ nav div a:focus {
   $(document).ready(function() {
     // INITIALIZE - remove push and sources session info on page load
     $.get($SCRIPT_ROOT + '/reset_usage');
+    $.get($SCRIPT_ROOT + '/reset_account');
     $.get($SCRIPT_ROOT + '/reset_push');
     $.get($SCRIPT_ROOT + '/reset_historics');
     $.get($SCRIPT_ROOT + '/reset_sources');
@@ -381,6 +382,21 @@ nav div a:focus {
       }
     });
 
+    $('#account').click(function() {
+      //only get data if we're opening 
+      if ($('#accountget').css('display') == 'none'){
+        // loading gif
+        $('#account_load').css('display', 'block');
+        $.get($SCRIPT_ROOT + '/account_get', function(data){
+          $('#accountget').html(data).slideToggle("fast");
+          $('#account_load').css('display', 'none');
+          $('html,body').animate({scrollTop: $('#account').offset().top}, 'slow');
+        });
+      }
+      else{
+        $('#accountget').slideToggle("fast");
+      }
+    });
 
     $('#push').click(function() {
       //only get data if we're opening 
@@ -496,6 +512,14 @@ nav div a:focus {
     <img src="static/ajax-loader.gif" alt="loading.." id="usage_load" class="load" style="display: block;">
   </div>
   <div id="usageget" class="section"></div>
+
+<!-- ACCOUNT IDENTITIES -->
+
+  <div id="account" class="section">
+    <a id="showaccount"> Account </a>
+    <img src="static/ajax-loader.gif" alt="loading.." id="account_load" class="load" style="display: none;">
+  </div>
+  <div id="accountget" style="display: none;"></div>
 
 <!-- PUSH SUBSCRIPTIONS -->
   <div id="push" class="section">

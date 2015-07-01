@@ -1,5 +1,5 @@
 from flask import Flask, render_template,request,session,redirect,url_for,jsonify,make_response
-from datasift import Client
+from datasift import Client, identity
 from datasift.push import Push
 from datasift.request import PartialRequest, DatasiftAuth
 from flask_kvsession import KVSessionExtension
@@ -85,7 +85,14 @@ def logout():
 @app.route('/reset_usage')
 def reset_usage():
     if 'usage' in session.keys():
-        session.pop('push', None)
+        session.pop('usage', None)
+    response = make_response("",204)
+    return response
+
+@app.route('/reset_account')
+def reset_account():
+    if 'account' in session.keys():
+        session.pop('account', None)
     response = make_response("",204)
     return response
 
@@ -156,6 +163,22 @@ def get_usage_export():
     # to be downloaded, instead of just printed on the browser
     response.headers["Content-Disposition"] = "attachment; filename=output.txt"
     return response
+
+
+'''
+ACCOUNT
+'''
+
+@app.route('/account_get', methods=['POST', 'GET'])
+def account_get():
+    if not 'account' in session.keys() or 'reload' in request.args:
+        session['account_out'] = ""
+        session['account_reload_time'] = datetime.datetime.utcnow()
+        #session['account'] = account_all()
+    return render_template(
+        'account.html',
+        raw=account_get_all())
+
 
 '''
 PUSH 
@@ -731,6 +754,19 @@ def usage_all():
     except:
         usage = ["No usage available"]
     return usage
+
+def account_get_all():
+    account = {}
+    try:
+        client = Client(session['username'],session['apikey'])
+        identities_list = client.account.identity.list()
+        identities = identities_list['identities']
+
+        identities_keys = {i['label']: i['api_key'] for i in identities}
+        account = identities
+    except:
+        account = ["No account identities available"]
+    return account
 
 
 def account_all():

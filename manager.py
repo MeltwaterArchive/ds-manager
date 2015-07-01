@@ -174,11 +174,17 @@ def account_get():
     if not 'account' in session.keys() or 'reload' in request.args:
         session['account_out'] = ""
         session['account_reload_time'] = datetime.datetime.utcnow()
-        #session['account'] = account_all()
+        session['account'] = account_get_all()
     return render_template(
         'account.html',
         raw=account_get_all())
 
+@app.route('/account_get_raw')
+def account_get_raw():
+    if 'account' in session.keys():
+        return jsonify(out=session['account'])
+    else:
+        return jsonify(out="account identity data not available..")
 
 '''
 PUSH 

@@ -73,6 +73,41 @@
   </span>
   <div id=account_output class="out">[output]</div>
 
+  {% if raw %}
+    <table id="accounttable" class="tablesorter">
+      <thead>
+        <tr>
+          <th></th>
+          <th>label</th>
+          <th>id</th>
+          <th>API key</th>
+          <th>created</th>
+          <th>updated</th>
+          <th>expires</th>
+          <th>master</th>
+          <th>status</th>
+        </tr>
+      </thead>
+      <tbody>
+    {% for i in raw %}
+        <tr>
+          <td><input type="checkbox" class="account" name="{{i['id']}}"></td>
+          <td>{{i['label']}}</td>
+          <td>{{i['id']}}</td>
+          <td>{{i['api_key']}}</td>
+          <td>{{i['created_at']}}</td>
+          <td>{{i['updated_at']}}</td>
+          <td>{{i['expires_at']}}</td>
+          <td>{{i['master']}}</td>
+          <td>{{i['status']}}</td>
+        </tr>
+    {% endfor %}
+      </tbody>
+    </table>
+    {% else %}
+    <p> [ No identities found ] </p>
+    {% endif %}
+
 {{ raw }}
 <!-- new account table should go here -->
 

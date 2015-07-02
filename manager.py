@@ -175,9 +175,11 @@ def account_get():
         session['account_out'] = ""
         session['account_reload_time'] = datetime.datetime.utcnow()
         session['account'] = account_get_all()
+        session['account_limits']=limits_get_all()
     return render_template(
         'account.html',
-        raw=account_get_all())
+        raw=session['account'],
+        limits=session['account_limits'])
 
 @app.route('/account_get_raw')
 def account_get_raw():
@@ -185,6 +187,22 @@ def account_get_raw():
         return jsonify(out=session['account'])
     else:
         return jsonify(out="account identity data not available..")
+
+@app.route('/set_account_export', methods=['POST'])
+def set_account_export():
+    # store jquery formatted output in session data
+    session['account_out'] = request.form['output'].encode('utf-8')
+    response = make_response("",204)
+    return response
+
+@app.route('/get_account_export/output.txt')
+def get_account_export():
+    response = make_response(session['account_out'])
+    response.headers['Content-Type'] = 'text/xml'
+    # This is the key: Set the right header for the response
+    # to be downloaded, instead of just printed on the browser
+    response.headers["Content-Disposition"] = "attachment; filename=output.txt"
+    return response
 
 '''
 PUSH 
@@ -771,8 +789,21 @@ def account_get_all():
         identities_keys = {i['label']: i['api_key'] for i in identities}
         account = identities
     except:
-        account = ["No account identities available"]
+        account = ["account identities available"]
     return account
+
+def limits_get_all(services=["facebook"]):
+    ''' single list of all limits for all services '''
+    limits = []
+    try:
+        client = Client(session['username'],session['apikey'])
+        # for now, just do facebook
+        for s in services:
+            limits_list = client.account.identity.limit.list(s)
+            limits += limits_list["limits"]
+    except:
+        client = "[ limits unavailable ]"
+    return limits
 
 
 def account_all():

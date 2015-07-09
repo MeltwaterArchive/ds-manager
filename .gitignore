@@ -14,3 +14,8 @@ static/tablesorter/jquery.tablesorter.min.js
 static/tablesorter/themes/blue/
 static/tablesorter/themes/green/
 venv/
+
+# Elastic Beanstalk Files
+.elasticbeanstalk/*
+!.elasticbeanstalk/*.cfg.yml
+!.elasticbeanstalk/*.global.yml

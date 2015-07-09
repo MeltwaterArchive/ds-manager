@@ -25,7 +25,7 @@ KVSessionExtension(store, app)
 
 @app.route('/')
 def index():
-    return 'heres the index'
+    return redirect(url_for('log_the_user_in'))
 
 @app.route('/login', methods=['POST', 'GET'])
 def login():

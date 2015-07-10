@@ -1,30 +1,40 @@
 Requirements:
-  pip install flask
-  
-  pip install datasift
-  
-  git clone https://github.com/mbr/flask-kvsession.git
-  
-  python ./setup.py install
-    
+  Local environment: 
+    Python 2.7
+    virtualenv
+    pip
+  Dependencies:
+    use requirements.txt with pip to get all dependencies
     
 To run locally:
-  cd into your preferred directory
+  1. cd into your preferred directory
+  2. git clone this to the directory
+  3. set up a local virtual environment: 
+    a. pip install virtualenv
+    b. virtualenv venv
+    c. source venv/bin/activate
+  4. install dependencies: pip install -r requirements.txt
+  5. run from terminal: python application.py
+  6. from browser: navigate to http://127.0.0.1:5000/
   
-  git clone this to the directory
+Note on elasticbeanstalk use:
+  - application.py has just a single import which makes it a WSGI application. Otherwise eb complains "Target WSGI script '/opt/python/current/app/application.py' does not contain WSGI application 'application'"
+  - make sure that Configuration is using something like "64bit Amazon Linux 2015.03 v1.4.3 running Python 2.7" (note Python version)
   
-  set up a virtual environment
-  
-  use pip to install flask and datasift
-  
-  git clone flask-kvsession to the directory
-  
-  python console.py
-  
-  http://127.0.0.1:5000/ds_console
-  
-  
-Quick notes on the new features:
+==== RELEASE NOTES ====
+
+2015-07-09:
+
+  - renamed to DS Manager
+  - new ACCOUNT section: include new endpoints for Account identities 
+  - updated to be used with elasticbeanstalk
+  - add DPU calculations
+  - historics fixes incl. multiple push subscriptions
+  - prettier style and formatting incl. section tables and raw output display
+  - better README format
+
+2015-01-27:
+
   - (nearly) everything is asynchronous. This minimizes unnecessary API usage, page loading is very fast, and it allows for quick-ish updates on the fly.
   - organization of streams (subscriptions + historics) is a bit different. Historics with push subscriptions are now grouped together for convenience, under 'Historics Streams'. 'Live Streams' are standard push subscriptions only 
   - Multiple stream and Managed Source control: You can look at raw output/log files or stop/start/delete/resume/etc. however many subscriptions, historics, and/or Managed Sources you like with a minimal amount of clicks. 

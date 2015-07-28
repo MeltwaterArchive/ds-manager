@@ -160,8 +160,8 @@
         <th>start</th>
         <th>end</th>
         <th>index capacity</th>
-        <th>status</th>
         <th>volume</th>
+        <th>status</th>
       </tr>
     </thead>
     <tbody>
@@ -176,8 +176,8 @@
         <td>{{r['start']}}</td>
         <td>{{r['end']}}</td>
         <td>{{r['remaining_index_capacity']}}</td>
-        <td id="status_{{r['hash']}}">{{r['status']}}</td>
         <td>{{r['volume']}}</td>
+        <td id="status_{{r['hash']}}">{{r['status']}}</td>
       </tr>
     {% endfor %}
   {% endfor %}

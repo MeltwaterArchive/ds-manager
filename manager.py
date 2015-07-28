@@ -223,7 +223,7 @@ def pylon_get():
         session['pylon_reload_time'] = datetime.datetime.utcnow()
         session['pylon'] = pylon_get_all()
     return render_template(
-        'pylon.html',
+        'PYLON.html',
         raw=session['pylon'])
 
 @app.route('/pylon_get_raw')

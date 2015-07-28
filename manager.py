@@ -221,9 +221,10 @@ def pylon_get():
     if not 'pylon' in session.keys() or 'reload' in request.args:
         session['pylon_out'] = ""
         session['pylon_reload_time'] = datetime.datetime.utcnow()
-        # session['pylon'] = pylon_get_all()
+        session['pylon'] = pylon_get_all()
     return render_template(
-        'pylon.html')
+        'pylon.html',
+        raw=session['pylon'])
 
 @app.route('/pylon_get_raw')
 def pylon_get_raw():
@@ -824,6 +825,7 @@ def usage_all():
         usage = ["No usage available"]
     return usage
 
+# account IDENTITIES 
 def account_get_all():
     account = {}
     try:
@@ -834,8 +836,27 @@ def account_get_all():
         identities_keys = {i['label']: i['api_key'] for i in identities}
         account = identities
     except:
-        account = ["account identities available"]
+        account = ["account identities not available"]
     return account
+
+def pylon_get_all():
+    pylon = []
+    try:
+        if not 'account' in session:
+            session['account'] = account_get_all()
+        if not 'account_limits' in session:
+            session['account_limits']=limits_get_all()
+        client = Client(session['username'],session['apikey'])
+        for i in session['account']:
+            idclient = Client(session['username'],i['api_key'])
+            recordings=idclient.pylon.list()
+            # add identity label to each recording
+            for r in recordings:
+                r['identity_label'] = i['label']
+            pylon.append(recordings)
+    except:
+        pylon = ["pylon recordings not available"]
+    return pylon
 
 def limits_get_all(services=["facebook"]):
     ''' single list of all limits for all services '''
@@ -850,7 +871,7 @@ def limits_get_all(services=["facebook"]):
         client = "[ limits unavailable ]"
     return limits
 
-
+# general account details.. (not identities)
 def account_all():
     ''' get dictionary of usage, balance, and rate limit '''
     try:

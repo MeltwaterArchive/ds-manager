@@ -72,6 +72,38 @@
     <input type="button" id="pylon_refresh" class=refresh title="reload" value=" ">
   </span>
   <div id=pylon_output class="out">[output]</div>
-
-  {{ raw }}
+  {% if raw %}
+  <table id="pylontable" class="tablesorter">
+    <thead>
+      <tr>
+        <th>name</th>
+        <th>hash</th>
+        <th>identity</th>
+        <th>start</th>
+        <th>end</th>
+        <th>remaining index capacity</th>
+        <th>status</th>
+        <th>volume</th>
+      </tr>
+    </thead>
+    <tbody>
+  {% for i in raw %}
+    {% for r in i %}
+      <tr>
+        <td>{{r['name']}}</td>
+        <td>{{r['hash']}}</td>
+        <td>{{r['identity_label']}}</td>
+        <td>{{r['start']}}</td>
+        <td>{{r['end']}}</td>
+        <td>{{r['remaining_index_capacity']}}</td>
+        <td>{{r['status']}}</td>
+        <td>{{r['volume']}}</td>
+      </tr>
+    {% endfor %}
+  {% endfor %}
+    </tbody>
+  </table>
+  {% else %}
+  <p> [ No recordings found ] </p>
+  {% endif %}
 </body>

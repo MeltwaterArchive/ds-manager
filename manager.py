@@ -224,7 +224,8 @@ def pylon_get():
         session['pylon'] = pylon_get_all()
     return render_template(
         'PYLON.html',
-        raw=session['pylon'])
+        raw=session['pylon'],
+        reload_time=format_time(session['pylon_reload_time']))
 
 @app.route('/pylon_get_raw')
 def pylon_get_raw():
@@ -232,6 +233,44 @@ def pylon_get_raw():
         return jsonify(out=session['pylon'])
     else:
         return jsonify(out="pylon data not available..")
+
+@app.route('/pylon_start')
+def pylon_start():
+    success = []
+    fail = []
+    fail_message = []
+    for r in request.args:
+        # split the id of the checkboxes on _ to get hash and identity id, so we can stop it
+        hash_idid = r.split('_')
+        for i in session['account']:
+            try:
+                if i['id'] == hash_idid[1]:
+                    client = Client(session['username'],i['api_key'])
+                    client.pylon.start(hash_idid[0])
+                    success.append(hash_idid[0])
+            except Exception, e:
+                fail.append(hash_idid[0])
+                fail_message.append(e.message)
+    return jsonify(success=success,fail=fail,fail_message=fail_message)
+
+@app.route('/pylon_stop')
+def pylon_stop():
+    success = []
+    fail = []
+    fail_message = []
+    for r in request.args:
+        # split the id of the checkboxes on _ to get hash and identity id, so we can stop it
+        hash_idid = r.split('_')
+        for i in session['account']:
+            try:
+                if i['id'] == hash_idid[1]:
+                    client = Client(session['username'],i['api_key'])
+                    client.pylon.stop(hash_idid[0])
+                    success.append(hash_idid[0])
+            except Exception, e:
+                fail.append(hash_idid[0])
+                fail_message.append(e.message)
+    return jsonify(success=success,fail=fail,fail_message=fail_message)
 
 @app.route('/set_pylon_export', methods=['POST'])
 def set_pylon_export():
@@ -685,6 +724,8 @@ def get_source_export():
     # to be downloaded, instead of just printed on the browser
     response.headers["Content-Disposition"] = "attachment; filename=output.txt"
     return response
+
+
 
 '''
 HELPER FUNCTIONS

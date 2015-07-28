@@ -24,6 +24,52 @@
       return false;
     });
 
+    $('input#pylon_start').bind('click', function() {
+      var recs = "";
+      // NOTE - each checkbox has name like: <hash>_<identity id>
+      // split on _ delimeter for user confirmation.
+      $( ".pylon:checked").each(function(){
+        recs = recs + "\n" + $( this ).attr('name').split('_')[0];
+      });
+      var confirm_start = confirm("Are you sure you want to start PYLON recordings:\n " + recs);
+      if (confirm_start == true){
+        pylon_output_wait();
+        $.getJSON($SCRIPT_ROOT + '/pylon_start',
+        $( ".pylon:checked"), 
+        function(data) {
+          formatted = pylon_control_output_format(data,"started");
+          $("#pylon_output").html(formatted);
+          $.each(data.success, function( index, id ){
+            $("#status_"+id).text("running")
+          });
+        });
+      }
+      return false;
+    });
+
+    $('input#pylon_stop').bind('click', function() {
+      var recs = "";
+      // NOTE - each checkbox has name like: <hash>_<identity id>
+      // split on _ delimeter for user confirmation.
+      $( ".pylon:checked").each(function(){
+        recs = recs + "\n" + $( this ).attr('name').split('_')[0];
+      });
+      var confirm_stop = confirm("Are you sure you want to stop PYLON recordings:\n " + recs);
+      if (confirm_stop == true){
+        pylon_output_wait();
+        $.getJSON($SCRIPT_ROOT + '/pylon_stop',
+        $( ".pylon:checked"), 
+        function(data) {
+          formatted = pylon_control_output_format(data,"stopped");
+          $("#pylon_output").html(formatted);
+          $.each(data.success, function( index, id ){
+            $("#status_"+id).text("stopped")
+          });
+        });
+      }
+      return false;
+    });
+
     $('#pylon_refresh').bind('click', function() {
       //only get data if we're opening 
       $('#pylonget').css('display') == 'none';
@@ -44,6 +90,32 @@
     });
 
     // helper functions
+
+    var pylon_output_wait = function(){
+      $("#pylon_output").text("[ please wait ]");
+    }
+
+    // html formatted success/fail response for push control actions
+    var pylon_control_output_format = function(data,action){
+      var formatted = ""
+      if (data.success.length > 0){
+        formatted += action + ":<BR>";
+        for (i = 0; i < data.success.length; i++){
+          formatted += "<ul>" + data.success[i] + "</ul>";
+        }
+      }
+      if (data.fail.length > 0){
+        formatted += "not " + action + ":<BR>";
+        for (i = 0; i < data.fail.length; i++){
+          var message = "";
+          if ('fail_message' in data){
+            message = " - " + data.fail_message[i]
+          }
+          formatted += "<ul>" + data.fail[i] + message + "</ul>";
+        }
+      }
+      return formatted;
+    }
 
     //stringify the json so that its formatted nicely for output (we export this as well)
     var pylon_output_format = function(data){
@@ -67,21 +139,27 @@
 <body>
   <span class="output_buttons"> 
     <input type="button" id="pylon_raw" value="raw output">
+  <span class="control_buttons"> 
+    <input type="button" id="pylon_start" value=start>
+    <input type="button" id="pylon_stop" value=stop>
   </span>
   <span class="update_buttons">
     <input type="button" id="pylon_refresh" class=refresh title="reload" value=" ">
+    <span class="reload_time"> loaded at: {{ reload_time }} </span>
   </span>
+
   <div id=pylon_output class="out">[output]</div>
   {% if raw %}
   <table id="pylontable" class="tablesorter">
     <thead>
       <tr>
+        <th></th>
         <th>name</th>
         <th>hash</th>
         <th>identity</th>
         <th>start</th>
         <th>end</th>
-        <th>remaining index capacity</th>
+        <th>index capacity</th>
         <th>status</th>
         <th>volume</th>
       </tr>
@@ -90,13 +168,15 @@
   {% for i in raw %}
     {% for r in i %}
       <tr>
+        <!-- NOTE - need a special identifier due to account identities -->
+        <td><input type="checkbox" class="pylon" name="{{r['hash']}}_{{r['identity_id']}}"></td>
         <td>{{r['name']}}</td>
         <td>{{r['hash']}}</td>
         <td>{{r['identity_label']}}</td>
         <td>{{r['start']}}</td>
         <td>{{r['end']}}</td>
         <td>{{r['remaining_index_capacity']}}</td>
-        <td>{{r['status']}}</td>
+        <td id="status_{{r['hash']}}">{{r['status']}}</td>
         <td>{{r['volume']}}</td>
       </tr>
     {% endfor %}

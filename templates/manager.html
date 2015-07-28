@@ -351,6 +351,7 @@ nav div a:focus {
     // INITIALIZE - remove push and sources session info on page load
     $.get($SCRIPT_ROOT + '/reset_usage');
     $.get($SCRIPT_ROOT + '/reset_account');
+    $.get($SCRIPT_ROOT + '/reset_pylon');
     $.get($SCRIPT_ROOT + '/reset_push');
     $.get($SCRIPT_ROOT + '/reset_historics');
     $.get($SCRIPT_ROOT + '/reset_sources');
@@ -397,6 +398,22 @@ nav div a:focus {
       }
       else{
         $('#accountget').slideToggle("fast");
+      }
+    });
+
+    $('#pylon').click(function() {
+      //only get data if we're opening 
+      if ($('#pylonget').css('display') == 'none'){
+        // loading gif
+        $('#pylon_load').css('display', 'block');
+        $.get($SCRIPT_ROOT + '/pylon_get', function(data){
+          $('#pylonget').html(data).slideToggle("fast");
+          $('#pylon_load').css('display', 'none');
+          $('html,body').animate({scrollTop: $('#pylon').offset().top}, 'slow');
+        });
+      }
+      else{
+        $('#pylonget').slideToggle("fast");
       }
     });
 
@@ -522,6 +539,14 @@ nav div a:focus {
     <img src="static/ajax-loader.gif" alt="loading.." id="account_load" class="load" style="display: none;">
   </div>
   <div id="accountget" style="display: none;"></div>
+
+<!-- PYLON IDENTITIES -->
+
+  <div id="pylon" class="section">
+    <a id="showpylon"> PYLON Recordings </a>
+    <img src="static/ajax-loader.gif" alt="loading.." id="pylon_load" class="load" style="display: none;">
+  </div>
+  <div id="pylonget" style="display: none;"></div>
 
 <!-- PUSH SUBSCRIPTIONS -->
   <div id="push" class="section">

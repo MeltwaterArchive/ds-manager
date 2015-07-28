@@ -96,6 +96,13 @@ def reset_account():
     response = make_response("",204)
     return response
 
+@app.route('/reset_pylon')
+def reset_pylon():
+    if 'pylon' in session.keys():
+        session.pop('pylon', None)
+    response = make_response("",204)
+    return response
+
 @app.route('/reset_push')
 def reset_push():
     if 'push' in session.keys():
@@ -203,6 +210,44 @@ def get_account_export():
     # to be downloaded, instead of just printed on the browser
     response.headers["Content-Disposition"] = "attachment; filename=output.txt"
     return response
+
+
+'''
+PYLON
+'''
+
+@app.route('/pylon_get', methods=['POST', 'GET'])
+def pylon_get():
+    if not 'pylon' in session.keys() or 'reload' in request.args:
+        session['pylon_out'] = ""
+        session['pylon_reload_time'] = datetime.datetime.utcnow()
+        # session['pylon'] = pylon_get_all()
+    return render_template(
+        'pylon.html')
+
+@app.route('/pylon_get_raw')
+def pylon_get_raw():
+    if 'pylon' in session.keys():
+        return jsonify(out=session['pylon'])
+    else:
+        return jsonify(out="pylon data not available..")
+
+@app.route('/set_pylon_export', methods=['POST'])
+def set_pylon_export():
+    # store jquery formatted output in session data
+    session['pylon_out'] = request.form['output'].encode('utf-8')
+    response = make_response("",204)
+    return response
+
+@app.route('/get_pylon_export/output.txt')
+def get_pylon_export():
+    response = make_response(session['pylon_out'])
+    response.headers['Content-Type'] = 'text/xml'
+    # This is the key: Set the right header for the response
+    # to be downloaded, instead of just printed on the browser
+    response.headers["Content-Disposition"] = "attachment; filename=output.txt"
+    return response
+
 
 '''
 PUSH 

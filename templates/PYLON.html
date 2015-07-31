@@ -149,7 +149,7 @@
   </span>
 
   <div id=pylon_output class="out">[output]</div>
-  {% if raw %}
+  {% if raw is mapping %}
   <table id="pylontable" class="tablesorter">
     <thead>
       <tr>
@@ -184,6 +184,6 @@
     </tbody>
   </table>
   {% else %}
-  <p> [ No recordings found ] </p>
+  <p> {{ raw }} </p>
   {% endif %}
 </body>

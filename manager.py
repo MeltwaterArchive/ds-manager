@@ -896,7 +896,7 @@ def pylon_get_all():
                 r['identity_label'] = i['label']
             pylon.append(recordings)
     except:
-        pylon = ["pylon recordings not available"]
+        pylon = "pylon recordings not available"
     return pylon
 
 def limits_get_all(services=["facebook"]):

@@ -23,10 +23,17 @@ Note on elasticbeanstalk use:
   
 ==== RELEASE NOTES ====
 
+2015-08-07
+
+  - elastic beanstalk support 
+  - new PYLON recordings section for all identities
+  - start/stop PYLON recordings from any identity
+  - improved output in the case that there's no data in a section 
+
 2015-07-09:
 
   - renamed to DS Manager
-  - new ACCOUNT section: include new endpoints for Account identities 
+  - new ACCOUNT Identities section: include new endpoints for Account identities 
   - updated to be used with elasticbeanstalk
   - add DPU calculations
   - historics fixes incl. multiple push subscriptions

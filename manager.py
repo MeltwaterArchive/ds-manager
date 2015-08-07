@@ -91,8 +91,8 @@ def reset_usage():
 
 @app.route('/reset_account')
 def reset_account():
-    if 'account' in session.keys():
-        session.pop('account', None)
+    if 'identities' in session.keys():
+        session.pop('identities', None)
     response = make_response("",204)
     return response
 
@@ -173,38 +173,38 @@ def get_usage_export():
 
 
 '''
-ACCOUNT
+ACCOUNT IDENTITIES
 '''
 
 @app.route('/account_get', methods=['POST', 'GET'])
 def account_get():
-    if not 'account' in session.keys() or 'reload' in request.args:
-        session['account_out'] = ""
-        session['account_reload_time'] = datetime.datetime.utcnow()
-        session['account'] = account_get_all()
-        session['account_limits']=limits_get_all()
+    if not 'identities' in session.keys() or 'reload' in request.args:
+        session['identities_out'] = ""
+        session['identities_reload_time'] = datetime.datetime.utcnow()
+        session['identities'] = account_get_all()
+        session['identities_limits']=limits_get_all()
     return render_template(
         'account.html',
-        raw=session['account'],
-        limits=session['account_limits'])
+        raw=session['identities'],
+        limits=session['identities_limits'])
 
 @app.route('/account_get_raw')
 def account_get_raw():
-    if 'account' in session.keys():
-        return jsonify(out=session['account'])
+    if 'identities' in session.keys():
+        return jsonify(out=session['identities'])
     else:
         return jsonify(out="account identity data not available..")
 
 @app.route('/set_account_export', methods=['POST'])
 def set_account_export():
     # store jquery formatted output in session data
-    session['account_out'] = request.form['output'].encode('utf-8')
+    session['identities_out'] = request.form['output'].encode('utf-8')
     response = make_response("",204)
     return response
 
 @app.route('/get_account_export/output.txt')
 def get_account_export():
-    response = make_response(session['account_out'])
+    response = make_response(session['identities_out'])
     response.headers['Content-Type'] = 'text/xml'
     # This is the key: Set the right header for the response
     # to be downloaded, instead of just printed on the browser
@@ -242,7 +242,7 @@ def pylon_start():
     for r in request.args:
         # split the id of the checkboxes on _ to get hash and identity id, so we can stop it
         hash_idid = r.split('_')
-        for i in session['account']:
+        for i in session['identities']:
             try:
                 if i['id'] == hash_idid[1]:
                     client = Client(session['username'],i['api_key'])
@@ -261,7 +261,7 @@ def pylon_stop():
     for r in request.args:
         # split the id of the checkboxes on _ to get hash and identity id, so we can stop it
         hash_idid = r.split('_')
-        for i in session['account']:
+        for i in session['identities']:
             try:
                 if i['id'] == hash_idid[1]:
                     client = Client(session['username'],i['api_key'])
@@ -820,8 +820,8 @@ def push_get_all():
                 p['last_request'] = datetime.datetime.fromtimestamp(p['last_request'])
 
         session['ratelimit'] = pushget.headers['x-ratelimit-remaining']
-    except:
-        pushgetlist = ["No Push API access"]
+    except Exception, e:
+        pushgetlist = e.message
     return pushgetlist
 
 def historic_get_all():
@@ -836,8 +836,8 @@ def historic_get_all():
             historicget = client.historics.get(maximum=per_page,page=i)
             session['ratelimit'] = historicget.headers['x-ratelimit-remaining']
             historicgetlist.extend([h for h in historicget['data']])
-    except:
-        historicgetlist = ["No Historic API access"]
+    except Exception, e:
+        historicgetlist = e.message
     return historicgetlist
 
 def source_get_all():
@@ -851,52 +851,61 @@ def source_get_all():
         for i in xrange(1,pages):
             sourceget = client.managed_sources.get(per_page=per_page,page=i)
             session['ratelimit'] = sourceget.headers['x-ratelimit-remaining']
-            sourcegetlist.extend([s for s in sourceget['sources']])
-    except:
-        sourcegetlist = ["No Managed Source API access"]
+            if sourceget:
+                sourcegetlist.extend([s for s in sourceget['sources']])
+    except Exception, e:
+        sourcegetlist = e.message
     return sourcegetlist
 
 def usage_all():
+    ''' get usage and rate limit '''
     usage = {}
     try:
         client = Client(session['username'],session['apikey'])
         usage = client.usage(period='day')
         session['ratelimit'] = usage.headers['x-ratelimit-remaining']
-    except:
-        usage = ["No usage available"]
+    except Exception, e:
+        usage = e.message
     return usage
 
 # account IDENTITIES 
 def account_get_all():
-    account = {}
+    ''' get all account identities '''
+    identities = {}
     try:
         client = Client(session['username'],session['apikey'])
         identities_list = client.account.identity.list()
         identities = identities_list['identities']
-
         identities_keys = {i['label']: i['api_key'] for i in identities}
-        account = identities
-    except:
-        account = ["account identities not available"]
-    return account
+    except Exception, e:
+        identities = e.message
+        # identities = "[ account identities not available ]"
+    return identities
 
 def pylon_get_all():
+    ''' get all PYLON recordings for all accounts '''
     pylon = []
     try:
-        if not 'account' in session:
-            session['account'] = account_get_all()
-        if not 'account_limits' in session:
-            session['account_limits']=limits_get_all()
+        # need identities to get PYLON recording
+        if not 'identities' in session:
+            session['identities'] = account_get_all()
+        if not 'identities_limits' in session:
+            session['identities_limits']=limits_get_all()
         client = Client(session['username'],session['apikey'])
-        for i in session['account']:
-            idclient = Client(session['username'],i['api_key'])
-            recordings=idclient.pylon.list()
-            # add identity label to each recording
-            for r in recordings:
-                r['identity_label'] = i['label']
-            pylon.append(recordings)
-    except:
-        pylon = "pylon recordings not available"
+        
+        # if identities session is a string, then PYLON is not available
+        if isinstance(session['identities'], basestring):
+            pylon = session['identities']
+        else:
+            for i in session['identities']:
+                idclient = Client(session['username'],i['api_key'])
+                recordings=idclient.pylon.list()
+                # add identity label to each recording
+                for r in recordings:
+                    r['identity_label'] = i['label']
+                pylon.append(recordings)
+    except Exception, e:
+        pylon = e.message
     return pylon
 
 def limits_get_all(services=["facebook"]):
@@ -908,8 +917,8 @@ def limits_get_all(services=["facebook"]):
         for s in services:
             limits_list = client.account.identity.limit.list(s)
             limits += limits_list["limits"]
-    except:
-        client = "[ limits unavailable ]"
+    except Exception, e:
+        client = e.message
     return limits
 
 # general account details.. (not identities)

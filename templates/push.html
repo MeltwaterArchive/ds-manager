@@ -215,6 +215,7 @@
   </span>
 
   <div id=push_output class="out">[output]</div>
+  {% if push %}
   <table id="pushtable" class="tablesorter">
     <thead>
       <tr>
@@ -232,7 +233,7 @@
       </tr>
     </thead>
     <tbody>
-  {% for entry in push %}
+    {% for entry in push %}
       <tr id="push_row_{{entry['id']}}">
         <td><input type="checkbox" class="push" name="{{entry['id']}}"></td>
         <td>{{entry['id']}}</td>
@@ -246,7 +247,10 @@
         <td>{{entry['output_type']}}</td>
         <td id="push_status_{{entry['id']}}">{{entry['status']}}</td>
       </tr>
-  {% endfor %}
+    {% endfor %}
     </tbody>
   </table>
+  {% else %}
+    <p> [ No live streams available ] </p>
+  {% endif %}
 </body>

@@ -149,41 +149,45 @@
   </span>
 
   <div id=pylon_output class="out">[output]</div>
-  {% if raw is mapping %}
-  <table id="pylontable" class="tablesorter">
-    <thead>
-      <tr>
-        <th></th>
-        <th>name</th>
-        <th>hash</th>
-        <th>identity</th>
-        <th>start</th>
-        <th>end</th>
-        <th>index capacity</th>
-        <th>volume</th>
-        <th>status</th>
-      </tr>
-    </thead>
-    <tbody>
-  {% for i in raw %}
-    {% for r in i %}
-      <tr>
-        <!-- NOTE - need a special identifier due to account identities -->
-        <td><input type="checkbox" class="pylon" name="{{r['hash']}}_{{r['identity_id']}}"></td>
-        <td>{{r['name']}}</td>
-        <td>{{r['hash']}}</td>
-        <td>{{r['identity_label']}}</td>
-        <td>{{r['start']}}</td>
-        <td>{{r['end']}}</td>
-        <td>{{r['remaining_index_capacity']}}</td>
-        <td>{{r['volume']}}</td>
-        <td id="status_{{r['hash']}}">{{r['status']}}</td>
-      </tr>
+  {% if raw is not string %}
+    {% if raw %}
+    <table id="pylontable" class="tablesorter">
+      <thead>
+        <tr>
+          <th></th>
+          <th>name</th>
+          <th>hash</th>
+          <th>identity</th>
+          <th>start</th>
+          <th>end</th>
+          <th>index capacity</th>
+          <th>volume</th>
+          <th>status</th>
+        </tr>
+      </thead>
+      <tbody>
+    {% for i in raw %}
+      {% for r in i %}
+        <tr>
+          <!-- NOTE - need a special identifier due to account identities -->
+          <td><input type="checkbox" class="pylon" name="{{r['hash']}}_{{r['identity_id']}}"></td>
+          <td>{{r['name']}}</td>
+          <td>{{r['hash']}}</td>
+          <td>{{r['identity_label']}}</td>
+          <td>{{r['start']}}</td>
+          <td>{{r['end']}}</td>
+          <td>{{r['remaining_index_capacity']}}</td>
+          <td>{{r['volume']}}</td>
+          <td id="status_{{r['hash']}}">{{r['status']}}</td>
+        </tr>
+      {% endfor %}
     {% endfor %}
-  {% endfor %}
-    </tbody>
-  </table>
+      </tbody>
+    </table>
+    {% else %}
+      <p>[ No PYLON recordings available ]</p>
+    {% endif %}
   {% else %}
-  <p> {{ raw }} </p>
+    <p> {{ raw }} </p>
   {% endif %}
 </body>

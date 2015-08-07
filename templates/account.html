@@ -73,7 +73,7 @@
   </span>
   <div id=account_output class="out">[output]</div>
 
-  {% if raw %}
+  {% if raw is not string %}
     <table id="accounttable" class="tablesorter">
       <thead>
         <tr>
@@ -118,8 +118,8 @@
     {% endfor %}
       </tbody>
     </table>
-    {% else %}
-    <p> [ No identities found ] </p>
-    {% endif %}
+  {% else %}
+  <p> {{ raw }} </p>
+  {% endif %}
 
 </body>

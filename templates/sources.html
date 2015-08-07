@@ -213,63 +213,71 @@
     [output] 
   </div>
 
-  <table id="sourcestable" class="tablesorter">
-    <thead>
-      <tr>
-        <th></th>
-        <th>Source Type</th>
-        <th>Name</th>
-        <th>ID</th>
-        <th>Resources</th>
-        <th>Parameters</th>
-        <th class="sourcesauth">Auth</th>
-        <th class="time_col">Created At (UTC)</th>
-        <th>Status</th>
-      </tr>  
-    </thead>
-    <tbody>
-  {% for entry in source %}
-      <tr id="source_row_{{entry['id']}}">
-        <td><input type="checkbox" class="source" name="{{entry['id']}}"></td>
-        <td>{{entry['source_type']}}</td>
-        <td>{{entry['name']}}</td>
-        <td>{{entry['id']}}</td>
-        <td class="sourcescol">
-          <ul>
-  {% for r in entry['resources'] %}
-            <li>
+  {% if source is not string %}
+    {% if source %}
+    <table id="sourcestable" class="tablesorter">
+      <thead>
+        <tr>
+          <th></th>
+          <th>Source Type</th>
+          <th>Name</th>
+          <th>ID</th>
+          <th>Resources</th>
+          <th>Parameters</th>
+          <th class="sourcesauth">Auth</th>
+          <th class="time_col">Created At (UTC)</th>
+          <th>Status</th>
+        </tr>  
+      </thead>
+      <tbody>
+      {% for entry in source %}
+        <tr id="source_row_{{entry['id']}}">
+          <td><input type="checkbox" class="source" name="{{entry['id']}}"></td>
+          <td>{{entry['source_type']}}</td>
+          <td>{{entry['name']}}</td>
+          <td>{{entry['id']}}</td>
+          <td class="sourcescol">
+            <ul>
+            {% for r in entry['resources'] %}
+              <li>
               {{r['resource_id']}}
-              <ul>
-  {% for p in r['parameters'] %}
-                <li>{{p}}:{{r['parameters'][p]}}</li>
-  {% endfor %}
-              </ul>
-            </li>
-  {% endfor %}
-          </ul>
-        </td>
-        <td>
-          <ul>
-  {% for p in entry['parameters'] %}
-          <li>{{p}}: {{entry['parameters'][p]}}</li> 
-  {% endfor %}
-          </ul>
-        </td>
-        <td class="sourcescol">
-          <ul>
-  {% for a in entry['auth'] %}
-            <li>id: {{a['identity_id']}}
-  {% for k in a['parameters'] %}
-              <ul><li>{{k}}: {{a['parameters'][k]}}</li></ul>
-  {% endfor %}
-            </li>
-  {% endfor %}
-          </ul>
-        </td>
-        <td>{{entry['created_at']}}</td>
-        <td id="status_{{entry['id']}}">{{entry['status']}}</td>
-      </tr>
-  {% endfor %}
-    </tbody>
-  </table>
+                <ul>
+              {% for p in r['parameters'] %}
+                  <li>{{p}}:{{r['parameters'][p]}}</li>
+              {% endfor %}
+                </ul>
+              </li>
+            {% endfor %}
+            </ul>
+          </td>
+          <td>
+            <ul>
+            {% for p in entry['parameters'] %}
+              <li>{{p}}: {{entry['parameters'][p]}}</li> 
+            {% endfor %}
+            </ul>
+          </td>
+          <td class="sourcescol">
+            <ul>
+            {% for a in entry['auth'] %}
+              <li>id: {{a['identity_id']}}
+              {% for k in a['parameters'] %}
+                <ul><li>{{k}}: {{a['parameters'][k]}}</li></ul>
+              {% endfor %}
+              </li>
+            {% endfor %}
+            </ul>
+          </td>
+          <td>{{entry['created_at']}}</td>
+          <td id="status_{{entry['id']}}">{{entry['status']}}</td>
+        </tr>
+      {% endfor %}
+      </tbody>
+    </table>
+    {% else %}
+      <p> [ No Managed Sources available ] <p>
+    {% endif %}
+  {% else %}
+    <p> {{ source }} </p>
+  {% endif %}
 </body>

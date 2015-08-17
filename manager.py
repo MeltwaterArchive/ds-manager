@@ -25,7 +25,7 @@ KVSessionExtension(store, app)
 
 @app.route('/')
 def index():
-    return redirect(url_for('log_the_user_in'))
+    return redirect(url_for('manager'))
 
 @app.route('/login', methods=['POST', 'GET'])
 def login():
@@ -35,7 +35,7 @@ def login():
         if client:
             session['username'] = request.form['username']
             session['apikey'] = request.form['apikey']
-            return log_the_user_in()
+            return manager()
         else:
             error = 'Invalid username/password'
 
@@ -47,17 +47,19 @@ def login():
 @app.route('/ds_console')
 def ds_console():
     # redirect from old endpoint
-    return redirect(url_for('log_the_user_in'))
+    return redirect(url_for('manager'))
 
 @app.route('/manager', methods=['POST', 'GET'])
-def log_the_user_in():
+def manager():
     
     # login dialog, set session stuff
     error = None 
     name = None
     if request.method == 'POST':
         client = valid_login(request.form['username'], request.form['apikey'])
-        if client:
+        if isinstance(client, dict):
+            error = client['error']
+        elif client:
             #clear old session data 
             pop_session()
             session['username'] = request.form['username']
@@ -80,7 +82,7 @@ def log_the_user_in():
 def logout():
     # remove the username from the session if it's there
     pop_session()
-    return redirect(url_for('log_the_user_in'))
+    return redirect(url_for('manager'))
 
 @app.route('/reset_usage')
 def reset_usage():
@@ -737,8 +739,8 @@ def valid_login(user,apikey):
         balance = client.balance()
         session['ratelimit'] = balance.headers['x-ratelimit-remaining']
         return client
-    except:
-        return None
+    except Exception, e:
+        return e.message
 
 def pop_session():
     for k in session.keys():

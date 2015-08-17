@@ -9,8 +9,13 @@ h1 {
 }
 h3 {
   display: inline;
-  margin-right: 10px;
+  margin-right: 2px;
+  overflow: None;
 } 
+h4 {
+  display: inline;
+  color: deeppink;
+}
 p {
     margin-left: 40px;
 }
@@ -107,11 +112,17 @@ ul {
 
 #loginlogout {
   float:right;
-  margin: 8px 40px;
+  margin: 12px 40px;
 }
 
 #loginlogout input {
   padding: 6px 6px 3px;
+}
+
+div#error {
+  overflow: scroll;
+  height: 1em;
+  padding: 4px;
 }
 
 #footer {

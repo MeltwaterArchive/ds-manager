@@ -1,69 +1,13 @@
 <head>
-<link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='tablesorter/themes/orange/style.css') }}">
+  <link rel="stylesheet" type="text/css" href="static/tablesorter/themes/orange/style.css">
 
-<script src="//ajax.googleapis.com/ajax/libs/jquery/1.9.1/jquery.min.js"></script>
-<script>window.jQuery || document.write('<script src="{{
-  url_for('static', filename='jquery.js') }}">\x3C/script>')</script>
-<script type="text/javascript" src="{{
-  url_for('static', filename='tablesorter/jquery.tablesorter.js') }}"></script>
-<script type=text/javascript>
-  $SCRIPT_ROOT = {{ request.script_root|tojson|safe }};
+  <script src="//ajax.googleapis.com/ajax/libs/jquery/1.9.1/jquery.min.js"></script>
 
-  $(document).ready(function() {
-
-    $('#accounttable').tablesorter();
-
-    $('input#account_raw').bind('click', function() {
-      $.getJSON($SCRIPT_ROOT + '/account_get_raw', 
-      function(data) {
-        formatted = account_output_format(data);
-        var html_formatted = account_output_format_html(formatted);
-        $.post($SCRIPT_ROOT + '/set_account_export', {output:formatted});
-        $("#account_output").html(html_formatted);
-      });
-      return false;
-    });
-
-    $('#account_refresh').bind('click', function() {
-      //only get data if we're opening 
-      $('#accountget').css('display') == 'none';
-      $('#accountget').slideToggle("fast");
-      // loading gif
-      $('#account_load').css('display', 'block');
-      $.get($SCRIPT_ROOT + '/account_get', 'reload=1', function(data){
-        $('#accountget').html(data).slideToggle("fast");
-        $('#account_load').css('display', 'none');
-      });
-    });
-
-    //update ratelimit
-    $(':button,h3').click(function() {
-      $.get($SCRIPT_ROOT + '/update_ratelimit', function(data){
-        $('#ratelimit').text(data);
-      });
-    });
-
-    // helper functions
-
-    //stringify the json so that its formatted nicely for output (we export this as well)
-    var account_output_format = function(data){
-      return JSON.stringify(data.out, null, 4);
-    }
-
-    //add the rest of the output html to the formatted output
-    var account_output_format_html = function(formatted){
-      var html_formatted = "";
-      var clear_output= "<span class='output_control' onclick='document.getElementById(\"account_output\").innerHTML = \"\";'><a href='#account'>clear output</a></span>";
-      var export_output= "<span class='output_control'><a href='/get_account_export/output.txt'>export output.txt</a></span>";
-      var output_control = "<div class='output_control_container'>" + clear_output + export_output + "</div>";
-      html_formatted = "<div class='inner_output'><pre>" + formatted + "</pre></div>" + output_control;
-
-      return html_formatted;
-    }
-
-  });
-</script>
+  <script type="text/javascript" src="static/tablesorter/jquery.tablesorter.js"></script>
+  <script type="text/javascript"> $('#accounttable').tablesorter(); </script>
 </head>
+
+
 <body>
   <span class="output_buttons"> 
     <input type="button" id="account_raw" value="raw output">

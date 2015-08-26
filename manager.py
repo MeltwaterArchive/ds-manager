@@ -4,6 +4,8 @@ from datasift.push import Push
 from datasift.request import PartialRequest, DatasiftAuth
 from views.usage import usage
 from views.account import account
+from views.pylon import pylon
+from views.source import source
 from flask_kvsession import KVSessionExtension
 from simplekv.fs import FilesystemStore
 import datetime
@@ -25,8 +27,11 @@ if not os.path.exists(data_directory):
 store = FilesystemStore(data_directory)
 KVSessionExtension(store, app)
 
+# register blueprints 
 app.register_blueprint(usage, url_prefix='/usage')
 app.register_blueprint(account, url_prefix='/account')
+app.register_blueprint(pylon, url_prefix='/pylon')
+app.register_blueprint(source, url_prefix='/source')
 
 @app.route('/')
 def index():
@@ -137,83 +142,6 @@ def update_ratelimit():
         response = make_response(session['ratelimit'],200)
     else:
         response = make_response("",200)
-    return response
-
-
-'''
-PYLON
-'''
-
-@app.route('/pylon_get', methods=['POST', 'GET'])
-def pylon_get():
-    if not 'pylon' in session.keys() or 'reload' in request.args:
-        session['pylon_out'] = ""
-        session['pylon_reload_time'] = datetime.datetime.utcnow()
-        session['pylon'] = pylon_get_all()
-    return render_template(
-        'PYLON.html',
-        raw=session['pylon'],
-        reload_time=format_time(session['pylon_reload_time']))
-
-@app.route('/pylon_get_raw')
-def pylon_get_raw():
-    if 'pylon' in session.keys():
-        return jsonify(out=session['pylon'])
-    else:
-        return jsonify(out="pylon data not available..")
-
-@app.route('/pylon_start')
-def pylon_start():
-    success = []
-    fail = []
-    fail_message = []
-    for r in request.args:
-        # split the id of the checkboxes on _ to get hash and identity id, so we can stop it
-        hash_idid = r.split('_')
-        for i in session['identities']:
-            try:
-                if i['id'] == hash_idid[1]:
-                    client = Client(session['username'],i['api_key'])
-                    client.pylon.start(hash_idid[0])
-                    success.append(hash_idid[0])
-            except Exception, e:
-                fail.append(hash_idid[0])
-                fail_message.append(e.message)
-    return jsonify(success=success,fail=fail,fail_message=fail_message)
-
-@app.route('/pylon_stop')
-def pylon_stop():
-    success = []
-    fail = []
-    fail_message = []
-    for r in request.args:
-        # split the id of the checkboxes on _ to get hash and identity id, so we can stop it
-        hash_idid = r.split('_')
-        for i in session['identities']:
-            try:
-                if i['id'] == hash_idid[1]:
-                    client = Client(session['username'],i['api_key'])
-                    client.pylon.stop(hash_idid[0])
-                    success.append(hash_idid[0])
-            except Exception, e:
-                fail.append(hash_idid[0])
-                fail_message.append(e.message)
-    return jsonify(success=success,fail=fail,fail_message=fail_message)
-
-@app.route('/set_pylon_export', methods=['POST'])
-def set_pylon_export():
-    # store jquery formatted output in session data
-    session['pylon_out'] = request.form['output'].encode('utf-8')
-    response = make_response("",204)
-    return response
-
-@app.route('/get_pylon_export/output.txt')
-def get_pylon_export():
-    response = make_response(session['pylon_out'])
-    response.headers['Content-Type'] = 'text/xml'
-    # This is the key: Set the right header for the response
-    # to be downloaded, instead of just printed on the browser
-    response.headers["Content-Disposition"] = "attachment; filename=output.txt"
     return response
 
 
@@ -536,122 +464,6 @@ def get_historics_export():
     response.headers["Content-Disposition"] = "attachment; filename=output.txt"
     return response
 
-'''
-MANAGED SOURCES
-'''
-
-@app.route('/source_get', methods=['POST', 'GET'])
-def source_get():
-    # do push/get request only when asked
-    if not 'source' in session.keys() or 'reload' in request.args:
-        session['source_out'] = ""
-        session['source'] = source_get_all()
-        session['source_reload_time'] = datetime.datetime.utcnow()
-    return make_response(render_template('sources.html', source=session['source'], reload_time=format_time(session['source_reload_time'])))
-
-@app.route('/source_get_raw')
-def source_get_raw():
-    raw = []
-    if 'source' in session.keys():
-        for s in session['source']:
-            for r in request.args:
-                if s['id'] == r:
-                    raw.append(s)
-    session['source_out'] = raw
-    return jsonify(out=raw)
-
-@app.route('/source_delete')
-def source_delete():
-    client = Client(session['username'],session['apikey'])
-    success = []
-    fail = []
-    fail_message = []
-    for r in request.args:
-        try:
-            client.managed_sources.delete(r)
-            success.append(r)
-        except Exception, e:
-            fail.append(r)
-            fail_message.append(e.message)
-    return jsonify(success=success,fail=fail,fail_message=fail_message)
-
-@app.route('/source_stop')
-def source_stop():
-    client = Client(session['username'],session['apikey'])
-    success = []
-    fail = []
-    fail_message = []
-    for r in request.args:
-        try:
-            client.managed_sources.stop(r)
-            success.append(r)
-        except Exception, e:
-            fail.append(r)
-            fail_message.append(e.message)
-    return jsonify(success=success,fail=fail,fail_message=fail_message)
-
-@app.route('/source_start')
-def source_start():
-    client = Client(session['username'],session['apikey'])
-    success = []
-    fail = []
-    fail_message = []
-    for r in request.args:
-        try:
-            client.managed_sources.start(r)
-            success.append(r)
-        except Exception, e:
-            fail.append(r)
-            fail_message.append(e.message)
-    return jsonify(success=success,fail=fail,fail_message=fail_message)
-
-@app.route('/source_log')
-def source_log():
-    client = Client(session['username'],session['apikey'])
-    try:
-        out = []
-        for r in request.args:
-            out.append(client.managed_sources.log(r))
-        session['push_out'] = out
-        return jsonify(out=out)
-    except:
-        return jsonify(out="Issues getting log")
-
-@app.route('/source_token')
-def source_token():
-    client = Client(session['username'],session['apikey'])
-    success = []
-    fail = []
-    fail_message = []
-    for r in request.args:
-        try:
-            source = client.managed_sources.get(r)
-            auth = source['auth']
-            auth.append({"parameters":{"value":request.args[r]},"expires_at":0})
-            client.managed_sources.update(
-                r, source['source_type'], source['name'], source['resources'], auth, parameters=source['parameters'])
-            success.append(r)
-        except Exception, e:
-            fail.append(r)
-            fail_message.append(e.message)
-    return jsonify(success=success,fail=fail,fail_message=fail_message)
-
-@app.route('/set_source_export', methods=['POST'])
-def set_source_export():
-    # store jquery formatted output in session data
-    # use encode() instead of str() to avoid encoding issues
-    session['source_out'] = request.form['output'].encode('utf-8')
-    response = make_response("",204)
-    return response
-
-@app.route('/get_source_export/output.txt')
-def get_source_export():
-    response = make_response(session['source_out'])
-    response.headers['Content-Type'] = 'text/xml'
-    # This is the key: Set the right header for the response
-    # to be downloaded, instead of just printed on the browser
-    response.headers["Content-Disposition"] = "attachment; filename=output.txt"
-    return response
 
 
 
@@ -768,59 +580,6 @@ def historic_get_all():
         historicgetlist = e.message
     return historicgetlist
 
-def source_get_all():
-    ''' get list of all managed sources '''
-    sourcegetlist = []
-    try:
-        client = Client(session['username'],session['apikey'])
-        per_page = 100
-
-        pages = client.managed_sources.get()['count']/per_page + 2
-        for i in xrange(1,pages):
-            sourceget = client.managed_sources.get(per_page=per_page,page=i)
-            session['ratelimit'] = sourceget.headers['x-ratelimit-remaining']
-            if sourceget:
-                sourcegetlist.extend([s for s in sourceget['sources']])
-    except Exception, e:
-        sourcegetlist = e.message
-    return sourcegetlist
-
-def usage_all():
-    ''' get usage and rate limit '''
-    usage = {}
-    try:
-        client = Client(session['username'],session['apikey'])
-        usage = client.usage(period='day')
-        session['ratelimit'] = usage.headers['x-ratelimit-remaining']
-    except Exception, e:
-        usage = e.message
-    return usage
-
-def pylon_get_all():
-    ''' get all PYLON recordings for all accounts '''
-    pylon = []
-    try:
-        # need identities to get PYLON recording
-        if not 'identities' in session:
-            session['identities'] = account_get_all()
-        if not 'identities_limits' in session:
-            session['identities_limits']=limits_get_all()
-        client = Client(session['username'],session['apikey'])
-        
-        # if identities session is a string, then PYLON is not available
-        if isinstance(session['identities'], basestring):
-            pylon = session['identities']
-        else:
-            for i in session['identities']:
-                idclient = Client(session['username'],i['api_key'])
-                recordings=idclient.pylon.list()
-                # add identity label to each recording
-                for r in recordings:
-                    r['identity_label'] = i['label']
-                pylon.append(recordings)
-    except Exception, e:
-        pylon = e.message
-    return pylon
 
 # general account details.. (not identities)
 def account_all():

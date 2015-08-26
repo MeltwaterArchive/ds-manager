@@ -1,0 +1,109 @@
+from flask import Blueprint, render_template, session, request, jsonify, make_response
+from datasift import Client
+from views import account
+import datetime
+
+pylon = Blueprint('pylon', __name__,template_folder='static')
+
+
+@pylon.route('/get', methods=['POST', 'GET'])
+def pylon_get():
+    if not 'pylon' in session.keys() or 'reload' in request.args:
+        session['pylon_out'] = ""
+        session['pylon_reload_time'] = datetime.datetime.utcnow()
+        session['pylon'] = pylon_get_all()
+    return render_template(
+        'PYLON.html',
+        raw=session['pylon'],
+        reload_time=format_time(session['pylon_reload_time']))
+
+@pylon.route('/get_raw')
+def pylon_get_raw():
+    if 'pylon' in session.keys():
+        return jsonify(out=session['pylon'])
+    else:
+        return jsonify(out="pylon data not available..")
+
+@pylon.route('/start')
+def pylon_start():
+    success = []
+    fail = []
+    fail_message = []
+    for r in request.args:
+        # split the id of the checkboxes on _ to get hash and identity id, so we can stop it
+        hash_idid = r.split('_')
+        for i in session['identities']:
+            try:
+                if i['id'] == hash_idid[1]:
+                    client = Client(session['username'],i['api_key'])
+                    client.pylon.start(hash_idid[0])
+                    success.append(hash_idid[0])
+            except Exception, e:
+                fail.append(hash_idid[0])
+                fail_message.append(e.message)
+    return jsonify(success=success,fail=fail,fail_message=fail_message)
+
+@pylon.route('/stop')
+def pylon_stop():
+    success = []
+    fail = []
+    fail_message = []
+    for r in request.args:
+        # split the id of the checkboxes on _ to get hash and identity id, so we can stop it
+        hash_idid = r.split('_')
+        for i in session['identities']:
+            try:
+                if i['id'] == hash_idid[1]:
+                    client = Client(session['username'],i['api_key'])
+                    client.pylon.stop(hash_idid[0])
+                    success.append(hash_idid[0])
+            except Exception, e:
+                fail.append(hash_idid[0])
+                fail_message.append(e.message)
+    return jsonify(success=success,fail=fail,fail_message=fail_message)
+
+@pylon.route('/set_export', methods=['POST'])
+def set_pylon_export():
+    # store jquery formatted output in session data
+    session['pylon_out'] = request.form['output'].encode('utf-8')
+    response = make_response("",204)
+    return response
+
+@pylon.route('/get_export/output.txt')
+def get_pylon_export():
+    response = make_response(session['pylon_out'])
+    response.headers['Content-Type'] = 'text/xml'
+    # This is the key: Set the right header for the response
+    # to be downloaded, instead of just printed on the browser
+    response.headers["Content-Disposition"] = "attachment; filename=output.txt"
+    return response
+
+
+def pylon_get_all():
+    ''' get all PYLON recordings for all accounts '''
+    pylon = []
+    try:
+        # need identities to get PYLON recording
+        if not 'identities' in session:
+            session['identities'] = account.account_get_all()
+        if not 'identities_limits' in session:
+            session['identities_limits']= account.limits_get_all()
+        client = Client(session['username'],session['apikey'])
+        
+        # if identities session is a string, then PYLON is not available
+        if isinstance(session['identities'], basestring):
+            pylon = session['identities']
+        else:
+            for i in session['identities']:
+                idclient = Client(session['username'],i['api_key'])
+                recordings=idclient.pylon.list()
+                # add identity label to each recording
+                for r in recordings:
+                    r['identity_label'] = i['label']
+                pylon.append(recordings)
+    except Exception, e:
+        pylon = e.message
+    return pylon
+
+def format_time(timestamp):
+    return timestamp.strftime("%Y-%m-%d %H:%M:%S +0000")

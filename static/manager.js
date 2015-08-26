@@ -65,7 +65,7 @@ $(window).ready(function() {
     if ($('#pylonget').css('display') == 'none'){
       // loading gif
       $('#pylon_load').css('display', 'block');
-      $.get($SCRIPT_ROOT + '/pylon_get', function(data){
+      $.get($SCRIPT_ROOT + '/pylon/get', function(data){
         $('#pylonget').html(data).slideToggle("fast");
         $('#pylon_load').css('display', 'none');
         $('html,body').animate({scrollTop: $('#pylon').offset().top}, 'slow');
@@ -110,7 +110,7 @@ $(window).ready(function() {
     //only get data if we're opening 
     if ($('#sourceget').css('display') == 'none'){
       $('#sources_load').css('display', 'block');
-      $.get($SCRIPT_ROOT + '/source_get', function(data){
+      $.get($SCRIPT_ROOT + '/source/get', function(data){
         $('#sourceget').html(data).slideToggle("fast");
         $('#sources_load').css('display', 'none');
         $('html,body').animate({scrollTop: $('#sources').offset().top}, 'slow');
@@ -207,11 +207,11 @@ $(window).ready(function() {
     /* PYLON */
 
     $(document).on('click', 'input#pylon_raw', function() {
-      $.getJSON($SCRIPT_ROOT + '/pylon_get_raw', 
+      $.getJSON($SCRIPT_ROOT + '/pylon/get_raw', 
       function(data) {
         formatted = output_format(data);
         var html_formatted = pylon_output_format_html(formatted);
-        $.post($SCRIPT_ROOT + '/set_pylon_export', {output:formatted});
+        $.post($SCRIPT_ROOT + '/pylon/set_export', {output:formatted});
         $("#pylon_output").html(html_formatted);
       });
       return false;
@@ -227,7 +227,7 @@ $(window).ready(function() {
       var confirm_start = confirm("Are you sure you want to start PYLON recordings:\n " + recs);
       if (confirm_start == true){
         pylon_output_wait();
-        $.getJSON($SCRIPT_ROOT + '/pylon_start',
+        $.getJSON($SCRIPT_ROOT + '/pylon/start',
         $( ".pylon:checked"), 
         function(data) {
           formatted = pylon_control_output_format(data,"started");
@@ -250,7 +250,7 @@ $(window).ready(function() {
       var confirm_stop = confirm("Are you sure you want to stop PYLON recordings:\n " + recs);
       if (confirm_stop == true){
         pylon_output_wait();
-        $.getJSON($SCRIPT_ROOT + '/pylon_stop',
+        $.getJSON($SCRIPT_ROOT + '/pylon/stop',
         $( ".pylon:checked"), 
         function(data) {
           formatted = pylon_control_output_format(data,"stopped");
@@ -269,7 +269,7 @@ $(window).ready(function() {
       $('#pylonget').slideToggle("fast");
       // loading gif
       $('#pylon_load').css('display', 'block');
-      $.get($SCRIPT_ROOT + '/pylon_get', 'reload=1', function(data){
+      $.get($SCRIPT_ROOT + '/pylon/get', 'reload=1', function(data){
         $('#pylonget').html(data).slideToggle("fast");
         $('#pylon_load').css('display', 'none');
       });
@@ -310,7 +310,7 @@ $(window).ready(function() {
     var pylon_output_format_html = function(formatted){
       var html_formatted = "";
       var clear_output= "<span class='output_control' onclick='document.getElementById(\"pylon_output\").innerHTML = \"\";'><a href='#pylon'>clear output</a></span>";
-      var export_output= "<span class='output_control'><a href='/get_pylon_export/output.txt'>export output.txt</a></span>";
+      var export_output= "<span class='output_control'><a href='/pylon/get_export/output.txt'>export output.txt</a></span>";
       var output_control = "<div class='output_control_container'>" + clear_output + export_output + "</div>";
       html_formatted = "<div class='inner_output'><pre>" + formatted + "</pre></div>" + output_control;
 
@@ -749,12 +749,12 @@ $(window).ready(function() {
 
     $(document).on('click', 'input#source_raw', function() {
       source_output_wait();
-      $.getJSON($SCRIPT_ROOT + '/source_get_raw',
+      $.getJSON($SCRIPT_ROOT + '/source/get_raw',
       $( ".source:checked"), 
       function(data) {
         formatted = source_output_format(data);
         var html_formatted = source_output_format_html(formatted);
-        $.post($SCRIPT_ROOT + '/set_source_export', {output:formatted});
+        $.post($SCRIPT_ROOT + '/source/set_export', {output:formatted});
         $("#source_output").html(html_formatted);
       });
       return false;
@@ -762,12 +762,12 @@ $(window).ready(function() {
 
     $(document).on('click', 'input#source_log', function() {
       source_output_wait();
-      $.getJSON($SCRIPT_ROOT + '/source_log',
+      $.getJSON($SCRIPT_ROOT + '/source/log',
       $( ".source:checked"), 
       function(data) {
         formatted = source_output_format(data);
         var html_formatted = source_output_format_html(formatted);
-        $.post($SCRIPT_ROOT + '/set_source_export', {output:formatted});
+        $.post($SCRIPT_ROOT + '/source/set_export', {output:formatted});
         $("#source_output").html(html_formatted);
       });
       return false;
@@ -781,7 +781,7 @@ $(window).ready(function() {
       var confirm_delete = confirm("Are you sure you want to delete Managed Sources:\n " + srcs);
       if (confirm_delete == true){
         source_output_wait();
-        $.getJSON($SCRIPT_ROOT + '/source_delete',
+        $.getJSON($SCRIPT_ROOT + '/source/delete',
         $( ".source:checked"), 
         function(data) {
           formatted = source_control_output_format(data,"deleted");
@@ -796,7 +796,7 @@ $(window).ready(function() {
 
     $(document).on('click', 'input#source_stop', function() {
       source_output_wait();
-      $.getJSON($SCRIPT_ROOT + '/source_stop',
+      $.getJSON($SCRIPT_ROOT + '/source/stop',
       $( ".source:checked"), 
       function(data) {
         formatted = source_control_output_format(data,"stopped");
@@ -811,7 +811,7 @@ $(window).ready(function() {
 
     $(document).on('click', 'input#source_start', function() {
       source_output_wait();
-      $.getJSON($SCRIPT_ROOT + '/source_start',
+      $.getJSON($SCRIPT_ROOT + '/source/start',
       $( ".source:checked"), 
       function(data) {
         formatted = source_control_output_format(data,"started");
@@ -843,7 +843,7 @@ $(window).ready(function() {
     // doesn't work because #source_output isn't available yet.
     $('#source_output').on('click', '#token_submit', function() {
       source_output_wait();
-      $.getJSON($SCRIPT_ROOT + '/source_token',
+      $.getJSON($SCRIPT_ROOT + '/source/token',
       $( ".token:text"), 
       function(data) {
         formatted = source_control_output_format(data,"added");
@@ -861,7 +861,7 @@ $(window).ready(function() {
       $('#sourceget').slideToggle("fast");
       // loading gif
       $('#sources_load').css('display', 'block');
-      $.get($SCRIPT_ROOT + '/source_get', 'reload=1', function(data){
+      $.get($SCRIPT_ROOT + '/source/get', 'reload=1', function(data){
         $('#sourceget').html(data).slideToggle("fast");
         $('#sources_load').css('display', 'none');
       });

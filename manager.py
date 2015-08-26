@@ -2,6 +2,8 @@ from flask import Flask, render_template,request,session,redirect,url_for,jsonif
 from datasift import Client, identity
 from datasift.push import Push
 from datasift.request import PartialRequest, DatasiftAuth
+from views.usage import usage
+from views.account import account
 from flask_kvsession import KVSessionExtension
 from simplekv.fs import FilesystemStore
 import datetime
@@ -22,6 +24,9 @@ if not os.path.exists(data_directory):
 # use local filesystem for session storage instead of default client sessions
 store = FilesystemStore(data_directory)
 KVSessionExtension(store, app)
+
+app.register_blueprint(usage, url_prefix='/usage')
+app.register_blueprint(account, url_prefix='/account')
 
 @app.route('/')
 def index():
@@ -132,85 +137,6 @@ def update_ratelimit():
         response = make_response(session['ratelimit'],200)
     else:
         response = make_response("",200)
-    return response
-
-'''
-USAGE
-'''
-
-@app.route('/usage_get', methods=['POST', 'GET'])
-def usage_get():
-    # do push/get request only when asked
-    if not 'usage' in session.keys() or 'reload' in request.args:
-        session['usage_out'] = ""
-        session['usage_reload_time'] = datetime.datetime.utcnow()
-        session['usage'] = usage_all()
-    return render_template(
-        'usage.html',
-        acct=session['usage'],
-        reload_time=format_time(session['usage_reload_time']))
-
-@app.route('/usage_get_raw')
-def usage_get_raw():
-    if 'usage' in session.keys():
-        return jsonify(out=session['usage'])
-    else:
-        return jsonify(out="usage data not available..")
-
-@app.route('/set_usage_export', methods=['POST'])
-def set_usage_export():
-    # store jquery formatted output in session data
-    session['usage_out'] = request.form['output'].encode('utf-8')
-    response = make_response("",204)
-    return response
-
-@app.route('/get_usage_export/output.txt')
-def get_usage_export():
-    response = make_response(session['usage_out'])
-    response.headers['Content-Type'] = 'text/xml'
-    # This is the key: Set the right header for the response
-    # to be downloaded, instead of just printed on the browser
-    response.headers["Content-Disposition"] = "attachment; filename=output.txt"
-    return response
-
-
-'''
-ACCOUNT IDENTITIES
-'''
-
-@app.route('/account_get', methods=['POST', 'GET'])
-def account_get():
-    if not 'identities' in session.keys() or 'reload' in request.args:
-        session['identities_out'] = ""
-        session['identities_reload_time'] = datetime.datetime.utcnow()
-        session['identities'] = account_get_all()
-        session['identities_limits']=limits_get_all()
-    return render_template(
-        'account.html',
-        raw=session['identities'],
-        limits=session['identities_limits'])
-
-@app.route('/account_get_raw')
-def account_get_raw():
-    if 'identities' in session.keys():
-        return jsonify(out=session['identities'])
-    else:
-        return jsonify(out="account identity data not available..")
-
-@app.route('/set_account_export', methods=['POST'])
-def set_account_export():
-    # store jquery formatted output in session data
-    session['identities_out'] = request.form['output'].encode('utf-8')
-    response = make_response("",204)
-    return response
-
-@app.route('/get_account_export/output.txt')
-def get_account_export():
-    response = make_response(session['identities_out'])
-    response.headers['Content-Type'] = 'text/xml'
-    # This is the key: Set the right header for the response
-    # to be downloaded, instead of just printed on the browser
-    response.headers["Content-Disposition"] = "attachment; filename=output.txt"
     return response
 
 
@@ -870,20 +796,6 @@ def usage_all():
         usage = e.message
     return usage
 
-# account IDENTITIES 
-def account_get_all():
-    ''' get all account identities '''
-    identities = {}
-    try:
-        client = Client(session['username'],session['apikey'])
-        identities_list = client.account.identity.list()
-        identities = identities_list['identities']
-        identities_keys = {i['label']: i['api_key'] for i in identities}
-    except Exception, e:
-        identities = e.message
-        # identities = "[ account identities not available ]"
-    return identities
-
 def pylon_get_all():
     ''' get all PYLON recordings for all accounts '''
     pylon = []
@@ -909,19 +821,6 @@ def pylon_get_all():
     except Exception, e:
         pylon = e.message
     return pylon
-
-def limits_get_all(services=["facebook"]):
-    ''' single list of all limits for all services '''
-    limits = []
-    try:
-        client = Client(session['username'],session['apikey'])
-        # for now, just do facebook
-        for s in services:
-            limits_list = client.account.identity.limit.list(s)
-            limits += limits_list["limits"]
-    except Exception, e:
-        client = e.message
-    return limits
 
 # general account details.. (not identities)
 def account_all():
@@ -966,4 +865,5 @@ app.secret_key = 'A0Zr98j/3yX R~XHH!jmN]LWX/,?RT'
 
 if __name__ == '__main__':
     app.debug = True
+    app.threaded = True
     app.run()

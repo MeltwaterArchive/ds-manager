@@ -1,6 +1,7 @@
 $.getScript("/static/tablesorter/jquery.tablesorter.js");
 
-$(window).unload(function() {
+$(window).ready(function() {
+
   // INITIALIZE - remove push and sources session info on page load
   $.get($SCRIPT_ROOT + '/reset_usage');
   $.get($SCRIPT_ROOT + '/reset_account');
@@ -8,9 +9,6 @@ $(window).unload(function() {
   $.get($SCRIPT_ROOT + '/reset_push');
   $.get($SCRIPT_ROOT + '/reset_historics');
   $.get($SCRIPT_ROOT + '/reset_sources');
-});
-
-$(window).ready(function() {
 
   if( $("#usage").length == 0 ) {
     $('#login_button').val("Log in")
@@ -21,7 +19,7 @@ $(window).ready(function() {
 
   // initially show usage
 
-  $.get($SCRIPT_ROOT + '/usage_get', function(data){
+  $.get($SCRIPT_ROOT + '/usage/get', function(data){
     $('#usage_load').css('display', 'none');
     $('#usageget').html(data);
   });
@@ -35,7 +33,7 @@ $(window).ready(function() {
     if ($('#usageget').css('display') == 'none'){
       // loading gif
       $('#usage_load').css('display', 'block');
-      $.get($SCRIPT_ROOT + '/usage_get', function(data){
+      $.get($SCRIPT_ROOT + '/usage/get', function(data){
         $('#usageget').html(data).slideToggle("fast");
         $('#usage_load').css('display', 'none');
         $('html,body').animate({scrollTop: $('#usage').offset().top}, 'slow');
@@ -51,7 +49,7 @@ $(window).ready(function() {
     if ($('#accountget').css('display') == 'none'){
       // loading gif
       $('#account_load').css('display', 'block');
-      $.get($SCRIPT_ROOT + '/account_get', function(data){
+      $.get($SCRIPT_ROOT + '/account/get', function(data){
         $('#accountget').html(data).slideToggle("fast");
         $('#account_load').css('display', 'none');
         $('html,body').animate({scrollTop: $('#account').offset().top}, 'slow');
@@ -123,16 +121,58 @@ $(window).ready(function() {
     }
   });
 
+
+  /*
+    USAGE SECTION
+  */
+
+  $(document).on('click', 'input#usage_raw', function() {
+    $.getJSON($SCRIPT_ROOT + '/usage/get_raw', 
+    function(data) {
+      formatted = output_format(data);
+      var html_formatted = usage_output_format_html(formatted);
+      $.post($SCRIPT_ROOT + '/usage/set_export', {output:formatted});
+      $("#usage_output").html(html_formatted);
+    });
+    return false;
+  });
+
+  $(document).on('click', '#usage_refresh', function() {
+    //only get data if we're opening 
+    $('#usageget').css('display') == 'none';
+    $('#usageget').slideToggle("fast");
+    // loading gif
+    $('#usage_load').css('display', 'block');
+    $.get($SCRIPT_ROOT + '/usage/get', 'reload=1', function(data){
+      $('#usageget').html(data).slideToggle("fast");
+      $('#usage_load').css('display', 'none');
+    });
+  });
+
+  // helper functions
+
+  //add the rest of the output html to the formatted output
+  var usage_output_format_html = function(formatted){
+    var html_formatted = "";
+    var clear_output= "<span class='output_control' onclick='document.getElementById(\"usage_output\").innerHTML = \"\";'><a href='#usage'>clear output</a></span>";
+    var export_output= "<span class='output_control'><a href='/usage/get_export/output.txt'>export output.txt</a></span>";
+    var output_control = "<div class='output_control_container'>" + clear_output + export_output + "</div>";
+    html_formatted = "<div class='inner_output'><pre>" + formatted + "</pre></div>" + output_control;
+
+    return html_formatted;
+  }
+
+
   /*
     ACCOUNT SECTION
   */
 
     $(document).on('click', 'input#account_raw', function() {
-      $.getJSON($SCRIPT_ROOT + '/account_get_raw', 
+      $.getJSON($SCRIPT_ROOT + '/account/get_raw', 
       function(data) {
         formatted = output_format(data);
         var html_formatted = account_output_format_html(formatted);
-        $.post($SCRIPT_ROOT + '/set_account_export', {output:formatted});
+        $.post($SCRIPT_ROOT + '/account/set_export', {output:formatted});
         $("#account_output").html(html_formatted);
       });
       return false;
@@ -144,7 +184,7 @@ $(window).ready(function() {
       $('#accountget').slideToggle("fast");
       // loading gif
       $('#account_load').css('display', 'block');
-      $.get($SCRIPT_ROOT + '/account_get', 'reload=1', function(data){
+      $.get($SCRIPT_ROOT + '/account/get', 'reload=1', function(data){
         $('#accountget').html(data).slideToggle("fast");
         $('#account_load').css('display', 'none');
       });
@@ -156,7 +196,7 @@ $(window).ready(function() {
     var account_output_format_html = function(formatted){
       var html_formatted = "";
       var clear_output= "<span class='output_control' onclick='document.getElementById(\"account_output\").innerHTML = \"\";'><a href='#account'>clear output</a></span>";
-      var export_output= "<span class='output_control'><a href='/get_account_export/output.txt'>export output.txt</a></span>";
+      var export_output= "<span class='output_control'><a href='/account/get_export/output.txt'>export output.txt</a></span>";
       var output_control = "<div class='output_control_container'>" + clear_output + export_output + "</div>";
       html_formatted = "<div class='inner_output'><pre>" + formatted + "</pre></div>" + output_control;
 

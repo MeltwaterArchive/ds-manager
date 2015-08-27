@@ -81,7 +81,7 @@ $(window).ready(function() {
     if ($('#pushget').css('display') == 'none'){
       // loading gif
       $('#push_load').css('display', 'block');
-      $.get($SCRIPT_ROOT + '/push_get', function(data){
+      $.get($SCRIPT_ROOT + '/push/get', function(data){
         $('#pushget').html(data).slideToggle("fast");
         $('#push_load').css('display', 'none');
         $('html,body').animate({scrollTop: $('#push').offset().top}, 'slow');
@@ -95,7 +95,7 @@ $(window).ready(function() {
   $('#historics').click(function() {
     if ($('#historicsget').css('display') == 'none'){
       $('#historics_load').css('display', 'block');
-      $.get($SCRIPT_ROOT + '/historics_get', function(data){
+      $.get($SCRIPT_ROOT + '/historics/get', function(data){
         $('#historicsget').html(data).slideToggle("fast");
         $('#historics_load').css('display', 'none');
         $('html,body').animate({scrollTop: $('#historics').offset().top}, 'slow');
@@ -326,12 +326,12 @@ $(window).ready(function() {
 
     $(document).on('click', 'input#push_raw', function() {
       push_output_wait();
-      $.getJSON($SCRIPT_ROOT + '/push_get_raw',
+      $.getJSON($SCRIPT_ROOT + '/push/get_raw',
       $( ".push:checked"), 
       function(data) {
         formatted = push_output_format(data);
         var html_formatted = push_output_format_html(formatted);
-        $.post($SCRIPT_ROOT + '/set_push_export', {output:formatted});
+        $.post($SCRIPT_ROOT + '/push/set_export', {output:formatted});
         $("#push_output").html(html_formatted);
       });
       return false;
@@ -339,12 +339,12 @@ $(window).ready(function() {
 
     $(document).on('click', 'input#push_log', function() {
       push_output_wait();
-      $.getJSON($SCRIPT_ROOT + '/push_log',
+      $.getJSON($SCRIPT_ROOT + '/push/log',
       $( ".push:checked"), 
       function(data) {
         formatted = push_output_format(data);
         var html_formatted = push_output_format_html(formatted);
-        $.post($SCRIPT_ROOT + '/set_push_export', {output:formatted});
+        $.post($SCRIPT_ROOT + '/push/set_export', {output:formatted});
         $("#push_output").html(html_formatted);
       });
       return false;
@@ -352,12 +352,12 @@ $(window).ready(function() {
 
     $(document).on('click', 'input#push_dpus', function() {
       push_output_wait();
-      $.getJSON($SCRIPT_ROOT + '/push_dpus',
+      $.getJSON($SCRIPT_ROOT + '/push/dpus',
       $( ".push:checked"), 
       function(data) {
         formatted = push_output_format(data);
         var html_formatted = push_output_format_html(formatted);
-        $.post($SCRIPT_ROOT + '/set_push_export', {output:formatted});
+        $.post($SCRIPT_ROOT + '/push/set_export', {output:formatted});
         $("#push_output").html(html_formatted);
       });
       return false;
@@ -373,7 +373,7 @@ $(window).ready(function() {
       // delete subs
       if (confirm_delete == true){
         push_output_wait();
-        $.getJSON($SCRIPT_ROOT + '/push_delete',
+        $.getJSON($SCRIPT_ROOT + '/push/delete',
         $( ".push:checked"), 
         function(data) {
           formatted = push_control_output_format(data,"deleted");
@@ -394,7 +394,7 @@ $(window).ready(function() {
       var confirm_delete = confirm("Are you sure you want to stop subscriptions:\n " + subs);
       if (confirm_delete == true){
         push_output_wait();
-        $.getJSON($SCRIPT_ROOT + '/push_stop',
+        $.getJSON($SCRIPT_ROOT + '/push/stop',
         $( ".push:checked"), 
         function(data) {
           formatted = push_control_output_format(data,"stopped");
@@ -409,7 +409,7 @@ $(window).ready(function() {
 
     $(document).on('click', 'input#push_pause', function() {
       push_output_wait();
-      $.getJSON($SCRIPT_ROOT + '/push_pause',
+      $.getJSON($SCRIPT_ROOT + '/push/pause',
       $( ".push:checked"), 
       function(data) {
         formatted = push_control_output_format(data,"paused");
@@ -423,7 +423,7 @@ $(window).ready(function() {
 
     $(document).on('click', 'input#push_resume', function() {
       push_output_wait();
-      $.getJSON($SCRIPT_ROOT + '/push_resume',
+      $.getJSON($SCRIPT_ROOT + '/push/resume',
       $( ".push:checked"), 
       function(data) {
         formatted = push_control_output_format(data,"resumed");  
@@ -441,7 +441,7 @@ $(window).ready(function() {
       $('#pushget').slideToggle("fast");
       // loading gif
       $('#push_load').css('display', 'block');
-      $.get($SCRIPT_ROOT + '/push_get', 'reload=1', function(data){
+      $.get($SCRIPT_ROOT + '/push/get', 'reload=1', function(data){
         $('#pushget').html(data).slideToggle("fast");
         $('#push_load').css('display', 'none');
       });
@@ -489,7 +489,7 @@ $(window).ready(function() {
     var push_output_format_html = function(formatted){
       var html_formatted = "";
       var clear_output= "<span class='output_control' onclick='document.getElementById(\"push_output\").innerHTML = \"\";'><a href='#push'>clear output</a></span>";
-      var export_output= "<span class='output_control'><a href='/get_push_export/output.txt'>export output.txt</a></span>";
+      var export_output= "<span class='output_control'><a href='/push/get_export/output.txt'>export output.txt</a></span>";
       var output_control = "<div class='output_control_container'>" + clear_output + export_output + "</div>";
       html_formatted = "<div class='inner_output'><pre>" + formatted + "</pre></div>" + output_control;
 
@@ -503,12 +503,12 @@ $(window).ready(function() {
 
     $(document).on('click', 'input#historics_raw', function() {
       historics_output_wait();
-      $.getJSON($SCRIPT_ROOT + '/historics_get_raw',
+      $.getJSON($SCRIPT_ROOT + '/historics/get_raw',
       $( ".historics:checked"), 
       function(data) {
         formatted = historics_output_format(data);
         var html_formatted = historics_output_format_html(formatted);
-        $.post($SCRIPT_ROOT + '/set_historics_export', {output:formatted});
+        $.post($SCRIPT_ROOT + '/historics/set_export', {output:formatted});
         $("#historics_output").html(html_formatted);
       });
       return false;
@@ -516,12 +516,12 @@ $(window).ready(function() {
 
     $(document).on('click', 'input#historics_log', function() {
       historics_output_wait();
-      $.getJSON($SCRIPT_ROOT + '/push_log',
+      $.getJSON($SCRIPT_ROOT + '/push/log',
       $( ".historics:checked"), 
       function(data) {
         formatted = historics_output_format(data);
         var html_formatted = historics_output_format_html(formatted);
-        $.post($SCRIPT_ROOT + '/set_historics_export', {output:formatted});
+        $.post($SCRIPT_ROOT + '/historics/set_export', {output:formatted});
         $("#historics_output").html(html_formatted);
       });
       return false;
@@ -529,12 +529,12 @@ $(window).ready(function() {
 
     $(document).on('click', 'input#historics_dpus', function() {
       historics_output_wait();
-      $.getJSON($SCRIPT_ROOT + '/historics_dpus',
+      $.getJSON($SCRIPT_ROOT + '/historics/dpus',
       $( ".historics:checked"), 
       function(data) {
         formatted = historics_output_format(data);
         var html_formatted = historics_output_format_html(formatted);
-        $.post($SCRIPT_ROOT + '/set_historics_export', {output:formatted});
+        $.post($SCRIPT_ROOT + '/historics/set_export', {output:formatted});
         $("#historics_output").html(html_formatted);
       });
       return false;
@@ -548,7 +548,7 @@ $(window).ready(function() {
       var confirm_delete = confirm("Are you sure you want to delete subscriptions:\n " + subs);
       if (confirm_delete == true){
         historics_output_wait();
-        $.getJSON($SCRIPT_ROOT + '/push_delete',
+        $.getJSON($SCRIPT_ROOT + '/push/delete',
         $( ".historics:checked"), 
         function(data) {
           formatted = historics_control_output_format(data,"deleted");
@@ -570,7 +570,7 @@ $(window).ready(function() {
       var confirm_delete = confirm("Are you sure you want to stop subscriptions:\n " + subs);
       if (confirm_delete == true){
         historics_output_wait();
-        $.getJSON($SCRIPT_ROOT + '/push_stop',
+        $.getJSON($SCRIPT_ROOT + '/push/stop',
         $( ".historics:checked"), 
         function(data) {
           formatted = historics_control_output_format(data,"stopped");
@@ -585,7 +585,7 @@ $(window).ready(function() {
 
     $(document).on('click', 'input#historics_push_pause', function() {
       historics_output_wait();
-      $.getJSON($SCRIPT_ROOT + '/push_pause',
+      $.getJSON($SCRIPT_ROOT + '/push/pause',
       $( ".historics:checked"), 
       function(data) {
         formatted = historics_control_output_format(data,"paused");
@@ -599,7 +599,7 @@ $(window).ready(function() {
 
     $(document).on('click', 'input#historics_push_resume', function() {
       historics_output_wait();
-      $.getJSON($SCRIPT_ROOT + '/push_resume',
+      $.getJSON($SCRIPT_ROOT + '/push/resume',
       $( ".historics:checked"), 
       function(data) {
           formatted = historics_control_output_format(data,"resumed");
@@ -613,7 +613,7 @@ $(window).ready(function() {
 
     $(document).on('click', 'input#historics_pause', function() {
       historics_output_wait();
-      $.getJSON($SCRIPT_ROOT + '/historics_pause',
+      $.getJSON($SCRIPT_ROOT + '/historics/pause',
       $( ".historics:checked"), 
       function(data) {
         formatted = historics_control_output_format(data,"paused");
@@ -627,7 +627,7 @@ $(window).ready(function() {
 
     $(document).on('click', 'input#historics_resume', function() {
       historics_output_wait();
-      $.getJSON($SCRIPT_ROOT + '/historics_resume',
+      $.getJSON($SCRIPT_ROOT + '/historics/resume',
       $( ".historics:checked"), 
       function(data) {
         formatted = historics_control_output_format(data,"running");
@@ -647,7 +647,7 @@ $(window).ready(function() {
       var confirm_stop = confirm("Are you sure you want to stop historics:\n " + hists);
       if (confirm_stop == true){
         historics_output_wait();
-        $.getJSON($SCRIPT_ROOT + '/historics_stop',
+        $.getJSON($SCRIPT_ROOT + '/historics/stop',
         $( ".historics:checked"), 
         function(data) {
           formatted = historics_control_output_format(data,"stopped");
@@ -668,7 +668,7 @@ $(window).ready(function() {
       var confirm_delete = confirm("Are you sure you want to delete historics:\n " + hists);
       if (confirm_delete == true){
         historics_output_wait();
-        $.getJSON($SCRIPT_ROOT + '/historics_delete',
+        $.getJSON($SCRIPT_ROOT + '/historics/delete',
         $( ".historics:checked"), 
         function(data) {
           formatted = historics_control_output_format(data,"deleted");
@@ -686,7 +686,7 @@ $(window).ready(function() {
       $('#historicsget').slideToggle("fast");
       // loading gif
       $('#historics_load').css('display', 'block');
-      $.get($SCRIPT_ROOT + '/historics_get', 'reload=1', function(data){
+      $.get($SCRIPT_ROOT + '/historics/get', 'reload=1', function(data){
         $('#historicsget').html(data).slideToggle("fast");
           $('#historics_load').css('display', 'none');
       });

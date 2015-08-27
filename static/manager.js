@@ -3,12 +3,7 @@ $.getScript("/static/tablesorter/jquery.tablesorter.js");
 $(window).ready(function() {
 
   // INITIALIZE - remove push and sources session info on page load
-  $.get($SCRIPT_ROOT + '/reset_usage');
-  $.get($SCRIPT_ROOT + '/reset_account');
-  $.get($SCRIPT_ROOT + '/reset_pylon');
-  $.get($SCRIPT_ROOT + '/reset_push');
-  $.get($SCRIPT_ROOT + '/reset_historics');
-  $.get($SCRIPT_ROOT + '/reset_sources');
+  $.get($SCRIPT_ROOT + '/reset_data');
 
   if( $("#usage").length == 0 ) {
     $('#login_button').val("Log in")

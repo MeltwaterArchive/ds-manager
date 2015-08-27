@@ -87,47 +87,16 @@ def logout():
     pop_session()
     return redirect(url_for('manager'))
 
-@app.route('/reset_usage')
-def reset_usage():
-    if 'usage' in session.keys():
-        session.pop('usage', None)
+# reset pretty much all session data except user and api key on page refresh
+@app.route('/reset_data')
+def reset_data():
+    session_keys = ["usage","identities","pylon","push","historics","sources"]
+    for k in session_keys: 
+        if k in session.keys():
+            session.pop(k, None)
     response = make_response("",204)
     return response
 
-@app.route('/reset_account')
-def reset_account():
-    if 'identities' in session.keys():
-        session.pop('identities', None)
-    response = make_response("",204)
-    return response
-
-@app.route('/reset_pylon')
-def reset_pylon():
-    if 'pylon' in session.keys():
-        session.pop('pylon', None)
-    response = make_response("",204)
-    return response
-
-@app.route('/reset_push')
-def reset_push():
-    if 'push' in session.keys():
-        session.pop('push', None)
-    response = make_response("",204)
-    return response
-
-@app.route('/reset_historics')
-def reset_historics():
-    if 'historics' in session.keys():
-        session.pop('historics', None)
-    response = make_response("",204)
-    return response
-
-@app.route('/reset_sources')
-def reset_sources():
-    if 'sources' in session.keys():
-        session.pop('sources', None)
-    response = make_response("",204)
-    return response
 
 @app.route('/update_ratelimit')
 def update_ratelimit():

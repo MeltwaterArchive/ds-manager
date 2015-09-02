@@ -46,7 +46,7 @@ def account_get_all():
     identities = {}
     try:
         client = Client(session['username'],session['apikey'])
-        identities_list = client.account.identity.list()
+        identities_list = client.account.identity.list(per_page=100)
         identities = identities_list['identities']
         identities_keys = {i['label']: i['api_key'] for i in identities}
     except Exception, e:

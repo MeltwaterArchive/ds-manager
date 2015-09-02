@@ -12,6 +12,7 @@ def pylon_get():
         session['pylon_out'] = ""
         session['pylon_reload_time'] = datetime.datetime.utcnow()
         session['pylon'] = pylon_get_all()
+        print session['pylon']
     return render_template(
         'PYLON.html',
         raw=session['pylon'],
@@ -81,7 +82,7 @@ def get_pylon_export():
 
 def pylon_get_all():
     ''' get all PYLON recordings for all accounts '''
-    pylon = []
+    recordings = []
     try:
         # need identities to get PYLON recording
         if not 'identities' in session:
@@ -92,18 +93,26 @@ def pylon_get_all():
         
         # if identities session is a string, then PYLON is not available
         if isinstance(session['identities'], basestring):
-            pylon = session['identities']
+            recordings = session['identities']
         else:
             for i in session['identities']:
                 idclient = Client(session['username'],i['api_key'])
-                recordings=idclient.pylon.list()
-                # add identity label to each recording
-                for r in recordings:
-                    r['identity_label'] = i['label']
-                pylon.append(recordings)
+                print i['label']
+                # in the case that there's an issue with an identity, we get an error when trying to get a recording
+                try:
+                    recs=idclient.pylon.list(per_page=100)
+                    print recs
+                    # add identity label to each recording
+                    for r in recs:
+                        r['identity_label'] = i['label']
+                    recordings.append(recs)
+                except Exception, e:
+                    pass
+                    # print "error", e.message
+                    
     except Exception, e:
-        pylon = e.message
-    return pylon
+        recordings = e.message
+    return recordings
 
 def format_time(timestamp):
     return timestamp.strftime("%Y-%m-%d %H:%M:%S +0000")

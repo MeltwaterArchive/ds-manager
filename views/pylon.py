@@ -12,7 +12,6 @@ def pylon_get():
         session['pylon_out'] = ""
         session['pylon_reload_time'] = datetime.datetime.utcnow()
         session['pylon'] = pylon_get_all()
-        print session['pylon']
     return render_template(
         'PYLON.html',
         raw=session['pylon'],
@@ -97,11 +96,9 @@ def pylon_get_all():
         else:
             for i in session['identities']:
                 idclient = Client(session['username'],i['api_key'])
-                print i['label']
                 # in the case that there's an issue with an identity, we get an error when trying to get a recording
                 try:
                     recs=idclient.pylon.list(per_page=100)
-                    print recs
                     # add identity label to each recording
                     for r in recs:
                         r['identity_label'] = i['label']

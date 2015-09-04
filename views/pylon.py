@@ -82,15 +82,16 @@ def get_pylon_export():
 def pylon_get_all():
     ''' get all PYLON recordings for all accounts '''
     recordings = []
+    per_page=100
+
     try:
         # need identities to get PYLON recording
         if not 'identities' in session:
             session['identities'] = account.account_get_all()
         if not 'identities_limits' in session:
             session['identities_limits']= account.limits_get_all()
-        client = Client(session['username'],session['apikey'])
         
-        # if identities session is a string, then PYLON is not available
+        # if identities session is a string, then PYLON is not available. Just use identity error message
         if isinstance(session['identities'], basestring):
             recordings = session['identities']
         else:
@@ -98,14 +99,24 @@ def pylon_get_all():
                 idclient = Client(session['username'],i['api_key'])
                 # in the case that there's an issue with an identity, we get an error when trying to get a recording
                 try:
-                    recs=idclient.pylon.list(per_page=100)
-                    # add identity label to each recording
+                    recs=idclient.pylon.list(per_page=per_page)
+                    page = 2
+                    # if there are more than per_page number of recordings for an identity
+                    while len(recs) == per_page:
+                        for r in recs:
+                            # add identity label to each recording
+                            r['identity_label'] = i['label']
+                        recordings.append(recs)
+                        recs =  idclient.pylon.list(page=page,per_page=per_page)
+                        page += 1
                     for r in recs:
+                        # add identity label to each recording
                         r['identity_label'] = i['label']
                     recordings.append(recs)
+
                 except Exception, e:
+                    # no recordings
                     pass
-                    # print "error", e.message
                     
     except Exception, e:
         recordings = e.message

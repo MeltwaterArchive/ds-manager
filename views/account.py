@@ -12,10 +12,12 @@ def account_get():
         session['identities_reload_time'] = datetime.datetime.utcnow()
         session['identities'] = account_get_all()
         session['identities_limits']=limits_get_all()
+        session['identities_tokens']=tokens_get_all(session['identities'])
     return render_template(
         'account.html',
         raw=session['identities'],
-        limits=session['identities_limits'])
+        limits=session['identities_limits'],
+        tokens=session['identities_tokens'])
 
 @account.route('/get_raw')
 def account_get_raw():
@@ -48,7 +50,7 @@ def account_get_all():
         client = Client(session['username'],session['apikey'])
         identities_list = client.account.identity.list(per_page=100)
         identities = identities_list['identities']
-        identities_keys = {i['label']: i['api_key'] for i in identities}
+        #identities_keys = {i['label']: i['api_key'] for i in identities}
     except Exception, e:
         identities = e.message
         # identities = "[ account identities not available ]"
@@ -66,3 +68,20 @@ def limits_get_all(services=["facebook"]):
     except Exception, e:
         client = e.message
     return limits
+
+def tokens_get_all(identity_ids,services=["facebook"]):
+    '''
+    returns a dictionary of identity ids with a list of tokens
+    '''
+    tokens = {}
+    try:
+        client = Client(session['username'],session['apikey'])
+        for i in identity_ids:
+            token = []
+            for s in services:
+                token.append(client.account.identity.token.get(i['id'],s))
+            tokens[i['id']] = token
+    except Exception, e:
+        client = e.message
+    print "tokens", tokens
+    return tokens

@@ -42,7 +42,19 @@
           <td>{{i['created_at']}}</td>
           <td>{{i['updated_at']}}</td>
           <td>{{i['expires_at']}}</td>
-          <td></td>
+          <td class="sourcescol">
+          {% if tokens[i['id']] %}
+            <ul>
+            {% for t in tokens[i['id']] %}
+              <li>{{ t['service'] }}
+                <ul><li>{{ t['token'] }}</ul></li>
+              </li>
+            </ul>
+
+            {% endfor %}
+            </ul>
+          {% endif %}
+          </td>
           <td>
           {% if limits %}
             <ul>

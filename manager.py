@@ -143,8 +143,9 @@ def account_all():
     ''' get dictionary of usage, balance, and rate limit '''
     try:
         client = Client(session['username'],session['apikey'])
-        if not session['usage']:
-         session['usage']=client.usage(period='day')
+        if not 'usage' in session:
+            session['usage']=client.usage(period='day')
+        usage = session['usage']
         # transform usage response as a list of tuples
         usage_streams = usage['streams'].items()
         usage_period = (usage['start'],usage['end'])

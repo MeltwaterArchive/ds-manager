@@ -58,18 +58,23 @@ def manager():
     # login dialog, set session stuff
     error = None 
     name = None
+    acct = None
     if request.method == 'POST':
         client = valid_login(request.form['username'], request.form['apikey'])
         if isinstance(client, dict):
             error = client['error']
+        elif isinstance(client,basestring):
+            error = client
         elif client:
-            #clear old session data 
+            #clear old session data, then repopulate and get account data
             pop_session()
             session['username'] = request.form['username']
             session['apikey'] = request.form['apikey']
             name=session['username']
+            acct=account_all()
         else:
-            error = 'Invalid username/password'
+            error = "something's wrong"
+
     else:
         if 'username' in session.keys():
             name=session['username']
@@ -78,7 +83,7 @@ def manager():
         'manager.html',
         error=error,
         name=name,
-        acct=account_all())
+        acct=acct)
 
 
 @app.route('/logout')
@@ -116,9 +121,15 @@ HELPER FUNCTIONS
 def valid_login(user,apikey):
     try:
         client = Client(user,apikey)
-        balance = client.balance()
-        session['ratelimit'] = balance.headers['x-ratelimit-remaining']
-        return client
+        usage = client.usage(period='day')
+
+        # make sure that we're using account credentials, not idenitity 
+        if usage:
+            session['usage'] = usage
+            session['ratelimit'] = usage.headers['x-ratelimit-remaining']
+            return client
+        else:
+            return "Use an account API key"
     except Exception, e:
         return e.message
 
@@ -132,7 +143,8 @@ def account_all():
     ''' get dictionary of usage, balance, and rate limit '''
     try:
         client = Client(session['username'],session['apikey'])
-        usage = client.usage(period='day')
+        if not session['usage']:
+         session['usage']=client.usage(period='day')
         # transform usage response as a list of tuples
         usage_streams = usage['streams'].items()
         usage_period = (usage['start'],usage['end'])

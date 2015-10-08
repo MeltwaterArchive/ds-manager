@@ -82,7 +82,7 @@ def get_pylon_export():
 def pylon_get_all():
     ''' get all PYLON recordings for all accounts '''
     recordings = []
-    per_page=100
+    per_page=41
 
     try:
         # need identities to get PYLON recording

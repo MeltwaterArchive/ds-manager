@@ -58,15 +58,21 @@ def get_account_export():
 # account IDENTITIES 
 def account_get_all():
     ''' get all account identities '''
+    per_page=200
     identities = {}
     try:
         client = Client(session['username'],session['apikey'])
-        identities_list = client.account.identity.list(per_page=100)
+        identities_list = client.account.identity.list(per_page=per_page)
         identities = identities_list['identities']
+
+        # if there are more than per_page number of identities
+        while identities_list['page'] < identities_list['pages']:
+            page = identities_list['page'] + 1
+            identities_list = client.account.identity.list(page=page,per_page=per_page)
+            identities.extend(identities_list['identities'])
         #identities_keys = {i['label']: i['api_key'] for i in identities}
     except Exception, e:
         identities = e.message
-        # identities = "[ account identities not available ]"
     return identities
 
 def limits_get_all(services=["facebook"]):
@@ -80,6 +86,7 @@ def limits_get_all(services=["facebook"]):
             limits += limits_list["limits"]
     except Exception, e:
         client = e.message
+    print limits
     return limits
 
 def tokens_get_all(identity_ids,services=["facebook"]):

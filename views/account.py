@@ -86,7 +86,6 @@ def limits_get_all(services=["facebook"]):
             limits += limits_list["limits"]
     except Exception, e:
         client = e.message
-    print limits
     return limits
 
 def tokens_get_all(identity_ids,services=["facebook"]):
@@ -94,13 +93,13 @@ def tokens_get_all(identity_ids,services=["facebook"]):
     returns a dictionary of identity ids with a list of tokens
     '''
     tokens = {}
-    try:
-        client = Client(session['username'],session['apikey'])
-        for i in identity_ids:
-            token = []
-            for s in services:
+    client = Client(session['username'],session['apikey'])
+    for i in identity_ids:
+        token = []
+        for s in services:
+            try:
                 token.append(client.account.identity.token.get(i['id'],s))
-            tokens[i['id']] = token
-    except Exception, e:
-        client = e.message
+            except:
+                pass
+        tokens[i['id']] = token
     return tokens

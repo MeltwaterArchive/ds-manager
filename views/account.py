@@ -99,7 +99,7 @@ def tokens_get_all(identity_ids,services=["facebook"]):
         for s in services:
             try:
                 token.append(client.account.identity.token.get(i['id'],s))
+                tokens[i['id']] = token
             except:
                 pass
-        tokens[i['id']] = token
     return tokens

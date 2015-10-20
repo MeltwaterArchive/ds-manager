@@ -96,27 +96,29 @@ def pylon_get_all():
             recordings = session['identities']
         else:
             for i in session['identities']:
-                idclient = Client(session['username'],i['api_key'])
-                # in the case that there's an issue with an identity, we get an error when trying to get a recording
-                try:
-                    recs=idclient.pylon.list(per_page=per_page)
-                    page = 2
-                    # if there are more than per_page number of recordings for an identity
-                    while len(recs) == per_page:
+                # inactive identities don't have a pylon/get response
+                if i['status'] == 'active':
+                    idclient = Client(session['username'],i['api_key'])
+                    # in the case that there's an issue with an identity, we get an error when trying to get a recording
+                    try:
+                        recs=idclient.pylon.list(per_page=per_page)
+                        page = 2
+                        # if there are more than per_page number of recordings for an identity
+                        while len(recs) == per_page:
+                            for r in recs:
+                                # add identity label to each recording
+                                r['identity_label'] = i['label']
+                            recordings.append(recs)
+                            recs =  idclient.pylon.list(page=page,per_page=per_page)
+                            page += 1
                         for r in recs:
                             # add identity label to each recording
                             r['identity_label'] = i['label']
                         recordings.append(recs)
-                        recs =  idclient.pylon.list(page=page,per_page=per_page)
-                        page += 1
-                    for r in recs:
-                        # add identity label to each recording
-                        r['identity_label'] = i['label']
-                    recordings.append(recs)
 
-                except Exception, e:
-                    # no recordings
-                    pass
+                    except Exception, e:
+                        # no recordings
+                        pass
                     
     except Exception, e:
         recordings = e.message

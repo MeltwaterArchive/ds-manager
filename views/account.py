@@ -10,21 +10,10 @@ def account_get():
     '''
     set account session data and render template
     '''
-    if not 'identities' in session.keys() or 'reload' in request.args:
-        session['identities_out'] = ""
-        session['identities_reload_time'] = datetime.datetime.utcnow()
-        session['identities'] = account_get_all()
-        session['identities_limits']=limits_get_all()
-        session['identities_tokens']=tokens_get_all(session['identities'])
-    elif not 'identities_limits' in session.keys():
-        session['identities_limits']=limits_get_all()
-    elif not 'identities_tokens' in session.keys():
-        session['identities_tokens']=tokens_get_all(session['identities'])
+    if 'reload' in request.args:
+        session['account_json'] = []
     return render_template(
-        'account.html',
-        raw=session['identities'],
-        limits=session['identities_limits'],
-        tokens=session['identities_tokens'])
+        'account.html')
 
 @account.route('/get_raw')
 def account_get_raw():
@@ -35,6 +24,87 @@ def account_get_raw():
         return jsonify(out=session['identities'])
     else:
         return jsonify(out="account identity data not available..")
+
+
+@account.route('/get_json')
+def account_get_json():
+    '''
+    return json array formatted for datatables 
+    '''
+    if not 'account_json' in session.keys() or 'reload' in request.args:
+        session['account_json'] = []
+        session['identities_out'] = ""
+        session['identities_reload_time'] = datetime.datetime.utcnow()
+        session['identities'] = account_get_all()
+        session['identities_limits']=limits_get_all()
+
+        for s in session['identities']:
+            limit = None
+            # add limit to json output
+            for l in session['identities_limits']:
+                if l['id'] == s['id']:
+                    limit = "%s: %d" % (l['service'], l['total_allowance'])
+            session['account_json'].append(
+                [s['label'],s['id'],s['api_key'],s['created_at'],s['updated_at'],s['expires_at'],"",limit,s['master'],s['status']])
+    return jsonify(data=session['account_json']) 
+
+
+@account.route('/get_token_json')
+def account_get_token_json():
+    session['identities_tokens']=tokens_get_all(session['identities'])
+    tokens = session['identities_tokens'] 
+    # go through array created in account_get_json() and add token for each identity that has one.
+    for i in session['account_json']:
+        if i[9] == 'active' and i[1] in tokens.keys():
+            out = ""
+            for t in tokens[i[1]]:
+                out += t['service'] + ": " + t['token']
+            i[6] = out
+    return jsonify(data=session['account_json'])
+
+
+'''
+@account.route('/get_json_limits')
+def account_get_json_limits():
+    if not 'identities_limits' in session.keys():
+        session['identities_limits']=limits_get_all()
+'''
+
+# TODO is it better to redraw the table after each request or update?
+
+'''
+class Account:
+    identities = {}
+
+    def __init__():
+        pass
+
+    def get_identities(per_page=200,page=1):
+        #get all account identities 
+        try:
+            client = Client(session['username'],session['apikey'])
+            identities_list = client.account.identity.list(page=page,per_page=per_page)
+            identities.extend(identities_list['identities'])
+        except Exception, e:
+            identities = e.message
+        return identities
+
+    def get_tokens(services=["facebook"]):
+        # returns a dictionary of identity ids with a list of tokens
+        
+        tokens = {}
+        client = Client(session['username'],session['apikey'])
+        for i in identities:
+            token = []
+            if i[]:
+                for s in services:
+                    try:
+                        token.append(client.account.identity.token.get(i['id'],s))
+                        tokens[i['id']] = token
+                    except:
+                        pass
+        return tokens
+'''
 
 @account.route('/set_export', methods=['POST'])
 def set_account_export():

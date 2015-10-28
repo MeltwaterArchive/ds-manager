@@ -2,9 +2,44 @@
   <link rel="stylesheet" type="text/css" href="static/tablesorter/themes/orange/style.css">
 
   <script src="//ajax.googleapis.com/ajax/libs/jquery/1.9.1/jquery.min.js"></script>
-
+<!--
   <script type="text/javascript" src="static/tablesorter/jquery.tablesorter.js"></script>
   <script type="text/javascript"> $('#accounttable').tablesorter(); </script>
+-->
+  <!-- DataTables CSS -->
+  <link rel="stylesheet" type="text/css" href="static/DataTables/dataTables.css">
+    
+  <!-- DataTables -->
+  <script type="text/javascript" charset="utf8" src="static/DataTables/dataTables.js"></script>
+  <script type="text/javascript"> 
+    var table = $('#accounttable').DataTable( {
+        "ajax": "/account/get_json",
+        dom: 'lBfrtip',
+        "buttons": ['copy'],
+        processing: true
+      } ).on( 'draw.dt', function () {
+      console.log( 'Redraw occurred at: '+new Date().getTime() );
+      } );
+
+    table.button().add( 0, {
+        action: function ( e, dt, button, config ) {
+            dt.ajax.url('/account/get_token_json').load();
+        },
+        text: 'get tokens'
+    } );
+    
+
+    // lazy loading..
+    /*
+    var temp = $.ajax({
+      url: "/account/get_json_array",
+      dataType: 'json',
+      success: function (data) {
+        table.rows.add(data.data).draw(); 
+      } 
+    });
+    */
+  </script>
 </head>
 
 
@@ -17,7 +52,6 @@
   </span>
   <div id=account_output class="out">[output]</div>
 
-  {% if raw is not string %}
     <table id="accounttable" class="tablesorter">
       <thead>
         <tr>
@@ -33,49 +67,6 @@
           <th>status</th>
         </tr>
       </thead>
-      <tbody>
-    {% for i in raw %}
-        <tr>
-          <td>{{i['label']}}</td>
-          <td>{{i['id']}}</td>
-          <td>{{i['api_key']}}</td>
-          <td>{{i['created_at']}}</td>
-          <td>{{i['updated_at']}}</td>
-          <td>{{i['expires_at']}}</td>
-          <td class="sourcescol">
-          {% if tokens[i['id']] %}
-            <ul>
-            {% for t in tokens[i['id']] %}
-              <li>{{ t['service'] }}
-                <ul><li>{{ t['token'] }}</ul></li>
-              </li>
-            </ul>
-
-            {% endfor %}
-            </ul>
-          {% endif %}
-          </td>
-          <td>
-          {% if limits %}
-            <ul>
-            {% for l in limits %}
-            {% if l['id'] == i['id'] %}
-              <li>{{ l['service'] }}: {{ l['total_allowance'] }}</li>
-            {% else %}
-              
-            {% endif %}
-            {% endfor %}
-            </ul>
-          {% endif %}
-          </td>
-          <td>{{i['master']}}</td>
-          <td>{{i['status']}}</td>
-        </tr>
-    {% endfor %}
-      </tbody>
     </table>
-  {% else %}
-  <p> {{ raw }} </p>
-  {% endif %}
 
 </body>

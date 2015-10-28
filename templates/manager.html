@@ -29,8 +29,8 @@
       </div>
       <form action="" method="post">
         <fieldset>
-          <label for="username">User name:</label> <input type="text"  class="loginfield" name="username">
-          <label for="apikey">API Key:</label> <input type="text"  class="loginfield" name="apikey" >
+          <label class="loginlabel" for="username">User name:</label> <input type="text"  class="loginfield" name="username">
+          <label class="loginlabel" for="apikey">API Key:</label> <input type="text"  class="loginfield" name="apikey" >
           <div id="loginlogout">
             <input type="submit" id="login_button" value="Login" >
             <input type="button" value="Log out" onClick="javascript:location.href='/logout';">
@@ -74,7 +74,7 @@
 <nav class="cl-effect-13" id="cl-effect-13">
 <!-- USAGE -->
   <div id="usage" class="section">
-    <a id="showusage"> Usage </a>
+    <a id="showusage" class="section_title"> Usage </a>
     <img src="static/ajax-loader.gif" alt="loading.." id="usage_load" class="load" style="display: block;">
   </div>
   <div id="usageget" class="section"></div>
@@ -82,7 +82,7 @@
 <!-- ACCOUNT IDENTITIES -->
 
   <div id="account" class="section">
-    <a id="showaccount"> Account Identities </a>
+    <a id="showaccount" class="section_title"> Account Identities </a>
     <img src="static/ajax-loader.gif" alt="loading.." id="account_load" class="load" style="display: none;">
   </div>
   <div id="accountget" style="display: none;"></div>
@@ -90,14 +90,14 @@
 <!-- PYLON IDENTITIES -->
 
   <div id="pylon" class="section">
-    <a id="showpylon"> PYLON Recordings </a>
+    <a id="showpylon" class="section_title"> PYLON Recordings </a>
     <img src="static/ajax-loader.gif" alt="loading.." id="pylon_load" class="load" style="display: none;">
   </div>
   <div id="pylonget" style="display: none;"></div>
 
 <!-- PUSH SUBSCRIPTIONS -->
   <div id="push" class="section">
-    <a id="showstreams"> Live Streams </a>
+    <a id="showstreams" class="section_title"> Live Streams </a>
     <img src="static/ajax-loader.gif" alt="loading.." id="push_load" class="load" style="display: none;">
   </div>
   <div id="pushget" style="display: none;"></div>
@@ -105,7 +105,7 @@
 
 <!-- HISTORICS -->
   <div id="historics" class="section">
-    <a id="showhistorics"> Historics Streams </a>
+    <a id="showhistorics" class="section_title"> Historics Streams </a>
     <img src="static/ajax-loader.gif" alt="loading.." id="historics_load" class="load" style="display: none;">
   </div>
 
@@ -114,7 +114,7 @@
 <!--  MANAGED SOURCES -->
   
   <div id="sources" class="section">
-    <a id="showsources"> Managed Sources </a>
+    <a id="showsources" class="section_title"> Managed Sources </a>
     <img src="static/ajax-loader.gif" alt="loading.." id="sources_load" class="load" style="display: none;">
   </div>
   <div id="sourceget" style="display: none;"></div>

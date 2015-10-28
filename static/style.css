@@ -23,15 +23,6 @@ li {
   text-align: left;
 }
 
-label{
-  display:inline-block;
-  width:100px;
-  margin-right:20px;
-  text-align:right;
-  margin-left: 10px;
-  font-weight: bold;
-}
-
 fieldset{
   border:none;
   width:400px;
@@ -166,6 +157,16 @@ div#error {
   margin-bottom: 100px;
 }
 
+
+.loginlabel{
+  display:inline-block;
+  width:100px;
+  margin-right:20px;
+  text-align:right;
+  margin-left: 10px;
+  font-weight: bold;
+}
+
 .loginfield {
   width: 220px;
   border-color: darkorange;
@@ -185,7 +186,8 @@ div#error {
 
 /* animation effects for headers */
 
-nav div a {
+  /* exclude paginate anchors from DataTable */
+nav div .section_title:not(.paginate_button):not(.dt-button) {
   position: relative;
   display: inline-block;
   margin-left: 15px;
@@ -202,8 +204,8 @@ nav div a:focus {
   outline: none;
 }
 
-.cl-effect-13 div a::before,
-.cl-effect-13 div a::after {
+.cl-effect-13 div .section_title::before,
+.cl-effect-13 div .section_title::after {
   display: inline-block;
   opacity: 0;
   -webkit-transition: -webkit-transform 0.3s, opacity 0.2s;
@@ -211,7 +213,7 @@ nav div a:focus {
   transition: transform 0.3s, opacity 0.2s;
 }
 
-.cl-effect-13 div a::before {
+.cl-effect-13 div .section_title::before {
   margin-right: 10px;
   content: '[';
   -webkit-transform: translateX(20px);
@@ -219,7 +221,7 @@ nav div a:focus {
   transform: translateX(20px);
 }
 
-.cl-effect-13 div a::after {
+.cl-effect-13 div .section_title::after {
   margin-left: 10px;
   content: ']';
   -webkit-transform: translateX(-20px);
@@ -227,10 +229,10 @@ nav div a:focus {
   transform: translateX(-20px);
 }
 
-.cl-effect-13 div a:hover::before,
-.cl-effect-13 div a:hover::after,
-.cl-effect-13 div a:focus::before,
-.cl-effect-13 div a:focus::after {
+.cl-effect-13 div .section_title:hover::before,
+.cl-effect-13 div .section_title:hover::after,
+.cl-effect-13 div .section_title:focus::before,
+.cl-effect-13 div .section_title:focus::after {
   opacity: 1;
   -webkit-transform: translateX(0px);
   -moz-transform: translateX(0px);

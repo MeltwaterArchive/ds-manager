@@ -35,7 +35,7 @@ def account_get_json():
         session['account_json'] = []
         session['identities_out'] = ""
         session['identities_reload_time'] = datetime.datetime.utcnow()
-        session['identities'] = account_get_all()
+        session['identities'] = account_get_all()['data']
         session['identities_limits']=limits_get_all()
 
         for s in session['identities']:
@@ -129,20 +129,23 @@ def get_account_export():
 def account_get_all():
     ''' get all account identities '''
     per_page=200
-    identities = {}
+    identities = {
+        "data":{},
+        "error":""
+    }
     try:
         client = Client(session['username'],session['apikey'])
         identities_list = client.account.identity.list(per_page=per_page)
-        identities = identities_list['identities']
+        identities['data'] = identities_list['identities']
 
         # if there are more than per_page number of identities
         while identities_list['page'] < identities_list['pages']:
             page = identities_list['page'] + 1
             identities_list = client.account.identity.list(page=page,per_page=per_page)
-            identities.extend(identities_list['identities'])
+            identities['data'].extend(identities_list['identities'])
         #identities_keys = {i['label']: i['api_key'] for i in identities}
     except Exception, e:
-        identities = e.message
+        identities['error'] = e.message
     return identities
 
 def limits_get_all(services=["facebook"]):

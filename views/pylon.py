@@ -87,7 +87,7 @@ def pylon_get_all():
     try:
         # need identities to get PYLON recording
         if not 'identities' in session:
-            session['identities'] = account.account_get_all()
+            session['identities'] = account.account_get_all()['data']
         if not 'identities_limits' in session:
             session['identities_limits']= account.limits_get_all()
         

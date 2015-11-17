@@ -1,11 +1,27 @@
 <head>
-  <link rel="stylesheet" type="text/css" href="static/tablesorter/themes/orange/style.css">
+<!--  <link rel="stylesheet" type="text/css" href="static/tablesorter/themes/orange/style.css"> -->
 
   <script src="//ajax.googleapis.com/ajax/libs/jquery/1.9.1/jquery.min.js"></script>
-
+<!--
   <script type="text/javascript" src="static/tablesorter/jquery.tablesorter.js"></script>
 
   <script type="text/javascript"> $('#pylontable').tablesorter(); </script>
+-->
+    <!-- DataTables CSS -->
+  <link rel="stylesheet" type="text/css" href="static/DataTables/datatables.css">
+    
+  <!-- DataTables -->
+  <script type="text/javascript" charset="utf8" src="static/DataTables/datatables.js"></script>
+  <script type="text/javascript"> 
+    var table2 = $('#pylontable').DataTable( {
+        "ajax": "/pylon/get_json",
+        dom: 'lBfrtip',
+        select: {"style":"multi"},
+        "buttons": ['copy'],
+        processing: true
+      } );
+
+  </script>
 </head>
 
 <body>

@@ -78,12 +78,53 @@ def get_pylon_export():
     response.headers["Content-Disposition"] = "attachment; filename=output.txt"
     return response
 
+@pylon.route('/get_json')
+def pylon_get_json():
+    '''
+    return json array formatted for datatables 
+    '''
+    if not 'pylon_json' in session.keys() or 'reload' in request.args:
+        session['pylon_json'] = []
+        session['pylon_out'] = ""
+        session['pylon_reload_time'] = datetime.datetime.utcnow()
+        session['pylon'] = pylon_get_all()
+
+        for s in session['pylon'][0]:
+            session['pylon_json'].append(
+                ["",s['name'],s['hash'],s['identity_label'],str(s['start']),str(s['end']),s['remaining_index_capacity'],s['volume'],s['status']])
+    return jsonify(data=session['pylon_json']) 
+
 
 def pylon_get_all():
     ''' get all PYLON recordings for all accounts '''
-    recordings = []
-    per_page=41
+    recordings = [[]]
+    per_page=200
 
+    try:
+        client = Client(session['username'],session['apikey'])
+        recs = client.pylon.list(per_page=per_page)
+        page = 2
+        # if there are more than per_page number of recordings for an identity
+        while len(recs) == per_page:
+            recordings[0].extend(recs)
+            recs =  client.pylon.list(page=page,per_page=per_page)
+            page += 1
+        recordings[0].extend(recs)
+        if 'identities' in session:
+            for r in recordings[0]:
+                for i in session['identities']:
+                    # add identity label to each recording
+                    if r['identity_id'] == i['id']:
+                        r['identity_label'] = i['label']
+        else:
+            for r in recordings[0]:
+                r['identity_label'] = r['identity_id']
+    except Exception, e:
+        recordings = e.message
+    return recordings
+
+    # old approach - goes through each identity
+    '''
     try:
         # need identities to get PYLON recording
         if not 'identities' in session:
@@ -123,6 +164,7 @@ def pylon_get_all():
     except Exception, e:
         recordings = e.message
     return recordings
+    '''
 
 def format_time(timestamp):
     return timestamp.strftime("%Y-%m-%d %H:%M:%S +0000")

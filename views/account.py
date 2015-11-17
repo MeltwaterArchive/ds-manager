@@ -63,13 +63,6 @@ def account_get_token_json():
     return jsonify(data=session['account_json'])
 
 
-'''
-@account.route('/get_json_limits')
-def account_get_json_limits():
-    if not 'identities_limits' in session.keys():
-        session['identities_limits']=limits_get_all()
-'''
-
 # TODO is it better to redraw the table after each request or update?
 
 '''

@@ -23,6 +23,17 @@ Note on elasticbeanstalk use:
   
 ==== RELEASE NOTES ====
 
+2015-12-03
+
+  - load tokens separately from identities 
+  - implement account level pylon/get instead of by identity = MUCH faster load time
+  - major restructuring of python, CSS, and javascript
+  - better error response messages
+  - now using Flask Blueprints for clearer endpoint management
+  - don't allow identity api keys to log in
+  - switch to DataTables for data display
+
+
 2015-08-07
 
   - elastic beanstalk support 

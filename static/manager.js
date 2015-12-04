@@ -179,7 +179,7 @@ $(window).ready(function() {
       $('#accountget').slideToggle("fast");
       // loading gif
       $('#account_load').css('display', 'block');
-      $.get($SCRIPT_ROOT + '/account/get_json', 'reload=1', function(data){
+      $.get($SCRIPT_ROOT + '/account/get', 'reload=1', function(data){
         $('#accountget').html(data).slideToggle("fast");
         $('#account_load').css('display', 'none');
       });

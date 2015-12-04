@@ -11,7 +11,7 @@ def account_get():
     set account session data and render template
     '''
     if 'reload' in request.args:
-        session['account_json'] = []
+        session.pop('account_json', None)
     return render_template(
         'account.html')
 

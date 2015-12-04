@@ -23,6 +23,7 @@
       //console.log( 'Redraw occurred at: '+new Date().getTime() );
       } );
 
+    //load tokens explicitly to save api calls
     table.button().add( 0, {
         action: function ( e, dt, button, config ) {
             dt.ajax.url('/account/get_token_json').load();

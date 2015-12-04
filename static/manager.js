@@ -214,16 +214,18 @@ $(window).ready(function() {
 
     $(document).on('click', 'input#pylon_start', function() {
       var recs = "";
+      var ids = "";
       // NOTE - each checkbox has name like: <hash>_<identity id>
       // split on _ delimeter for user confirmation.
-      $( ".pylon:checked").each(function(){
-        recs = recs + "\n" + $( this ).attr('name').split('_')[0];
+      $( ".pylon:checked").each(function(index, value){
+        ids += $(value).attr('id') + "=on&";
+        recs = recs + "\n" + $( value ).attr('id').split('_')[0];
       });
       var confirm_start = confirm("Are you sure you want to start PYLON recordings:\n " + recs);
       if (confirm_start == true){
         pylon_output_wait();
         $.getJSON($SCRIPT_ROOT + '/pylon/start',
-        $( ".pylon:checked"), 
+        ids, 
         function(data) {
           formatted = pylon_control_output_format(data,"started");
           $("#pylon_output").html(formatted);
@@ -237,16 +239,18 @@ $(window).ready(function() {
 
     $(document).on('click', 'input#pylon_stop', function() {
       var recs = "";
+      var ids = "";
       // NOTE - each checkbox has name like: <hash>_<identity id>
       // split on _ delimeter for user confirmation.
-      $( ".pylon:checked").each(function(){
-        recs = recs + "\n" + $( this ).attr('name').split('_')[0];
+      $( ".pylon:checked").each(function(index, value){
+        ids += $(value).attr('id') + "=on&";
+        recs = recs + "\n" + $( value ).attr('id').split('_')[0];
       });
       var confirm_stop = confirm("Are you sure you want to stop PYLON recordings:\n " + recs);
       if (confirm_stop == true){
         pylon_output_wait();
         $.getJSON($SCRIPT_ROOT + '/pylon/stop',
-        $( ".pylon:checked"), 
+        ids, 
         function(data) {
           formatted = pylon_control_output_format(data,"stopped");
           $("#pylon_output").html(formatted);

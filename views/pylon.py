@@ -8,13 +8,16 @@ pylon = Blueprint('pylon', __name__,template_folder='static')
 
 @pylon.route('/get', methods=['POST', 'GET'])
 def pylon_get():
-    if not 'pylon' in session.keys() or 'reload' in request.args:
+    # clear session variables on reload
+    if 'reload' in request.args:
+        session.pop('pylon_json',None)
+        session.pop('pylon',None)
         session['pylon_out'] = ""
         session['pylon_reload_time'] = datetime.datetime.utcnow()
-        session['pylon'] = pylon_get_all()
+    if not 'python_reload_time' in session:
+        session['pylon_reload_time'] = datetime.datetime.utcnow()
     return render_template(
         'PYLON.html',
-        raw=session['pylon'],
         reload_time=format_time(session['pylon_reload_time']))
 
 @pylon.route('/get_raw')
@@ -32,6 +35,8 @@ def pylon_start():
     for r in request.args:
         # split the id of the checkboxes on _ to get hash and identity id, so we can stop it
         hash_idid = r.split('_')
+        if not 'identities' in session:
+            session['identities'] = account.account_get_all()['data']
         for i in session['identities']:
             try:
                 if i['id'] == hash_idid[1]:
@@ -51,6 +56,8 @@ def pylon_stop():
     for r in request.args:
         # split the id of the checkboxes on _ to get hash and identity id, so we can stop it
         hash_idid = r.split('_')
+        if not 'identities' in session:
+            session['identities'] = account.account_get_all()['data']
         for i in session['identities']:
             try:
                 if i['id'] == hash_idid[1]:
@@ -90,8 +97,17 @@ def pylon_get_json():
         session['pylon'] = pylon_get_all()
 
         for s in session['pylon'][0]:
+            checkbox = '<input type="checkbox" class="pylon" id="'+s['hash']+'_'+s['identity_id']+'">'
             session['pylon_json'].append(
-                ["",s['name'],s['hash'],s['identity_label'],str(s['start']),str(s['end']),s['remaining_index_capacity'],s['volume'],s['status']])
+                [checkbox,
+                s['name'],
+                s['hash'],
+                s['identity_label'],
+                str(s['start']),
+                str(s['end']),
+                s['remaining_index_capacity'],
+                s['volume'],
+                s['status']])
     return jsonify(data=session['pylon_json']) 
 
 

@@ -733,7 +733,7 @@ $(window).ready(function() {
     var historics_output_format_html = function(formatted){
       var html_formatted = "";
       var clear_output= "<span class='output_control' onclick='document.getElementById(\"historics_output\").innerHTML = \"\";'><a href='#historics'>clear output</a></span>";
-      var export_output= "<span class='output_control'><a href='/get_historics_export/output.txt'>export output.txt</a></span>";
+      var export_output= "<span class='output_control'><a href='/historics/get_export/output.txt'>export output.txt</a></span>";
       var output_control = "<div class='output_control_container'>" + clear_output + export_output + "</div>";
       html_formatted = "<div class='inner_output'><pre>" + formatted + "</pre></div>" + output_control;
 
@@ -909,7 +909,7 @@ $(window).ready(function() {
     var source_output_format_html = function(formatted){
       var html_formatted = "";
       var clear_output= "<span class='output_control' onclick='document.getElementById(\"source_output\").innerHTML = \"\";'><a href='#sources'>clear output</a></span>";
-      var export_output= "<span class='output_control'><a href='/get_source_export/output.txt'>export output.txt</a></span>";
+      var export_output= "<span class='output_control'><a href='/source/get_export/output.txt'>export output.txt</a></span>";
       var output_control = "<div class='output_control_container'>" + clear_output + export_output + "</div>";
       html_formatted = "<div class='inner_output'><pre>" + formatted + "</pre></div>" + output_control;
 

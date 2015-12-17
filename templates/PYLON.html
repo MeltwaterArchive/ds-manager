@@ -5,8 +5,36 @@
   <!-- DataTables -->
   <script type="text/javascript" charset="utf8" src="/static/DataTables/datatables.min.js"></script>
   <script type="text/javascript"> 
+    $.ajax({
+      url: "/pylon/get_json",
+      dataType: 'json',
+      beforeSend: function(){
+        $('#pylontable').hide();
+        $('#pylon_output').text("[ please wait ]");
+      },
+      success: function (data) {
+        $('#pylontable').DataTable( {
+          "data": data.data,
+          dom: 'lBfrtip',
+          "buttons": ['copy'],
+          processing: true
+        } )
+        .order( [ 8, 'asc' ] )
+        .draw();
+        $('#pylontable').show();
+
+        if(data.error) {
+          $('#pylon_output').text(data.error)
+        }
+        else {
+          $('#pylon_output').text("[ output ]")
+        }
+      } 
+    });
+    /*
+    // original - using datatables' built in ajax
     var table2 = $('#pylontable').DataTable( {
-        "ajax": "/pylon/get_json",
+        "data": "/pylon/get_json",
         dom: 'lBfrtip',
         select: {"style":"multi"},
         "buttons": ['copy'],
@@ -16,6 +44,7 @@
     table2
     .order( [ 8, 'asc' ] )
     .draw();
+    */
 
   </script>
 </head>

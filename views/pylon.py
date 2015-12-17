@@ -96,24 +96,32 @@ def pylon_get_json():
         session['pylon_reload_time'] = datetime.datetime.utcnow()
         session['pylon'] = pylon_get_all()
 
-        for s in session['pylon'][0]:
-            checkbox = '<input type="checkbox" class="pylon" id="'+s['hash']+'_'+s['identity_id']+'">'
-            session['pylon_json'].append(
-                [checkbox,
-                s['name'],
-                s['hash'],
-                s['identity_label'],
-                str(s['start']),
-                str(s['end']),
-                s['remaining_index_capacity'],
-                s['volume'],
-                s['status']])
-    return jsonify(data=session['pylon_json']) 
+        recordings = session['pylon']['recordings']
+
+        if recordings:
+            for s in recordings:
+                checkbox = '<input type="checkbox" class="pylon" id="'+s['hash']+'_'+s['identity_id']+'">'
+                session['pylon_json'].append(
+                    [checkbox,
+                    s['name'],
+                    s['hash'],
+                    s['identity_label'],
+                    str(s['start']),
+                    str(s['end']),
+                    s['remaining_index_capacity'],
+                    s['volume'],
+                    s['status']])
+    json = jsonify(data=session['pylon_json'], error=session['pylon']['error']) 
+    print json
+    return json
 
 
 def pylon_get_all():
     ''' get all PYLON recordings for all accounts '''
-    recordings = [[]]
+    recordings = {
+        "error":"",
+        "recordings":[]
+    }
     per_page=200
 
     try:
@@ -122,21 +130,22 @@ def pylon_get_all():
         page = 2
         # if there are more than per_page number of recordings for an identity
         while len(recs) == per_page:
-            recordings[0].extend(recs)
+            recordings["recordings"].extend(recs)
             recs =  client.pylon.list(page=page,per_page=per_page)
             page += 1
-        recordings[0].extend(recs)
+        recordings["recordings"].extend(recs)
         if 'identities' in session:
-            for r in recordings[0]:
+            for r in recordings["recordings"]:
                 for i in session['identities']:
                     # add identity label to each recording
                     if r['identity_id'] == i['id']:
                         r['identity_label'] = i['label']
         else:
-            for r in recordings[0]:
+            # identities not loaded = don't bother with label
+            for r in recordings["recordings"]:
                 r['identity_label'] = r['identity_id']
     except Exception, e:
-        recordings = e.message
+        recordings["error"] = e.message
     return recordings
 
     # old approach - goes through each identity

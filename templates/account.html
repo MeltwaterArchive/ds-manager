@@ -7,13 +7,49 @@
   <script type="text/javascript"> 
     $('#tablesortersheet').remove();
 
+    $.ajax({
+      url: "/account/get_json",
+      dataType: 'json',
+      beforeSend: function(){
+        $('#accounttable').hide();
+        $('#account_output').text("[ please wait ]");
+      },
+      success: function (data) {
+        var acct_table = $('#accounttable').DataTable( {
+          "data": data.data,
+          dom: 'lBfrtip',
+          "buttons": ['copy'],
+          processing: true
+        } )
+        .order( [ 9, 'asc' ] )
+        .draw();
+
+        // load tokens explicitly to save api calls on initial load
+        acct_table.button().add( 0, {
+            action: function ( e, dt, button, config ) {
+                dt.ajax.url('/account/get_token_json').load();
+            },
+            text: 'get tokens'
+        } );
+
+        $('#accounttable').show();
+
+        if(data.error) {
+          $('#account_output').text(data.error)
+        }
+        else {
+          $('#account_output').text("[ output ]")
+        }
+      } 
+    });
+/*
+    // original - using datatables built in ajax
     var table = $('#accounttable').DataTable( {
         "ajax": "/account/get_json",
         dom: 'lBfrtip',
         "buttons": ['copy'],
         processing: true
       } ).on( 'draw.dt', function () {
-      //console.log( 'Redraw occurred at: '+new Date().getTime() );
       } );
 
     //load tokens explicitly to save api calls
@@ -23,7 +59,7 @@
         },
         text: 'get tokens'
     } );
-    
+*/
 
     // lazy loading..
     /*
@@ -51,7 +87,7 @@
     <table id="accounttable" class="tablesorter">
       <thead>
         <tr>
-          <th>label</th>
+          <th style="max-width:200px">label</th>
           <th>id</th>
           <th>API key</th>
           <th>created</th>

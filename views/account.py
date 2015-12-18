@@ -21,7 +21,7 @@ def account_get_raw():
     return jsonified account/get response 
     '''
     if 'identities' in session.keys():
-        return jsonify(out=session['identities'])
+        return jsonify(out=session['identities']['data'])
     else:
         return jsonify(out="account identity data not available..")
 
@@ -35,10 +35,10 @@ def account_get_json():
         session['account_json'] = []
         session['identities_out'] = ""
         session['identities_reload_time'] = datetime.datetime.utcnow()
-        session['identities'] = account_get_all()['data']
+        session['identities'] = account_get_all()
         session['identities_limits']=limits_get_all()
 
-        for s in session['identities']:
+        for s in session['identities']['data']:
             limit = None
             # add limit to json output
             for l in session['identities_limits']:
@@ -46,12 +46,12 @@ def account_get_json():
                     limit = "%s: %d" % (l['service'], l['total_allowance'])
             session['account_json'].append(
                 [s['label'],s['id'],s['api_key'],s['created_at'],s['updated_at'],s['expires_at'],"",limit,s['master'],s['status']])
-    return jsonify(data=session['account_json']) 
+    return jsonify(data=session['account_json'],error=session['identities']['error']) 
 
 
 @account.route('/get_token_json')
 def account_get_token_json():
-    session['identities_tokens']=tokens_get_all(session['identities'])
+    session['identities_tokens']=tokens_get_all(session['identities']['data'])
     tokens = session['identities_tokens'] 
     # go through array created in account_get_json() and add token for each identity that has one.
     for i in session['account_json']:

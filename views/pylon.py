@@ -112,7 +112,6 @@ def pylon_get_json():
                     s['volume'],
                     s['status']])
     json = jsonify(data=session['pylon_json'], error=session['pylon']['error']) 
-    print json
     return json
 
 
@@ -134,10 +133,10 @@ def pylon_get_all():
             recs =  client.pylon.list(page=page,per_page=per_page)
             page += 1
         recordings["recordings"].extend(recs)
-        if 'identities' in session:
+        # add identity label information to recordings if it's already loaded
+        if 'identities' in session and 'data' in session['identities']:
             for r in recordings["recordings"]:
-                for i in session['identities']:
-                    # add identity label to each recording
+                for i in session['identities']['data']:
                     if r['identity_id'] == i['id']:
                         r['identity_label'] = i['label']
         else:

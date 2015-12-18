@@ -313,6 +313,10 @@ nav div a:focus {
   min-width: 12ch;
 }
 
+.check_col {
+  width: 1px;
+}
+
 .sub {
   background-color: white;
   position: relative;

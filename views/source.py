@@ -9,9 +9,8 @@ def source_get():
     # do push/get request only when asked
     if not 'source' in session.keys() or 'reload' in request.args:
         session['source_out'] = ""
-        session['source'] = source_get_all()
         session['source_reload_time'] = datetime.datetime.utcnow()
-    return make_response(render_template('sources.html', source=session['source']['sources'], reload_time=format_time(session['source_reload_time'])))
+    return make_response(render_template('sources.html', reload_time=format_time(session['source_reload_time'])))
 
 @source.route('/get_raw')
 def source_get_raw():

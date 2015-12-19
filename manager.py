@@ -4,6 +4,7 @@ from views import usage,account,pylon,source,push,historics
 from flask_kvsession import KVSessionExtension
 from simplekv.fs import FilesystemStore
 import datetime,os,sys,logging
+import sys
 
 app = Flask(__name__)
 
@@ -163,6 +164,9 @@ def account_all():
     return acct
 
 app.secret_key = 'A0Zr98j/3yX R~XHH!jmN]LWX/,?RT'
+
+reload(sys)  
+sys.setdefaultencoding('utf-8')
 
 if __name__ == '__main__':
     app.debug = True

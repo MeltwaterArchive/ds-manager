@@ -137,7 +137,7 @@ def source_get_json():
                 for r in s['resources']:
                     resources+= '<li>' + r['resource_id'] + '<ul>'
                     for p in r['parameters']:
-                        resources += '<li>' + p + ': ' + str(r['parameters'][p]) + '</li>'
+                        resources += '<li>' + p + ': ' + r['parameters'][p].encode('utf-8') + '</li>'
                     resources += '</ul></li>'
                 resources += "</ul></div>"
 

@@ -760,9 +760,13 @@ $(window).ready(function() {
     });
 
     $(document).on('click', 'input#source_log', function() {
+      var ids = "";
+      $( ".source:checked").each(function(index, value){
+        ids += $(value).attr('id') + "=on&";
+      });
       source_output_wait();
       $.getJSON($SCRIPT_ROOT + '/source/log',
-      $( ".source:checked"), 
+      ids, 
       function(data) {
         formatted = source_output_format(data);
         var html_formatted = source_output_format_html(formatted);

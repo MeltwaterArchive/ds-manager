@@ -11,7 +11,7 @@ def source_get():
         session['source_out'] = ""
         session['source'] = source_get_all()
         session['source_reload_time'] = datetime.datetime.utcnow()
-    return make_response(render_template('sources.html', source=session['source'], reload_time=format_time(session['source_reload_time'])))
+    return make_response(render_template('sources.html', source=session['source']['sources'], reload_time=format_time(session['source_reload_time'])))
 
 @source.route('/get_raw')
 def source_get_raw():
@@ -117,9 +117,63 @@ def get_source_export():
     response.headers["Content-Disposition"] = "attachment; filename=output.txt"
     return response
 
+@source.route('/get_json')
+def source_get_json():
+    '''
+    return json array formatted for datatables 
+    '''
+    if not 'source_json' in session.keys() or 'reload' in request.args:
+        session['source_json'] = []
+        session['source_out'] = ""
+        session['source_reload_time'] = datetime.datetime.utcnow()
+        session['source'] = source_get_all()
+
+        sources = session['source']['sources']
+
+        if sources:
+            for s in sources:
+                checkbox = '<input type="checkbox" class="source" id="'+s['id']+'">'
+
+                resources = "<div class='sourcescol'><ul>"
+                for r in s['resources']:
+                    resources+= '<li>' + r['resource_id'] + '<ul>'
+                    for p in r['parameters']:
+                        resources += '<li>' + p + ': ' + str(r['parameters'][p]) + '</li>'
+                    resources += '</ul></li>'
+                resources += "</ul></div>"
+
+                parameters = "<ul>"
+                for p in s['parameters']:
+                    parameters += '<li>'+ p + ': ' + str(s['parameters'][p]) + '</li>'
+                parameters += '</ul>'
+
+                auth = "<div class='sourcescol'><ul>"
+                for a in s['auth']:
+                    auth += '<li>id: ' + a['identity_id']
+                    for k in a['parameters']:
+                        auth += '<ul><li>' + k +': ' + a['parameters'][k] + '</li></ul>'
+                auth += '</li></ul></div>'
+
+                session['source_json'].append(
+                    [checkbox,
+                    s['source_type'],
+                    s['name'],
+                    s['id'],
+                    resources,
+                    parameters,
+                    auth,
+                    str(s['created_at']),
+                    s['status']])
+    json = jsonify(data=session['source_json'], error=session['source']['error']) 
+    return json
+
 
 def source_get_all():
     ''' get list of all managed sources '''
+    sources = {
+        'error':'',
+        'sources':[]
+    }
     sourcegetlist = []
     try:
         client = Client(session['username'],session['apikey'])
@@ -130,10 +184,10 @@ def source_get_all():
             sourceget = client.managed_sources.get(per_page=per_page,page=i)
             session['ratelimit'] = sourceget.headers['x-ratelimit-remaining']
             if sourceget:
-                sourcegetlist.extend([s for s in sourceget['sources']])
+                sources['sources'].extend([s for s in sourceget['sources']])
     except Exception, e:
-        sourcegetlist = e.message
-    return sourcegetlist
+        sources['error'] = e.message
+    return sources
 
 def format_time(timestamp):
     return timestamp.strftime("%Y-%m-%d %H:%M:%S +0000")

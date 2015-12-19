@@ -3,7 +3,35 @@
   <link rel="stylesheet" type="text/css" href="/static/DataTables/datatables.css">
   <!-- DataTables -->
   <script type="text/javascript" charset="utf8" src="/static/DataTables/datatables.min.js"></script>
-  <script type="text/javascript"> $('#sourcestable').DataTable(); </script>
+  <script>
+    $.ajax({
+      url: "/source/get_json",
+      dataType: 'json',
+      beforeSend: function(){
+        $('#sourcestable').hide();
+        $('#source_output').text("[ please wait ]");
+      },
+      success: function (data) {
+        $('#sourcestable').DataTable( {
+          "data": data.data,
+          dom: 'lBfrtip',
+          "buttons": ['copy'],
+          processing: true
+        } )
+        .draw();
+        $('#sourcestable').show();
+
+        if(data.error) {
+          alert(data.error);
+          $('#source_output').text(data.error);
+        }
+        else {
+          $('#source_output').text("[ output ]")
+        }
+      } 
+    });
+  </script>
+  <!-- <script type="text/javascript"> $('#sourcestable').DataTable(); </script> -->
 </head>
 
 <body>
@@ -26,6 +54,22 @@
     [output] 
   </div>
 
+  <table id="sourcestable" class="tablesorter">
+    <thead>
+      <tr>
+        <th class="check_col"></th>
+        <th>Source Type</th>
+        <th>Name</th>
+        <th>ID</th>
+        <th>Resources</th>
+        <th>Parameters</th>
+        <th class="sourcesauth">Auth</th>
+        <th class="time_col">Created At (UTC)</th>
+        <th>Status</th>
+      </tr>
+    </thead>
+  </table>
+<!--
   {% if source is not string %}
     {% if source %}
     <table id="sourcestable" class="tablesorter">
@@ -93,4 +137,5 @@
   {% else %}
     <p> {{ source }} </p>
   {% endif %}
+-->
 </body>

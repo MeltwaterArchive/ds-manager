@@ -748,31 +748,29 @@ $(window).ready(function() {
 
     $(document).on('click', 'input#source_raw', function() {
       source_output_wait();
-      $.getJSON($SCRIPT_ROOT + '/source/get_raw',
-      $( ".source:checked"), 
-      function(data) {
-        formatted = source_output_format(data);
-        var html_formatted = source_output_format_html(formatted);
-        $.post($SCRIPT_ROOT + '/source/set_export', {output:formatted});
-        $("#source_output").html(html_formatted);
-      });
+      $.getJSON(
+        $SCRIPT_ROOT + '/source/get_raw',
+        make_url_params(), 
+        function(data) {
+          formatted = source_output_format(data);
+          var html_formatted = source_output_format_html(formatted);
+          $.post($SCRIPT_ROOT + '/source/set_export', {output:formatted});
+          $("#source_output").html(html_formatted);
+        });
       return false;
     });
 
     $(document).on('click', 'input#source_log', function() {
-      var ids = "";
-      $( ".source:checked").each(function(index, value){
-        ids += $(value).attr('id') + "=on&";
-      });
       source_output_wait();
-      $.getJSON($SCRIPT_ROOT + '/source/log',
-      ids, 
-      function(data) {
-        formatted = source_output_format(data);
-        var html_formatted = source_output_format_html(formatted);
-        $.post($SCRIPT_ROOT + '/source/set_export', {output:formatted});
-        $("#source_output").html(html_formatted);
-      });
+      $.getJSON(
+        $SCRIPT_ROOT + '/source/log',
+        make_url_params(), 
+        function(data) {
+          formatted = source_output_format(data);
+          var html_formatted = source_output_format_html(formatted);
+          $.post($SCRIPT_ROOT + '/source/set_export', {output:formatted});
+          $("#source_output").html(html_formatted);
+        });
       return false;
     });
 
@@ -785,7 +783,7 @@ $(window).ready(function() {
       if (confirm_delete == true){
         source_output_wait();
         $.getJSON($SCRIPT_ROOT + '/source/delete',
-        $( ".source:checked"), 
+        make_url_params(), 
         function(data) {
           formatted = source_control_output_format(data,"deleted");
           $("#source_output").html(formatted);
@@ -800,7 +798,7 @@ $(window).ready(function() {
     $(document).on('click', 'input#source_stop', function() {
       source_output_wait();
       $.getJSON($SCRIPT_ROOT + '/source/stop',
-      $( ".source:checked"), 
+      make_url_params(), 
       function(data) {
         formatted = source_control_output_format(data,"stopped");
         $("#source_output").html(formatted);
@@ -815,7 +813,7 @@ $(window).ready(function() {
     $(document).on('click', 'input#source_start', function() {
       source_output_wait();
       $.getJSON($SCRIPT_ROOT + '/source/start',
-      $( ".source:checked"), 
+      make_url_params(), 
       function(data) {
         formatted = source_control_output_format(data,"started");
         $("#source_output").html(formatted);
@@ -873,6 +871,14 @@ $(window).ready(function() {
 
     //helper functions
 
+    var make_url_params = function(){
+      var ids = "";
+      $( ".source:checked").each(function(index, value){
+        ids += $(value).attr('id') + "=on&";
+      });
+      return ids;
+    }
+
     var source_output_wait = function(){
       $("#source_output").text("[ please wait ]");
     }
@@ -924,6 +930,7 @@ $(window).ready(function() {
 /* COMMON things */
 
     //update ratelimit
+    // TODO - doesn't actually work...
     $(document).on('click', ':button,h3', function() {
       $.get($SCRIPT_ROOT + '/update_ratelimit', function(data){
         $('#ratelimit').text(data);

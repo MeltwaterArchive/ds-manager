@@ -16,7 +16,7 @@ def source_get():
 def source_get_raw():
     raw = []
     if 'source' in session.keys():
-        for s in session['source']:
+        for s in session['source']['sources']:
             for r in request.args:
                 if s['id'] == r:
                     raw.append(s)
@@ -137,7 +137,8 @@ def source_get_json():
                 for r in s['resources']:
                     resources+= '<li>' + r['resource_id'] + '<ul>'
                     for p in r['parameters']:
-                        resources += '<li>' + p + ': ' + r['parameters'][p].encode('utf-8') + '</li>'
+                        # encode parameters in case of special characters
+                        resources += '<li>' + p + ': ' + str(r['parameters'][p]).encode('utf-8') + '</li>'
                     resources += '</ul></li>'
                 resources += "</ul></div>"
 
@@ -173,7 +174,6 @@ def source_get_all():
         'error':'',
         'sources':[]
     }
-    sourcegetlist = []
     try:
         client = Client(session['username'],session['apikey'])
         per_page = 100

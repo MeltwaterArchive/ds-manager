@@ -129,6 +129,11 @@ def get_push_export():
 
 def push_get_all():
     ''' get list of all push subscriptions from API v1.1 '''
+    pushgetlist = {
+        'error':'',
+        'subscriptions': []
+    }
+
     try:
         client = Client(session['username'],session['apikey'])
         per_page = 100
@@ -146,7 +151,7 @@ def push_get_all():
         'order_dir':'desc',
         'per_page':per_page}
         pushget = request.get('get',params=params)
-        pushgetlist = [p for p in pushget['subscriptions']]
+        pushgetlist['subscriptions'].extend([p for p in pushget['subscriptions']])
         pages = pushget['count']/per_page + 2 
 
         # >= 2 pages push/get response
@@ -158,17 +163,17 @@ def push_get_all():
             'per_page':per_page,
             'page':i}
             pushget = request.get('get',params=params)
-            pushgetlist.extend([p for p in pushget['subscriptions']])
+            pushgetlist['subscriptions'].extend([p for p in pushget['subscriptions']])
 
         # convert 'last request' to date format
-        for p in pushgetlist:
+        for p in pushgetlist['subscriptions']:
             if p['last_request']:
                 p['last_request'] = datetime.datetime.fromtimestamp(p['last_request'])
 
         session['ratelimit'] = pushget.headers['x-ratelimit-remaining']
     except Exception, e:
-        pushgetlist = e.message
-    return pushgetlist
+        pushgetlist['error'] = e.message
+    return pushgetlist['subscriptions']
 
 def dpu_cost(hashes):
     '''get ordered dict of hourly dpu cost'''

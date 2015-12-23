@@ -326,7 +326,7 @@ $(window).ready(function() {
     $(document).on('click', 'input#push_raw', function() {
       push_output_wait();
       $.getJSON($SCRIPT_ROOT + '/push/get_raw',
-      $( ".push:checked"), 
+      push_make_url_params(), 
       function(data) {
         formatted = push_output_format(data);
         var html_formatted = push_output_format_html(formatted);
@@ -339,7 +339,7 @@ $(window).ready(function() {
     $(document).on('click', 'input#push_log', function() {
       push_output_wait();
       $.getJSON($SCRIPT_ROOT + '/push/log',
-      $( ".push:checked"), 
+      push_make_url_params(), 
       function(data) {
         formatted = push_output_format(data);
         var html_formatted = push_output_format_html(formatted);
@@ -351,29 +351,30 @@ $(window).ready(function() {
 
     $(document).on('click', 'input#push_dpus', function() {
       push_output_wait();
-      $.getJSON($SCRIPT_ROOT + '/push/dpus',
-      $( ".push:checked"), 
-      function(data) {
-        formatted = push_output_format(data);
-        var html_formatted = push_output_format_html(formatted);
-        $.post($SCRIPT_ROOT + '/push/set_export', {output:formatted});
-        $("#push_output").html(html_formatted);
-      });
+      $.getJSON(
+        $SCRIPT_ROOT + '/push/dpus',
+        push_make_url_params(), 
+        function(data) {
+          formatted = push_output_format(data);
+          var html_formatted = push_output_format_html(formatted);
+          $.post($SCRIPT_ROOT + '/push/set_export', {output:formatted});
+          $("#push_output").html(html_formatted);
+        });
       return false;
     });
 
     $(document).on('click', 'input#push_delete', function() {
       // confirm that we should delete subs before doing it
       var subs = "";
-      $( ".push:checked").each(function(){
-        subs = subs + "\n" + $( this ).attr('name');
+      $( ".push:checked").each(function(index, value){
+        subs = subs + "\n" + $(value).attr('id');
       });
       var confirm_delete = confirm("Are you sure you want to delete subscriptions:\n " + subs);
       // delete subs
       if (confirm_delete == true){
         push_output_wait();
         $.getJSON($SCRIPT_ROOT + '/push/delete',
-        $( ".push:checked"), 
+        push_make_url_params(), 
         function(data) {
           formatted = push_control_output_format(data,"deleted");
           $("#push_output").html(formatted);
@@ -387,14 +388,15 @@ $(window).ready(function() {
 
     $(document).on('click', 'input#push_stop', function() {
       var subs = "";
-      $( ".push:checked").each(function(){
-        subs = subs + "\n" + $( this ).attr('name');
+      $( ".push:checked").each(function(index, value){
+        subs = subs + "\n" + $(value).attr('id');
       });
+
       var confirm_delete = confirm("Are you sure you want to stop subscriptions:\n " + subs);
       if (confirm_delete == true){
         push_output_wait();
         $.getJSON($SCRIPT_ROOT + '/push/stop',
-        $( ".push:checked"), 
+        push_make_url_params(), 
         function(data) {
           formatted = push_control_output_format(data,"stopped");
           $("#push_output").html(formatted);
@@ -409,7 +411,7 @@ $(window).ready(function() {
     $(document).on('click', 'input#push_pause', function() {
       push_output_wait();
       $.getJSON($SCRIPT_ROOT + '/push/pause',
-      $( ".push:checked"), 
+      push_make_url_params(), 
       function(data) {
         formatted = push_control_output_format(data,"paused");
         $("#push_output").html(formatted);
@@ -423,7 +425,7 @@ $(window).ready(function() {
     $(document).on('click', 'input#push_resume', function() {
       push_output_wait();
       $.getJSON($SCRIPT_ROOT + '/push/resume',
-      $( ".push:checked"), 
+      push_make_url_params(), 
       function(data) {
         formatted = push_control_output_format(data,"resumed");  
         $("#push_output").html(formatted);
@@ -447,6 +449,14 @@ $(window).ready(function() {
     });
 
     //helper functions
+
+    var push_make_url_params = function(){
+      var ids = "";
+      $( ".push:checked").each(function(index, value){
+        ids += $(value).attr('id') + "=on&";
+      });
+      return ids;
+    }
 
     var push_output_wait = function(){
       $("#push_output").text("[ please wait ]");
@@ -750,7 +760,7 @@ $(window).ready(function() {
       source_output_wait();
       $.getJSON(
         $SCRIPT_ROOT + '/source/get_raw',
-        make_url_params(), 
+        source_make_url_params(), 
         function(data) {
           formatted = source_output_format(data);
           var html_formatted = source_output_format_html(formatted);
@@ -764,7 +774,7 @@ $(window).ready(function() {
       source_output_wait();
       $.getJSON(
         $SCRIPT_ROOT + '/source/log',
-        make_url_params(), 
+        source_make_url_params(), 
         function(data) {
           formatted = source_output_format(data);
           var html_formatted = source_output_format_html(formatted);
@@ -783,7 +793,7 @@ $(window).ready(function() {
       if (confirm_delete == true){
         source_output_wait();
         $.getJSON($SCRIPT_ROOT + '/source/delete',
-        make_url_params(), 
+        source_make_url_params(), 
         function(data) {
           formatted = source_control_output_format(data,"deleted");
           $("#source_output").html(formatted);
@@ -798,7 +808,7 @@ $(window).ready(function() {
     $(document).on('click', 'input#source_stop', function() {
       source_output_wait();
       $.getJSON($SCRIPT_ROOT + '/source/stop',
-      make_url_params(), 
+      source_make_url_params(), 
       function(data) {
         formatted = source_control_output_format(data,"stopped");
         $("#source_output").html(formatted);
@@ -813,7 +823,7 @@ $(window).ready(function() {
     $(document).on('click', 'input#source_start', function() {
       source_output_wait();
       $.getJSON($SCRIPT_ROOT + '/source/start',
-      make_url_params(), 
+      source_make_url_params(), 
       function(data) {
         formatted = source_control_output_format(data,"started");
         $("#source_output").html(formatted);
@@ -871,7 +881,7 @@ $(window).ready(function() {
 
     //helper functions
 
-    var make_url_params = function(){
+    var source_make_url_params = function(){
       var ids = "";
       $( ".source:checked").each(function(index, value){
         ids += $(value).attr('id') + "=on&";

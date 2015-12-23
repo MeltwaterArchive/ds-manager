@@ -6,7 +6,34 @@
     
   <!-- DataTables -->
   <script type="text/javascript" charset="utf8" src="/static/DataTables/datatables.min.js"></script>
-  <script type="text/javascript"> $('#pushtable').DataTable(); </script>
+  <script type="text/javascript"> 
+    $.ajax({
+      url: "/push/get_json",
+      dataType: 'json',
+      beforeSend: function(){
+        $('#pushtable').hide();
+        $('#push_output').text("[ please wait ]");
+      },
+      success: function (data) {
+        $('#pushtable').DataTable( {
+          "data": data.data,
+          dom: 'lBfrtip',
+          "buttons": ['copy'],
+          processing: true
+        } )
+        .order( [ 6, 'desc' ] )
+        .draw();
+        $('#pushtable').show();
+
+        if(data.error) {
+          $('#push_output').text(data.error)
+        }
+        else {
+          $('#push_output').text("[ output ]")
+        }
+      } 
+    });
+  </script>
 </head>
 
 <body>
@@ -27,6 +54,25 @@
   </span>
 
   <div id=push_output class="out">[output]</div>
+  <table id="pushtable" class="tablesorter">
+    <thead>
+      <tr>
+        <th class="push check_col"></th>
+        <th>Push ID</th>
+        <th>Name</th>
+        <th>Hash</th>
+        <th class="time_col">Last Request</th>
+        <th class="time_col">Last Success</th>
+        <th class="time_col">Created</th>
+        <th>Lost Data</th>
+        <th>Count</th>
+        <th>Output</th>
+        <th class="status">Status</th>
+      </tr>
+    </thead>
+  </table>
+
+<!--
   {% if push %}
   <table id="pushtable" class="tablesorter">
     <thead>
@@ -65,4 +111,5 @@
   {% else %}
     <p> No Live Streams available </p>
   {% endif %}
+-->
 </body>

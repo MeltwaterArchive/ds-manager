@@ -8,21 +8,35 @@ push = Blueprint('push', __name__,template_folder='static')
 
 @push.route('/get', methods=['POST', 'GET'])
 def push_get():
+    # clear session variables on reload
+    if 'reload' in request.args:
+        session.pop('push_json',None)
+        session.pop('push',None)
+        session['push_out'] = ""
+        session['push_reload_time'] = datetime.datetime.utcnow()
+    if not 'push_reload_time' in session:
+        session['push_reload_time'] = datetime.datetime.utcnow()
+    return render_template(
+        'push.html',
+        reload_time=format_time(session['push_reload_time']))
+
+    '''
     # do push/get request only when asked
     if not 'push' in session.keys() or 'reload' in request.args:
         session['push_out'] = ""
         session['push_reload_time'] = datetime.datetime.utcnow()
         push_get = push_get_all()
-        session['push'] = [p for p in push_get if type(p) is dict and 'hash_type' in p.keys() and p['hash_type'] != "historic"]
+        session['push'] = [p for p in push_get['subscriptions'] if type(p) is dict and 'hash_type' in p.keys() and p['hash_type'] != "historic"]
         # avoid another push/get if we've already loaded live steams
-        session['push_historics'] = [p for p in push_get if type(p) is dict and 'hash_type' in p.keys() and p['hash_type'] == "historic"]
-    return make_response(render_template('push.html', push=session['push'], reload_time=format_time(session['push_reload_time'])))
+        session['push_historics'] = [p for p in push_get['subscriptions'] if type(p) is dict and 'hash_type' in p.keys() and p['hash_type'] == "historic"]
+    return make_response(render_template('push.html', reload_time=format_time(session['push_reload_time'])))
+    '''
 
 @push.route('/get_raw')
 def push_get_raw():
     raw = []
     if 'push' in session.keys():
-        for p in session['push']:
+        for p in session['push']['subscriptions']:
             for r in request.args:
                 if p['id'] == r:
                     raw.append(p)
@@ -44,10 +58,9 @@ def push_log():
 def push_dpus():
     hashes = []
     if 'push' in session.keys():
-        for p in session['push']:
-            for r in request.args:
-                if p['id'] == r:
-                    hashes.append(p['hash'])
+        for p in session['push']['subscriptions']:
+            if p['id'] in request.args:
+                hashes.append(p['hash'])
     cost = dpu_cost(hashes)
     return jsonify(out=cost)
 
@@ -127,6 +140,37 @@ def get_push_export():
     response.headers["Content-Disposition"] = "attachment; filename=output.txt"
     return response
 
+@push.route('/get_json')
+def push_get_json():
+    '''
+    return json array formatted for datatables 
+    '''
+    if not 'push_json' in session.keys() or 'reload' in request.args:
+        session['push_json'] = []
+        session['push_out'] = ""
+        session['push_reload_time'] = datetime.datetime.utcnow()
+        session['push'] = push_get_all()
+
+        subscriptions = session['push']['subscriptions']
+
+        if subscriptions:
+            for s in subscriptions:
+                checkbox = '<input type="checkbox" class="push" id="'+s['id']+'">'
+                session['push_json'].append(
+                    [checkbox,
+                    s['id'],
+                    s['name'],
+                    s['hash'],
+                    str(s['last_request']),
+                    str(s['last_success']),
+                    str(s['start']),
+                    s['lost_data'],
+                    s['interaction_count'],
+                    s['output_type'],
+                    s['status']])
+    json = jsonify(data=session['push_json'], error=session['push']['error']) 
+    return json
+
 def push_get_all():
     ''' get list of all push subscriptions from API v1.1 '''
     pushgetlist = {
@@ -172,8 +216,9 @@ def push_get_all():
 
         session['ratelimit'] = pushget.headers['x-ratelimit-remaining']
     except Exception, e:
+        print e.message
         pushgetlist['error'] = e.message
-    return pushgetlist['subscriptions']
+    return pushgetlist
 
 def dpu_cost(hashes):
     '''get ordered dict of hourly dpu cost'''

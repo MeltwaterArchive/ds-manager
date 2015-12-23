@@ -12,7 +12,7 @@
         $('#source_output').text("[ please wait ]");
       },
       success: function (data) {
-        $('#sourcestable').DataTable( {
+        var sourcestable = $('#sourcestable').DataTable( {
           "data": data.data,
           dom: 'lBfrtip',
           "buttons": ['copy'],
@@ -20,6 +20,24 @@
         } )
         .order( [ 8, 'asc' ] )
         .draw();
+
+        // implement individual page loading later?
+        /*
+        sourcestable.button().add( 1, {
+            action: function ( e, dt, button, config ) {
+                dt.ajax.url('/source/get_json?page=2').load();
+            },
+            text: 'next 200 Managed Sources'
+        } );
+        */
+
+        sourcestable.button().add( 0, {
+            action: function ( e, dt, button, config ) {
+                dt.ajax.url('/source/get_json?page=0').load();
+            },
+            text: 'all Managed Sources'
+        } );
+
         $('#sourcestable').show();
 
         if(data.error) {

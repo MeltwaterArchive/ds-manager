@@ -1,6 +1,6 @@
 from flask import Blueprint, render_template, session, request, jsonify, make_response
 from datasift import Client
-import datetime
+import datetime, math
 
 source = Blueprint('source', __name__,template_folder='static')
 
@@ -9,6 +9,7 @@ def source_get():
     # do push/get request only when asked
     if not 'source' in session.keys() or 'reload' in request.args:
         session['source_out'] = ""
+        session.pop('source_json',None)
         session['source_reload_time'] = datetime.datetime.utcnow()
     return make_response(render_template('sources.html', reload_time=format_time(session['source_reload_time'])))
 
@@ -121,11 +122,16 @@ def source_get_json():
     '''
     return json array formatted for datatables 
     '''
-    if not 'source_json' in session.keys() or 'reload' in request.args:
+    if not 'source_json' in session.keys() or 'reload' in request.args or 'page' in request.args:
         session['source_json'] = []
         session['source_out'] = ""
         session['source_reload_time'] = datetime.datetime.utcnow()
-        session['source'] = source_get_all()
+        if 'page' in request.args: 
+            # for some reason this doesn't work as expected
+            # session['source'] = source_get_all(page=request.args['page'])
+            session['source'] = source_get_all()
+        else:
+            session['source'] = source_get_all(page=1)
 
         sources = session['source']['sources']
 
@@ -133,6 +139,7 @@ def source_get_json():
             for s in sources:
                 checkbox = '<input type="checkbox" class="source" id="'+s['id']+'">'
 
+                # special html and formatting for resources, parameters, and auth
                 resources = "<div class='sourcescol'><ul>"
                 for r in s['resources']:
                     resources+= '<li>' + r['resource_id'] + '<ul>'
@@ -164,24 +171,40 @@ def source_get_json():
                     auth,
                     str(s['created_at']),
                     s['status']])
-    json = jsonify(data=session['source_json'], error=session['source']['error']) 
+    json = jsonify(data=session['source_json'], pages=session['source']['pages'], error=session['source']['error']) 
     return json
 
 
-def source_get_all():
+def source_get_all(page=0):
     ''' get list of all managed sources '''
     sources = {
         'error':'',
-        'sources':[]
+        'sources':[],
+        'pages':0
     }
-    try:
-        client = Client(session['username'],session['apikey'])
-        per_page = 100
+    per_page = 200
 
-        pages = client.managed_sources.get()['count']/per_page + 2
-        for i in xrange(1,pages):
-            sourceget = client.managed_sources.get(per_page=per_page,page=i)
-            session['ratelimit'] = sourceget.headers['x-ratelimit-remaining']
+    try:
+        client = Client(session['username'],session['apikey'])    
+
+        # load all pages
+        if page == 0:
+            initial_get = client.managed_sources.get(per_page=per_page,page=1)
+            if initial_get:
+                sources['sources'].extend([i for i in initial_get['sources']])
+                count = float(initial_get['count'])
+                sources['pages'] = int(math.ceil(count/per_page))
+
+                if sources['pages'] > 1:
+                    for i in xrange(2,sources['pages']+1):
+                        sourceget = client.managed_sources.get(per_page=per_page,page=i)
+                        if sourceget:
+                            sources['sources'].extend([s for s in sourceget['sources']])
+        # load single page
+        else:
+            sourceget = client.managed_sources.get(per_page=per_page,page=page)
+            count = float(sourceget['count'])
+            sources['pages'] = int(math.ceil(count/per_page))
             if sourceget:
                 sources['sources'].extend([s for s in sourceget['sources']])
     except Exception, e:

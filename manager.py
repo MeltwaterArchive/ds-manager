@@ -96,7 +96,7 @@ def logout():
 # reset pretty much all session data except user and api key on page refresh
 @app.route('/reset_data')
 def reset_data():
-    session_keys = ["usage","identities","pylon","push","historics","sources"]
+    session_keys = ["usage","identities","pylon","push","historics","source"]
     for k in session_keys: 
         if k in session.keys():
             session.pop(k, None)

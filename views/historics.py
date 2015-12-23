@@ -22,7 +22,7 @@ def historics_get():
     stale_threshold = datetime.timedelta(seconds=60*15)
     # only do push/get request if it hasn't been done before or reload or its stale
     if not 'push_historics' in session.keys() or 'reload' in request.args or stale_threshold < staleness:
-        push_get = push.push_get_all()
+        push_get = push.push_get_all()['subscriptions']
         session['push_reload_time'] = datetime.datetime.utcnow()
         session['push_historics'] = [p for p in push_get if type(p) is dict and 'hash_type' in p.keys() and p['hash_type'] == "historic"]
         session['push'] = [p for p in push_get if type(p) is dict and 'hash_type' in p.keys() and p['hash_type'] != "historic"]

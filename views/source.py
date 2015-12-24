@@ -127,9 +127,7 @@ def source_get_json():
         session['source_out'] = ""
         session['source_reload_time'] = datetime.datetime.utcnow()
         if 'page' in request.args: 
-            # for some reason this doesn't work as expected
-            # session['source'] = source_get_all(page=request.args['page'])
-            session['source'] = source_get_all()
+            session['source'] = source_get_all(int(request.args['page']))
         else:
             session['source'] = source_get_all(page=1)
 

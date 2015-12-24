@@ -13,7 +13,7 @@
         $('#pylon_output').text("[ please wait ]");
       },
       success: function (data) {
-        $('#pylontable').DataTable( {
+        var pylontable = $('#pylontable').DataTable( {
           "data": data.data,
           dom: 'lBfrtip',
           "buttons": ['copy'],
@@ -21,6 +21,13 @@
         } )
         .order( [ 8, 'asc' ] )
         .draw();
+
+        pylontable.button().add( 0, {
+            action: function ( e, dt, button, config ) {
+                dt.ajax.url('/pylon/get_json?page=0').load();
+            },
+            text: 'all recordings'
+        } );
         $('#pylontable').show();
 
         if(data.error) {

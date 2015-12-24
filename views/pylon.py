@@ -90,11 +90,15 @@ def pylon_get_json():
     '''
     return json array formatted for datatables 
     '''
-    if not 'pylon_json' in session.keys() or 'reload' in request.args:
+    if not 'pylon_json' in session.keys() or 'reload' in request.args or 'page' in request.args:
         session['pylon_json'] = []
         session['pylon_out'] = ""
         session['pylon_reload_time'] = datetime.datetime.utcnow()
-        session['pylon'] = pylon_get_all()
+        if 'page' in request.args:
+            session['pylon'] = pylon_get_all(page=int(request.args['page']))
+        # by default just load the first page
+        else:
+            session['pylon'] = pylon_get_all(page=1)
 
         recordings = session['pylon']['recordings']
 
@@ -115,24 +119,29 @@ def pylon_get_json():
     return json
 
 
-def pylon_get_all():
+def pylon_get_all(page=0):
     ''' get all PYLON recordings for all accounts '''
     recordings = {
         "error":"",
-        "recordings":[]
+        "recordings":[],
     }
     per_page=200
 
     try:
         client = Client(session['username'],session['apikey'])
-        recs = client.pylon.list(per_page=per_page)
-        page = 2
-        # if there are more than per_page number of recordings for an identity
-        while len(recs) == per_page:
+        recs = client.pylon.list(page=page,per_page=per_page)
+
+        if page == 0:
+            page = 2
+            # if there are more than per_page number of recordings for an account
+            while len(recs) == per_page:
+                recordings["recordings"].extend(recs)
+                recs =  client.pylon.list(page=page,per_page=per_page)
+                page += 1
             recordings["recordings"].extend(recs)
-            recs =  client.pylon.list(page=page,per_page=per_page)
-            page += 1
-        recordings["recordings"].extend(recs)
+        else:
+            recordings["recordings"].extend(recs)
+
         # add identity label information to recordings if it's already loaded
         if 'identities' in session and 'data' in session['identities']:
             for r in recordings["recordings"]:

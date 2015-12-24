@@ -31,21 +31,27 @@
         } );
         */
 
-        sourcestable.button().add( 0, {
-            action: function ( e, dt, button, config ) {
-                dt.ajax.url('/source/get_json?page=0').load();
-            },
-            text: 'all Managed Sources'
-        } );
-
-        $('#sourcestable').show();
-
         if(data.error) {
           $('#source_output').text(data.error);
         }
         else {
           $('#source_output').text("[ output ]")
         }
+
+        if(!data.all) {
+          $('#source_output').text("NOTE: there are more Managed Sources than listed here.");
+          sourcestable.button().add( 0, {
+              action: function ( e, dt, button, config ) {
+                  dt.ajax.url('/source/get_json?page=0').load(function(){
+                    $('#source_output').text("done");
+                  });
+                  $('#source_output').text("processing " + data.pages + " pages of Managed Sources...");
+              },
+              text: 'get all Managed Sources'
+          } );
+        }
+
+        $('#sourcestable').show();
       } 
     });
   </script>

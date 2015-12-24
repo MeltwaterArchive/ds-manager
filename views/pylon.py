@@ -115,7 +115,7 @@ def pylon_get_json():
                     s['remaining_index_capacity'],
                     s['volume'],
                     s['status']])
-    json = jsonify(data=session['pylon_json'], error=session['pylon']['error']) 
+    json = jsonify(data=session['pylon_json'], error=session['pylon']['error'], all=session['pylon']['all']) 
     return json
 
 
@@ -124,6 +124,7 @@ def pylon_get_all(page=0):
     recordings = {
         "error":"",
         "recordings":[],
+        "all":True
     }
     per_page=200
 
@@ -131,9 +132,9 @@ def pylon_get_all(page=0):
         client = Client(session['username'],session['apikey'])
         recs = client.pylon.list(page=page,per_page=per_page)
 
+        # get all pages if page=0
         if page == 0:
             page = 2
-            # if there are more than per_page number of recordings for an account
             while len(recs) == per_page:
                 recordings["recordings"].extend(recs)
                 recs =  client.pylon.list(page=page,per_page=per_page)
@@ -141,6 +142,8 @@ def pylon_get_all(page=0):
             recordings["recordings"].extend(recs)
         else:
             recordings["recordings"].extend(recs)
+            if len(recs) == per_page:
+                recordings['all']= False
 
         # add identity label information to recordings if it's already loaded
         if 'identities' in session and 'data' in session['identities']:

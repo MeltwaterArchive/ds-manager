@@ -180,7 +180,7 @@ def push_get_all():
 
     try:
         client = Client(session['username'],session['apikey'])
-        per_page = 100
+        per_page = 200
 
         # custom request, so we can pass all param to API v.1.1 
         #  only for internal accounts?

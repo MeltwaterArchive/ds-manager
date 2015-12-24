@@ -22,20 +22,26 @@
         .order( [ 8, 'asc' ] )
         .draw();
 
-        pylontable.button().add( 0, {
-            action: function ( e, dt, button, config ) {
-                dt.ajax.url('/pylon/get_json?page=0').load();
-            },
-            text: 'all recordings'
-        } );
-        $('#pylontable').show();
-
         if(data.error) {
           $('#pylon_output').text(data.error)
         }
         else {
           $('#pylon_output').text("[ output ]")
         }
+
+        if(!data.all) {
+          $('#pylon_output').text("NOTE: there are more PYLON recordings than listed here.");
+          pylontable.button().add( 0, {
+              action: function ( e, dt, button, config ) {
+                  dt.ajax.url('/pylon/get_json?page=0').load(function(){
+                    $('#pylon_output').text("done.");
+                  });
+                  $('#pylon_output').text("processing all PYLON recordings...");
+              },
+              text: 'get all recordings'
+          } );
+        }
+        $('#pylontable').show();
       } 
     });
     /*

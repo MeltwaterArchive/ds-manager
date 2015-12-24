@@ -169,7 +169,7 @@ def source_get_json():
                     auth,
                     str(s['created_at']),
                     s['status']])
-    json = jsonify(data=session['source_json'], pages=session['source']['pages'], error=session['source']['error']) 
+    json = jsonify(data=session['source_json'], pages=session['source']['pages'], error=session['source']['error'], all=session['source']['all']) 
     return json
 
 
@@ -178,7 +178,8 @@ def source_get_all(page=0):
     sources = {
         'error':'',
         'sources':[],
-        'pages':0
+        'pages':0,
+        'all':True
     }
     per_page = 200
 
@@ -205,6 +206,8 @@ def source_get_all(page=0):
             sources['pages'] = int(math.ceil(count/per_page))
             if sourceget:
                 sources['sources'].extend([s for s in sourceget['sources']])
+            if sources['pages'] > 1:
+                sources['all'] = False
     except Exception, e:
         sources['error'] = e.message
     return sources

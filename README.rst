@@ -9,6 +9,10 @@ Requirements:
 To run locally:
   1. cd into your preferred directory
   2. git clone this to the directory
+  2a. Mac OSX 10.11+ (El Capitan+) ONLY: update openssl headers:
+    a. brew uninstall openssl; brew update
+    b. brew install openssl
+    c. brew link openssl --force
   3. set up a local virtual environment: 
     a. pip install virtualenv
     b. virtualenv venv

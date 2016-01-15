@@ -36,8 +36,8 @@ def pylon_start():
         # split the id of the checkboxes on _ to get hash and identity id, so we can stop it
         hash_idid = r.split('_')
         if not 'identities' in session:
-            session['identities'] = account.account_get_all()['data']
-        for i in session['identities']:
+            session['identities'] = account.account_get_all()
+        for i in session['identities']['data']:
             try:
                 if i['id'] == hash_idid[1]:
                     client = Client(session['username'],i['api_key'])
@@ -57,8 +57,8 @@ def pylon_stop():
         # split the id of the checkboxes on _ to get hash and identity id, so we can stop it
         hash_idid = r.split('_')
         if not 'identities' in session:
-            session['identities'] = account.account_get_all()['data']
-        for i in session['identities']:
+            session['identities'] = account.account_get_all()
+        for i in session['identities']['data']:
             try:
                 if i['id'] == hash_idid[1]:
                     client = Client(session['username'],i['api_key'])

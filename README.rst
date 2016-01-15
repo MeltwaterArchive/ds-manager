@@ -3,23 +3,25 @@ Requirements:
     Python 2.7
     virtualenv
     pip
-  Dependencies:
-    use requirements.txt with pip to get all dependencies
     
 To run locally:
-  1. cd into your preferred directory
-  2. git clone this to the directory
-  2a. Mac OSX 10.11+ (El Capitan+) ONLY: update openssl headers:
-    a. brew uninstall openssl; brew update
-    b. brew install openssl
-    c. brew link openssl --force
+  1. git clone to preferred directory
+  2. Mac OSX 10.11+ (El Capitan+) ONLY: fix for system openssl headers issue:
+    a. download/install brew (http://brew.sh) if not installed already
+    b. brew uninstall openssl; brew update
+    c. brew install openssl
+    d. brew link openssl --force
+    e. which openssl
+      i. if /usr/bin/openssl , need to update PATH variable: export PATH="/usr/local/bin:$PATH"
+      ii. if /usr/local/bin/openssl , you're set
   3. set up a local virtual environment: 
     a. pip install virtualenv
+      i. if "bash: pip: command not found": brew install python
     b. virtualenv venv
     c. source venv/bin/activate
   4. install dependencies: pip install -r requirements.txt
-  5. run from terminal: python application.py
-  6. from browser: navigate to http://127.0.0.1:5000/
+  5. python application.py
+  6. from browser, navigate to http://127.0.0.1:5000/
   
 Note on elasticbeanstalk use:
   - application.py has just a single import which makes it a WSGI application. Otherwise eb complains "Target WSGI script '/opt/python/current/app/application.py' does not contain WSGI application 'application'"

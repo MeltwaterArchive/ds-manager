@@ -163,7 +163,7 @@ def account_all():
         'x-ratelimit-limit':""}
     return acct
 
-app.secret_key = 'A0Zr98j/3yX R~XHH!jmN]LWX/,?RT'
+app.secret_key = '1nnvthg@#+^_$42u)#w4u^0a4p^b9q)w0#v_v^wzr40bkg93i)'
 
 reload(sys)  
 sys.setdefaultencoding('utf-8')

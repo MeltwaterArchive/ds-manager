@@ -20,7 +20,7 @@ To run locally:
     b. virtualenv venv
     c. source venv/bin/activate
   4. install dependencies: pip install -r requirements.txt
-  5. python application.py
+  5. python manager.py
   6. from browser, navigate to http://127.0.0.1:5000/
   
 Note on elasticbeanstalk use:
